@@ -6,7 +6,8 @@
 - **Last step done:** steps 1–2 done (2026-10-12). JDK 25 + IntelliJ + MC Dev plugin installed. Project generated with the Fabric template (26.3, datagen ON, split sources ON, Groovy) and unzipped into the repo root. Loader 0.19.5, Loom 1.18-SNAPSHOT, Gradle 9.7.1. Hello line: "Site Works loaded. Time to build!" First `gradlew build` = **BUILD SUCCESSFUL** (24 min, slow internet downloads, not an error). The Turkish letters in the folder path cause no build problem.
 Step 3 done: IntelliJ opened the project, the "Minecraft Client" run config works, the log shows the hello line. Harmless log errors: `Perflib 009` (Turkish Windows perf counters) and `401 Failed to fetch user properties` (offline dev account). The game log is `run/logs/latest.log` (Claude can read it directly).
 Step 4 done: `git init -b main` + first commit (local only). A creative world loads fine.
-- **Next step:** (optional) push to the private GitHub repo when the user says so, then discuss the Phase 1 questions.
+Pushed to GitHub (`origin`, branch `main`, the repo name stayed `siteworks_minecraft-mode`).
+- **Next step:** discuss the Phase 1 questions (best in a new chat).
 - **Template leftovers to clean in Phase 1:** `ExampleMixin.java`, `ExampleClientMixin.java` (and their entries in the `*.mixins.json` files). `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -14,7 +15,7 @@ Step 4 done: `git init -b main` + first commit (local only). A creative world lo
   - The user hates **chores** (angarya) in gameplay. Every tool must be functional.
   - v1.0 scope is **locked**. New ideas go to `docs/game-design.md` §5 "Later".
   - The user has **no bought Minecraft account**. Dev testing (`runClient`, offline name "Player") works without one. For LAN tests, run two clients with different `--username`. Phase 7 "test in the normal launcher" needs another way (dev jar test, dedicated server, or a friend). Never suggest cracked launchers.
-  - The GitHub repo may be renamed from `siteworks_minecraft-mode` to `…-mod`. Check the real URL before the first push.
+  - GitHub remote: `https://github.com/semihkayli/siteworks_minecraft-mode.git` (the user may rename it to `…-mod` later, then run `git remote set-url origin <new URL>`). Push only when the user asks.
   - Total estimate: **~28–43 work sessions** (2–3 h each). A guess, update it as we learn.
 
 **How every phase works:** discuss → write decisions → small steps (each step: what changed, which files, how to test) → "Done when" checklist → update "Current status" → git commit.
