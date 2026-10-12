@@ -1,0 +1,10 @@
+{
+  "block.siteworks.safety_net": "Güvenlik Ağı",
+  "item.siteworks.ghost_test": "Hayalet Testi (test eşyası)",
+  "item.siteworks.hard_hat": "Baret",
+  "item.siteworks.mattock": "Kazma Çapa",
+  "item.siteworks.sledgehammer": "Balyoz",
+  "itemGroup.siteworks.site_works": "Site Works",
+  "message.siteworks.ghost_test.removed": "%s hayalet blok silindi",
+  "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu"
+}

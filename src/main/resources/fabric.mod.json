@@ -25,6 +25,7 @@
 			"io.github.semihkayli.siteworks.client.SiteWorksDataGenerator"
 		]
 	},
+	"accessWidener": "siteworks.classtweaker",
 	"mixins": [
 		"siteworks.mixins.json",
 		{

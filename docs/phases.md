@@ -2,13 +2,23 @@
 
 ## Current status
 
-- **Phase:** 0 — Setup, **done** ✅ (2026-10-12). Next: Phase 1 — Site basics, **not started** (discuss the questions first)
-- **Last step done:** steps 1–2 done (2026-10-12). JDK 25 + IntelliJ + MC Dev plugin installed. Project generated with the Fabric template (26.3, datagen ON, split sources ON, Groovy) and unzipped into the repo root. Loader 0.19.5, Loom 1.18-SNAPSHOT, Gradle 9.7.1. Hello line: "Site Works loaded. Time to build!" First `gradlew build` = **BUILD SUCCESSFUL** (24 min, slow internet downloads, not an error). The Turkish letters in the folder path cause no build problem.
-Step 3 done: IntelliJ opened the project, the "Minecraft Client" run config works, the log shows the hello line. Harmless log errors: `Perflib 009` (Turkish Windows perf counters) and `401 Failed to fetch user properties` (offline dev account). The game log is `run/logs/latest.log` (Claude can read it directly).
-Step 4 done: `git init -b main` + first commit (local only). A creative world loads fine.
-Pushed to GitHub (`origin`, branch `main`, the repo name stayed `siteworks_minecraft-mode`).
-- **Next step:** discuss the Phase 1 questions (best in a new chat).
-- **Template leftovers to clean in Phase 1:** `ExampleMixin.java`, `ExampleClientMixin.java` (and their entries in the `*.mixins.json` files). `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
+- **Phase:** 1 — Site basics, **done** ✅ (2026-10-12). Only the Hard Hat anvil test is still waiting for the user's in-game check. Next: **Phase 2 — Concrete, not started** (discuss the questions first, best in a new chat).
+- **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
+- **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
+- **Code layout:** `registry/` (ModItems, ModBlocks, ModTags, ModCreativeTabs), `item/`, `block/`, `event/` in `src/main/java/.../siteworks/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
+- **Datagen notes:** run `gradlew runDatagen` after changing any provider. Never edit `src/main/generated/` by hand. Vanilla tags must be added with `forceAddTag` (plain `addTag` fails because datagen can't see vanilla tags). A JNA `Win32Exception: Parametre hatalı` line in the datagen log is harmless.
+- **26.3 API notes (old tutorials are wrong here):**
+  - Dyes: `Items.DYE.yellow()` (a `ColorCollection`), not `Items.YELLOW_DYE`.
+  - Entity types: `EntityTypes.BLOCK_DISPLAY` (plural class).
+  - Block/item IDs for tags: `BlockItemIds.X`.
+  - Tools: plain `Item` + `Properties.shovel/pickaxe(...)` (no `ShovelItem`).
+  - Block bounce: `Properties.bounceRestitution(float)`.
+  - Render layers are picked from the texture's transparency (no `BlockRenderLayerMap`).
+  - Block codecs are gone.
+  - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
+- **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
+- **Next step:** Phase 2 discussion (exact recipes, mixer capacity, strength numbers, flood-fill unit tests).
+- `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
   - The user's mood can be low, so lead with ideas and recommendations, and the user guides with feedback.
@@ -18,7 +28,7 @@ Pushed to GitHub (`origin`, branch `main`, the repo name stayed `siteworks_minec
   - GitHub remote: `https://github.com/semihkayli/siteworks_minecraft-mode.git` (the user may rename it to `…-mod` later, then run `git remote set-url origin <new URL>`). Push only when the user asks.
   - Total estimate: **~28–43 work sessions** (2–3 h each). A guess, update it as we learn.
 
-**How every phase works:** discuss → write decisions → small steps (each step: what changed, which files, how to test) → "Done when" checklist → update "Current status" → git commit.
+**How every phase works:** discuss → write decisions → small steps (each step: what changed, which files, how to test, **update `docs/items.md`**) → "Done when" checklist → update "Current status" → git commit.
 
 ---
 
@@ -68,13 +78,33 @@ Pushed to GitHub (`origin`, branch `main`, the repo name stayed `siteworks_minec
 - Do the ghost test here, or wait for Phase 5?
 
 **Done when:**
-- [ ] All 4 items are in our creative tab, craftable in survival, with en/tr names
-- [ ] The Hard Hat blocks falling-anvil damage, and the Safety Net cancels fall damage
-- [ ] Mattock digs 3×3 dirt but not stone, Sledgehammer digs 3×3 stone but not ores
-- [ ] (Optional) Ghost test: glowing small blocks look OK
+- [x] All 4 items are in our creative tab, craftable in survival, with en/tr names
+- [ ] The Safety Net cancels fall damage (tested ✅). The Hard Hat blocks falling-anvil damage: built, **in-game anvil test still pending**
+- [x] Mattock digs 3×3 dirt but not stone, Sledgehammer digs 3×3 stone but not ores
+- [x] (Optional) Ghost test: glowing small blocks look OK (user: "not sure, can change later". Results are under Phase 5)
 
-**Decisions:**
-- _(write answers here)_
+**Decisions:** (2026-10-12)
+- **JSON:** the Mattock is written **by hand** (to learn the files), then we switch to **datagen** for everything else.
+- **Recipes (iron set):**
+  - Hard Hat = `III / IYI` (5 iron + yellow dye)
+  - Safety Net ×4 = `S.S / .S. / S.S` (5 string)
+  - Mattock = `III / IS. / .S.` (4 iron + 2 sticks)
+  - Sledgehammer = `III / III / .S.` (6 iron + 1 stick)
+- **Tools:** Mattock and Sledgehammer have 500 durability, and each block broken costs 1. Repair with iron in an anvil, enchantable. The block you hit breaks like a normal shovel/pickaxe hit, and only the 8 blocks around it are filtered by a tag (`soft_ground` / `sledge_breakable`). Sneak = 1 block.
+- **Hard Hat:** like an iron helmet (armor 2, durability 165) + full immunity to falling blocks (vanilla damage type tag `damages_helmet`). Placeholder look = golden helmet (yellow). The hat still loses durability when it blocks a hit (1 per 4 damage), user agreed.
+- **Safety Net:** ~~a thin 2-pixel pad~~ → **changed in step 5 (user agreed): a 3-pixel net at the TOP of its block space** (like a trapdoor "up"), because vanilla's landing checks look 0.2/0.5 blocks under the feet and miss a thin pad at the bottom. Can be placed in the air without support. No fall damage, small vanilla bounce (`bounceRestitution 0.3`).
+- **Creative tab:** "Site Works", with the Hard Hat as its icon.
+- **Ghost test:** yes, at the **end of Phase 1** (a creative-only test item).
+- **No mixins needed** (events + block methods). The template's example mixins are deleted.
+
+**Steps:**
+1. Clean the template mixins. Add `ModItems` + the creative tab + the **Mattock item, all JSON by hand**.
+2. Mattock 3×3 digging + the `soft_ground` tag.
+3. Switch to datagen. Add the Sledgehammer + the `sledge_breakable` tag.
+4. Hard Hat (armor material, equipment asset, damage event).
+5. Safety Net block.
+6. Ghost test item.
+7. "Done when" checklist → update status → commit.
 
 ---
 
@@ -155,7 +185,12 @@ Pushed to GitHub (`origin`, branch `main`, the repo name stayed `siteworks_minec
 **Discuss before starting:**
 - What counts as "correct": only the block type, or also the direction (stairs facing)?
 - Who can remove someone else's stake on a server?
-- Ghost colors and size (e.g. 0.8 scale)
+- Ghost colors and size (e.g. 0.8 scale). **Phase 1 ghost test results (2026-10-12):**
+  - **Performance OK:** 512 ghosts = 112–116 FPS, server 9.5 ms/tick (RTX 5060 laptop; weaker PCs may differ, so keep the 512 limit).
+  - **Night OK:** full brightness makes ghosts stand out.
+  - **Ghosts survive a world restart** (as expected) → cleanup is needed.
+  - Problem 1: vanilla merges glow outlines of the same color into **one silhouette**, so a red "wrong" block **inside** a big ghost is hard to see. Idea: show wrong blocks as a **red stained glass** ghost (not only a red outline).
+  - Problem 2: in daylight, 0.8-scale ghosts look almost like real blocks. Ideas: smaller scale (0.6–0.7), or no outline + glass-like look. The user was not sure. Decide here.
 
 **Done when:**
 - [ ] The ghost appears, updates while building, and disappears when the blueprint is taken back
@@ -173,10 +208,10 @@ Pushed to GitHub (`origin`, branch `main`, the repo name stayed `siteworks_minec
 
 **Goal:** make v1.0 feel complete and stable.
 
-**Content:** recipe balance pass, advancements (Solid Ground, Don't Strip Too Early, Iron Will, Architect, By the Book, Bridge Builder), full Turkish translation, vanilla sounds for actions, creative tab order, `runServer` test (no client code on the server), performance test, bug fixing.
+**Content:** **new looks for all our tools** (user's wish, 2026-10-12: own original textures/models instead of vanilla placeholders, e.g. the Mattock now looks exactly like an iron hoe; done when all tools exist), recipe balance pass, advancements (Solid Ground, Don't Strip Too Early, Iron Will, Architect, By the Book, Bridge Builder), full Turkish translation, vanilla sounds for actions, creative tab order, `runServer` test (no client code on the server), performance test, bug fixing.
 
 **Discuss before starting:**
-- Any textures to replace now, or keep vanilla placeholders for v1.0?
+- How should the new tool looks be made (simple original pixel textures by script, Piskel by hand, Blockbench 3D models)? Blocks too, or only tools?
 - Any balance problems found while playing?
 
 **Done when:**

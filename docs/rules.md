@@ -8,4 +8,14 @@
 - **Ask before big actions:** installing many packages, deleting or moving files, changing the architecture or data model, git push, anything that is hard to undo.
 - **$0 budget.** No paid APIs or services. If something might cost money later, warn first.
 - **The user is a student.** Suggest better ideas or alternative approaches when you see them, and teach while building.
+- **Document every item.** When we add or change an item, tool or block, update `docs/items.md` **in the same step**. Record:
+  - the names (EN + TR) and the ID
+  - what it does and its exact rules
+  - the recipe
+  - the stats (durability, damage, speed, armor...)
+  - repair and enchanting
+  - tags
+  - the look
+  - the code files
+  - the test status
 - **No extra mods.** Only Fabric API (if agreed in Phase 0). Do not add other mods as dependencies.

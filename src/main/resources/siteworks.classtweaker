@@ -1,0 +1,8 @@
+classTweaker	v1	official
+
+# Makes private Minecraft methods usable by our mod (Loom applies this at compile time).
+# Block Display setters, for the hologram ghost (Phase 1 ghost test, Phase 5 projection).
+accessible	method	net/minecraft/world/entity/Display$BlockDisplay	setBlockState	(Lnet/minecraft/world/level/block/state/BlockState;)V
+accessible	method	net/minecraft/world/entity/Display	setTransformation	(Lcom/mojang/math/Transformation;)V
+accessible	method	net/minecraft/world/entity/Display	setGlowColorOverride	(I)V
+accessible	method	net/minecraft/world/entity/Display	setBrightnessOverride	(Lnet/minecraft/util/Brightness;)V

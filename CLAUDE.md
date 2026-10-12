@@ -15,6 +15,7 @@ A **Fabric** mod for Minecraft about **rough construction (kaba inşaat)**. v1.0
 @docs/phases.md
 
 - `docs/game-design.md` — **source of truth for game content.** v1.0 scope is locked (§0 has all user decisions, §5 is the "later" list).
+- `docs/items.md` — **what is really built:** every item/tool/block with names, recipe, stats, rules and code files. Update it in the same step as any item change.
 - `docs/research.md` — technical research: versions, tools, concepts, technical risks, sources.
 
 **Starting a new chat:** read "Current status" at the top of `docs/phases.md` first. Update it at the end of every step, so the next chat can continue without the old conversation.

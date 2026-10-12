@@ -1,5 +1,10 @@
 package io.github.semihkayli.siteworks;
 
+import io.github.semihkayli.siteworks.event.AreaMining;
+import io.github.semihkayli.siteworks.event.HardHatProtection;
+import io.github.semihkayli.siteworks.registry.ModBlocks;
+import io.github.semihkayli.siteworks.registry.ModCreativeTabs;
+import io.github.semihkayli.siteworks.registry.ModItems;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.resources.Identifier;
@@ -20,6 +25,12 @@ public class SiteWorks implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+
+		ModBlocks.init();
+		ModItems.init();
+		ModCreativeTabs.init();
+		AreaMining.init();
+		HardHatProtection.init();
 
 		LOGGER.info("Site Works loaded. Time to build!");
 	}

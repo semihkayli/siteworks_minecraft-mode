@@ -1,0 +1,10 @@
+{
+  "block.siteworks.safety_net": "Safety Net",
+  "item.siteworks.ghost_test": "Ghost Test (test item)",
+  "item.siteworks.hard_hat": "Hard Hat",
+  "item.siteworks.mattock": "Mattock",
+  "item.siteworks.sledgehammer": "Sledgehammer",
+  "itemGroup.siteworks.site_works": "Site Works",
+  "message.siteworks.ghost_test.removed": "Removed %s ghost blocks",
+  "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks"
+}

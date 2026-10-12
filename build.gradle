@@ -14,6 +14,9 @@ repositories {
 loom {
 	splitEnvironmentSourceSets()
 
+	// Makes some private Minecraft methods usable (see the file for the list).
+	accessWidenerPath = file("src/main/resources/siteworks.classtweaker")
+
 	mods {
 		"siteworks" {
 			sourceSet sourceSets.main
