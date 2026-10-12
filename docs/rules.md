@@ -5,6 +5,7 @@
 - **Explain new tools.** Before using a new library or concept, explain in 2–3 simple sentences what it is and why we need it.
 - **Simple English.** The user is B1–B2. Add Turkish for hard or technical words, e.g. *dependency (bağımlılık)*.
 - **Small steps.** After each step, say: what changed, which files, and how the user can test it themselves.
+- **Commit after every step.** When a step builds and the user's test is OK, make a small local git commit, e.g. `Phase 2 step 3: wet concrete curing`. Small commits make it easy to undo (geri almak) one mistake without losing a whole phase. Pushing to GitHub still happens only when the user asks.
 - **Ask before big actions:** installing many packages, deleting or moving files, changing the architecture or data model, git push, anything that is hard to undo.
 - **$0 budget.** No paid APIs or services. If something might cost money later, warn first.
 - **The user is a student.** Suggest better ideas or alternative approaches when you see them, and teach while building.

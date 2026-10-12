@@ -9,8 +9,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * 3x3 digging for {@link AreaToolItem}s.
@@ -42,8 +45,8 @@ public final class AreaMining {
 			return;
 		}
 
-		// The axis the player looks along. The 3x3 plane is the other two axes.
-		Direction.Axis lookAxis = Direction.orderedByNearest(player)[0].getAxis();
+		// The 3x3 plane is flat against the face the player hit (top face = a floor, side face = a wall).
+		Direction.Axis lookAxis = hitFaceAxis(player, center, centerState);
 
 		BUSY.add(player.getUUID());
 		try {
@@ -61,16 +64,36 @@ public final class AreaMining {
 					if (!state.is(areaTool.areaBlocks()) || state.getDestroySpeed(level, pos) < 0) {
 						continue;
 					}
+					// destroyBlock() skips this check (only a normal click does it), so we do it ourselves:
+					// spawn protection and the world border.
+					if (!level.mayInteract(player, pos)) {
+						continue;
+					}
 					// The tool broke (or the player switched items): stop.
 					if (player.getMainHandItem() != tool || tool.isEmpty()) {
-						break;
+						return;
 					}
-					// The vanilla break: drops, 1 durability, spawn protection and events all work as normal.
+					// The vanilla break: drops, 1 durability, enchantments and Fabric events (claim mods) work as normal.
 					player.gameMode.destroyBlock(pos);
 				}
 			}
 		} finally {
 			BUSY.remove(player.getUUID());
 		}
+	}
+
+	/**
+	 * Which face did the player hit? The block is already broken (air) when this event runs,
+	 * so we cast the player's view ray against the OLD block's shape. If that fails (rare),
+	 * we fall back to the direction the player looks.
+	 */
+	private static Direction.Axis hitFaceAxis(ServerPlayer player, BlockPos center, BlockState centerState) {
+		Vec3 eye = player.getEyePosition();
+		Vec3 end = eye.add(player.getViewVector(1.0f).scale(player.blockInteractionRange() + 1.0));
+		BlockHitResult hit = centerState.getShape(EmptyBlockGetter.INSTANCE, center).clip(eye, end, center);
+		if (hit != null) {
+			return hit.getDirection().getAxis();
+		}
+		return Direction.orderedByNearest(player)[0].getAxis();
 	}
 }

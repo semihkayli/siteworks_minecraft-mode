@@ -7,7 +7,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * The Hard Hat cancels all damage from falling blocks (anvil, sand/gravel, dripstone, wet concrete).
+ * The Hard Hat cancels all damage from falling blocks (anvil, dripstone, and any falling block that deals damage).
+ * Note: vanilla falling sand/gravel deal no damage at all (only suffocation after landing).
  * Vanilla already groups these damage types in the tag {@code #minecraft:damages_helmet}.
  */
 public final class HardHatProtection {

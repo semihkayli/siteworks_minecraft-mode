@@ -17,7 +17,8 @@
   - Block codecs are gone.
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
-- **Next step:** Phase 2 discussion (exact recipes, mixer capacity, strength numbers, flood-fill unit tests).
+- **Phase 1 review (2026-10-12), fixes done, user test + commit pending:** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
+- **Next step:** user tests the review fixes → commit → Phase 2 discussion (exact recipes, mixer capacity, strength numbers, flood-fill unit tests, and the review notes under Phase 2).
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -28,7 +29,7 @@
   - GitHub remote: `https://github.com/semihkayli/siteworks_minecraft-mode.git` (the user may rename it to `…-mod` later, then run `git remote set-url origin <new URL>`). Push only when the user asks.
   - Total estimate: **~28–43 work sessions** (2–3 h each). A guess, update it as we learn.
 
-**How every phase works:** discuss → write decisions → small steps (each step: what changed, which files, how to test, **update `docs/items.md`**) → "Done when" checklist → update "Current status" → git commit.
+**How every phase works:** discuss → write decisions → small steps (each step: what changed, which files, how to test, **update `docs/items.md`**, **then a small git commit after the user's test is OK**) → "Done when" checklist → update "Current status" → final phase commit.
 
 ---
 
@@ -119,6 +120,11 @@
 - Exact recipes and mixer capacity
 - Strength numbers (concrete ≈ stone, reinforced ≈ ? blast resistance)
 - Unit tests for the flood fill: yes/no?
+- **From the Phase 1 review:**
+  - **Give the Hard Hat a job.** Vanilla falling sand/gravel deal no damage, so today the hat only helps against anvils and dripstone. Options: (a) falling wet concrete hurts a little (`setHurtsEntities`), (b) the Sledgehammer drops "debris" damage when you break blocks above your head (user idea, about 5–10 lines), (c) remove the Hard Hat. Both (a) and (b) use the `falling_block` damage type, so the hat blocks them automatically.
+  - **Concrete Bucket reusable?** User: yes, probably. The chain (clay + bone meal → cement mix → smelt → cement → mixer → bucket) may feel long: play it, then decide.
+  - **Mixer in 2 steps:** right-click input first, hopper input second. Hoppers work with any block entity that uses vanilla's `Container` (or `WorldlyContainer`) interface, so we may not need Fabric's Transfer API.
+  - **Sledgehammer recycling via loot tables:** a `match_tool` condition ("broken with `siteworks:sledgehammer`") → gravel (+ rebar), otherwise the block drops itself. No Java code. Also add concrete + reinforced concrete to `sledge_breakable`.
 
 **Done when:**
 - [ ] Full chain works in survival: clay + bone meal → cement → mixer → bucket
@@ -185,6 +191,7 @@
 **Discuss before starting:**
 - What counts as "correct": only the block type, or also the direction (stairs facing)?
 - Who can remove someone else's stake on a server?
+- **From the Phase 1 review:** the old Ghost Test entities (tag `siteworks_ghost_test`) stay in test worlds. The orphan cleanup must also remove this old tag, and the Ghost Test item must be removed or hidden before release.
 - Ghost colors and size (e.g. 0.8 scale). **Phase 1 ghost test results (2026-10-12):**
   - **Performance OK:** 512 ghosts = 112–116 FPS, server 9.5 ms/tick (RTX 5060 laptop; weaker PCs may differ, so keep the 512 limit).
   - **Night OK:** full brightness makes ghosts stand out.
@@ -213,6 +220,9 @@
 **Discuss before starting:**
 - How should the new tool looks be made (simple original pixel textures by script, Piskel by hand, Blockbench 3D models)? Blocks too, or only tools?
 - Any balance problems found while playing?
+- **From the Phase 1 review:** the 3×3 tools have no speed cost (9 blocks in the time of 1), and ring blocks harder than the center break for free (hit stone → deepslate around it breaks too). Test in play. Options: skip ring blocks harder than the center, and/or lower the mining speed (e.g. 4.0 instead of 6.0).
+- `sledge_breakable` misses some blocks: smooth/cut/chiseled sandstone, red nether bricks, cracked/chiseled deepslate bricks and tiles, cracked nether bricks, polished blackstone variants, quartz, prismarine, purpur, packed mud, smooth basalt.
+- Code cleanup: remove the empty mixin configs (`siteworks.mixins.json`, `siteworks.client.mixins.json` + the `"mixins"` entry in `fabric.mod.json`) if still unused. Merge `flatItem`/`handheldTool` in `ModModelProvider` into one helper.
 
 **Done when:**
 - [ ] A full survival playthrough (dig → foundation → frame → walls from a blueprint) works with no crashes

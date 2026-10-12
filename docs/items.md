@@ -35,18 +35,18 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Mining speed | 6.0 (iron) |
 | Attack | damage 4.5, speed 1.0 (same as the iron shovel) |
 | Repair | Iron ingot in an anvil |
-| Enchantable | Yes, enchantability 14 (iron). Unbreaking, Efficiency, Fortune, Silk Touch and Mending all work |
+| Enchantable | Yes, enchantability 14 (iron). Efficiency, Fortune, Silk Touch, Unbreaking and Mending work, because the Mattock is in the vanilla tag `#minecraft:shovels` (fixed after the Phase 1 review; before that, nothing could be enchanted) |
 | Look (placeholder) | Vanilla `item/iron_hoe` texture, held like a tool. A new look comes in Phase 6 |
 
 **3×3 rules**
 - The block you hit always breaks like a normal shovel hit.
 - The 3×3 starts only if that block is in `#siteworks:soft_ground`.
 - The 8 blocks around it break only if they are in `#siteworks:soft_ground` too.
-- Plane: if you look straight ahead, it digs a wall. If you look up or down, it digs the floor or ceiling.
+- Plane: flat against the **face you hit**. Top or bottom face = a floor or ceiling, side face = a wall. (Fixed after the Phase 1 review. Before, it used the look direction, which turned the plane wrong at shallow angles.)
 - **Sneak = 1 block only.**
 - Every block broken costs 1 durability. A full 3×3 = 9 durability, so about 55 full swings.
 - If the tool breaks or you switch items halfway, the digging stops.
-- Uses vanilla's normal break (`destroyBlock`). Because of that, drops, enchantments and spawn protection work as normal.
+- Uses vanilla's normal break (`destroyBlock`), so drops, enchantments and Fabric break events (claim mods) work. `destroyBlock` itself skips spawn protection and the world border, so we check `level.mayInteract()` for each extra block (fixed after the Phase 1 review).
 
 **Tag `#siteworks:soft_ground`** = vanilla's shovel list **minus suspicious sand and suspicious gravel** (protects archaeology). It contains:
 - grass block, dirt, coarse dirt, rooted dirt, podzol, mycelium, dirt path, farmland
@@ -60,6 +60,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 - `ModItems.MATTOCK` = `AreaToolItem(SOFT_GROUND)` + `Item.Properties().shovel(ToolMaterial.IRON, 1.5f, -3.0f).durability(500)`
 - 3×3 logic: `event/AreaMining.java`
 - Tag key: `ModTags.SOFT_GROUND`
+- Item tag: `ModItemTagProvider` puts the Mattock into `#minecraft:shovels` and the Sledgehammer into `#minecraft:pickaxes` (needed for enchanting)
 - Datagen: `ModModelProvider`, `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers
 
 ---
@@ -78,7 +79,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Mining speed | 6.0 (iron) |
 | Attack | damage 7, speed 0.8 (a heavy, slow hit) |
 | Repair | Iron ingot in an anvil |
-| Enchantable | Yes, enchantability 14 (iron) |
+| Enchantable | Yes, enchantability 14 (iron). Efficiency, Fortune, Silk Touch, Unbreaking and Mending work, because the Sledgehammer is in the vanilla tag `#minecraft:pickaxes` |
 | Look (placeholder) | Vanilla `item/mace` texture, held like a tool. A new look comes in Phase 6 |
 
 **3×3 rules:** the same as the Mattock (same `AreaToolItem` code), but with the tag `#siteworks:sledge_breakable`.
@@ -113,14 +114,14 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 |---|---|
 | ID | `siteworks:hard_hat` |
 | Names | EN "Hard Hat", TR "Baret" |
-| What it does | Helmet. **Cancels all damage from falling blocks:** falling anvil, falling block (and our wet concrete in Phase 2), falling dripstone |
+| What it does | Helmet. **Cancels all damage from falling blocks:** falling anvil, falling dripstone, and any falling block that deals damage. Note: vanilla falling sand/gravel deal **no** damage, so today the hat matters for anvils and dripstone. Phase 2 decides how to give it more work (falling wet concrete hurts, Sledgehammer ceiling debris, ...) |
 | Recipe | Shaped, `XXX / XYX` with X = iron ingot and Y = yellow dye (the iron helmet shape with dye in the hole) |
 | Recipe book | Unlocks when the player gets an iron ingot |
 | Armor | **2** (same as an iron helmet), toughness 0, knockback resistance 0 |
 | Durability | **165** (same as an iron helmet) |
 | Wear | When it blocks falling damage, it loses **1 durability per 4 damage** (at least 1), like vanilla armor. A big anvil hit costs about 10. User agreed (2026-10-12) |
 | Repair | Iron ingot in an anvil (`#minecraft:repairs_iron_armor`) |
-| Enchantable | Yes, like an iron helmet (Protection, Unbreaking, Mending...) |
+| Enchantable | Yes, like an iron helmet: Protection, Respiration, Aqua Affinity, Unbreaking, Mending..., because the Hard Hat is in the vanilla tag `#minecraft:head_armor` |
 | Equip sound | Iron armor sound |
 | Look (placeholder) | The **golden helmet** look, on the head and in the inventory (yellow = hard hat). A new look comes in Phase 6 |
 | Does NOT protect from | Suffocation (being stuck in sand/gravel). That's a different damage type, and vanilla helmets don't protect from it either |
@@ -129,6 +130,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 - `ModItems.HARD_HAT` = `Item` + `humanoidArmor(HARD_HAT_MATERIAL, ArmorType.HELMET)`
 - `HARD_HAT_MATERIAL` = the 7 values of `ArmorMaterials.IRON`, but `assetId = EquipmentAssets.GOLD`
 - Protection: `event/HardHatProtection.java`. It uses the Fabric event `ServerLivingEntityEvents.ALLOW_DAMAGE` and checks the vanilla damage tag `#minecraft:damages_helmet`
+- Item tag: `ModItemTagProvider` puts the Hard Hat into `#minecraft:head_armor` (needed for enchanting)
 - Works for **any entity** wearing it (players, and mobs too)
 
 ---

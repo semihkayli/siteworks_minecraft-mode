@@ -3,6 +3,7 @@ package io.github.semihkayli.siteworks.client;
 import io.github.semihkayli.siteworks.client.datagen.ModBlockLootProvider;
 import io.github.semihkayli.siteworks.client.datagen.ModBlockTagProvider;
 import io.github.semihkayli.siteworks.client.datagen.ModEnglishLangProvider;
+import io.github.semihkayli.siteworks.client.datagen.ModItemTagProvider;
 import io.github.semihkayli.siteworks.client.datagen.ModModelProvider;
 import io.github.semihkayli.siteworks.client.datagen.ModRecipeProvider;
 import io.github.semihkayli.siteworks.client.datagen.ModTurkishLangProvider;
@@ -24,5 +25,6 @@ public class SiteWorksDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(ModRecipeProvider::new);
 		pack.addProvider(ModBlockTagProvider::new);
 		pack.addProvider(ModBlockLootProvider::new);
+		pack.addProvider(ModItemTagProvider::new);
 	}
 }
