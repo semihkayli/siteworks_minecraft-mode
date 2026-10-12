@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "siteworks",
+	"version": "${version}",
+	"name": "Site Works",
+	"description": "Rough construction: concrete molds, rebar, a trowel builder's wand, steel beams and blueprint holograms.",
+	"authors": [
+		"semihkayli"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/siteworks/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.semihkayli.siteworks.SiteWorks"
+		],
+		"client": [
+			"io.github.semihkayli.siteworks.client.SiteWorksClient"
+		],
+		"fabric-datagen": [
+			"io.github.semihkayli.siteworks.client.SiteWorksDataGenerator"
+		]
+	},
+	"mixins": [
+		"siteworks.mixins.json",
+		{
+			"config": "siteworks.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
