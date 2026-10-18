@@ -20,6 +20,8 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add(ModItems.SLEDGEHAMMER, "Sledgehammer");
 		builder.add(ModItems.HARD_HAT, "Hard Hat");
 		builder.add(ModBlocks.SAFETY_NET, "Safety Net");
+		builder.add(ModItems.CEMENT_MIX, "Cement Mix");
+		builder.add(ModItems.CEMENT, "Cement");
 		builder.add(ModBlocks.FORMWORK, "Formwork");
 		builder.add(ModBlocks.REBAR, "Rebar");
 		builder.add(ModBlocks.CONCRETE, "Concrete");

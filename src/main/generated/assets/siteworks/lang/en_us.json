@@ -4,6 +4,8 @@
   "block.siteworks.rebar": "Rebar",
   "block.siteworks.reinforced_concrete": "Reinforced Concrete",
   "block.siteworks.safety_net": "Safety Net",
+  "item.siteworks.cement": "Cement",
+  "item.siteworks.cement_mix": "Cement Mix",
   "item.siteworks.ghost_test": "Ghost Test (test item)",
   "item.siteworks.hard_hat": "Hard Hat",
   "item.siteworks.mattock": "Mattock",

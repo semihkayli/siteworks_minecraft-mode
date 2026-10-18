@@ -4,6 +4,8 @@
   "block.siteworks.rebar": "İnşaat Demiri",
   "block.siteworks.reinforced_concrete": "Betonarme",
   "block.siteworks.safety_net": "Güvenlik Ağı",
+  "item.siteworks.cement": "Çimento",
+  "item.siteworks.cement_mix": "Çimento Karışımı",
   "item.siteworks.ghost_test": "Hayalet Testi (test eşyası)",
   "item.siteworks.hard_hat": "Baret",
   "item.siteworks.mattock": "Kazma Çapa",

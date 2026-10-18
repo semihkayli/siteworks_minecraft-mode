@@ -12,12 +12,14 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Hard Hat (Baret) | `siteworks:hard_hat` | 1 | ✅ built, durability choice OK by the user, anvil test pending |
 | Safety Net (Güvenlik Ağı) — block | `siteworks:safety_net` | 1 | ✅ tested in-game |
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
+| Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
+| Cement (Çimento) | `siteworks:cement` | 2 | ✅ tested in-game |
 | Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 
-**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
+**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
 
 **How to read the stats:**
 - "Attack damage" and "attack speed" are the numbers in the item's tooltip.
@@ -285,3 +287,35 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Known (Phase 6 balance note) | In a Sledgehammer 3×3, ring blocks harder than the center still break for free. Hit stone → reinforced concrete around it breaks too |
 
 **Code:** `ModBlocks.REINFORCED_CONCRETE` (plain `Block`). Loot: `ModBlockLootProvider` (pool 1 = `selfOrGravel`, pool 2 = rebar with the same Sledgehammer condition). Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers.
+
+---
+
+## Cement Mix (Çimento Karışımı)
+
+| | |
+|---|---|
+| ID | `siteworks:cement_mix` |
+| Names | EN "Cement Mix", TR "Çimento Karışımı" |
+| What it does | The raw mix. Smelt it to get Cement. It has no other use |
+| Recipes | Shapeless **clay ball + bone meal → 2**. Or shapeless **clay ball + calcite → 2** (calcite is like real limestone / kireçtaşı) |
+| Recipe book | Both unlock when the player gets a clay ball |
+| Stack | 64 |
+| Look (placeholder) | Flat vanilla `item/sugar` icon (a white powder). A new look comes in Phase 6 |
+| Decision note | The user asked whether 2 steps (craft + smelt) is boring. Kept for now (2026-10-18). If it's boring in play, switch to crafting Cement directly |
+
+**Code:** `ModItems.CEMENT_MIX` (plain `Item`). Datagen: `ModRecipeProvider` (recipe IDs `siteworks:cement_mix` and `siteworks:cement_mix_from_calcite`), `ModModelProvider.flatItem`, both lang providers.
+
+---
+
+## Cement (Çimento)
+
+| | |
+|---|---|
+| ID | `siteworks:cement` |
+| Names | EN "Cement", TR "Çimento" |
+| What it does | Ingredient for the Concrete Mixer (step 5): **1 cement + 4 sand + 4 gravel + water = 16 blocks of concrete** |
+| Recipe | Smelt Cement Mix: **furnace 10 s** (200 ticks, like ores) or **blast furnace 5 s** (100 ticks). 0.1 XP each. Recipe book group `cement` |
+| Stack | 64 |
+| Look (placeholder) | Flat vanilla `item/gunpowder` icon (a gray powder: white mix → gray cement after the fire). A new look comes in Phase 6 |
+
+**Code:** `ModItems.CEMENT` (plain `Item`). Datagen: `ModRecipeProvider` (`oreSmelting` + `oreBlasting` → recipe IDs `siteworks:cement_from_smelting_cement_mix` and `siteworks:cement_from_blasting_cement_mix`), `ModModelProvider.flatItem`, both lang providers.

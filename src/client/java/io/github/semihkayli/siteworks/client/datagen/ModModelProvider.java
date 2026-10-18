@@ -56,6 +56,9 @@ public class ModModelProvider extends FabricModelProvider {
 		// A flat cobweb icon looks better in the inventory than the thin 3D block.
 		flatItem(generators, ModBlocks.SAFETY_NET.asItem(), "block/cobweb");
 		flatItem(generators, ModItems.GHOST_TEST, "item/amethyst_shard");
+		// White raw mix -> gray cement after the furnace.
+		flatItem(generators, ModItems.CEMENT_MIX, "item/sugar");
+		flatItem(generators, ModItems.CEMENT, "item/gunpowder");
 	}
 
 	/** A normal flat item (like armor or ingots), using a vanilla texture. */

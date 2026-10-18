@@ -2,6 +2,7 @@ package io.github.semihkayli.siteworks.client.datagen;
 
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModItems;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -12,6 +13,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Recipe;
 
 /**
@@ -64,6 +66,25 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 						.pattern("S S")
 						.unlockedBy("has_string", has(Items.STRING))
 						.save(output);
+
+				// Clay ball + bone meal -> 2 Cement Mix. Calcite (like real limestone) works instead of bone meal.
+				shapeless(RecipeCategory.MISC, ModItems.CEMENT_MIX, 2)
+						.requires(Items.CLAY_BALL)
+						.requires(Items.BONE_MEAL)
+						.unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
+						.save(output);
+				// A 2nd recipe for the same item needs its own name. Fabric adds our mod ID ("siteworks:") to it.
+				shapeless(RecipeCategory.MISC, ModItems.CEMENT_MIX, 2)
+						.requires(Items.CLAY_BALL)
+						.requires(Items.CALCITE)
+						.unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
+						.save(output, "cement_mix_from_calcite");
+
+				// Smelt Cement Mix -> Cement: furnace 10 s (like ores), blast furnace 5 s. 0.1 XP each.
+				oreSmelting(List.of(ModItems.CEMENT_MIX), RecipeCategory.MISC, CookingBookCategory.MISC,
+						ModItems.CEMENT, 0.1f, 200, "cement");
+				oreBlasting(List.of(ModItems.CEMENT_MIX), RecipeCategory.MISC, CookingBookCategory.MISC,
+						ModItems.CEMENT, 0.1f, 100, "cement");
 
 				// 2 planks (any wood) + 2 sticks, diagonal -> 4 formwork. The mirrored shape works too.
 				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FORMWORK, 4)

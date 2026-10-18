@@ -21,6 +21,8 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add(ModItems.SLEDGEHAMMER, "Balyoz");
 		builder.add(ModItems.HARD_HAT, "Baret");
 		builder.add(ModBlocks.SAFETY_NET, "Güvenlik Ağı");
+		builder.add(ModItems.CEMENT_MIX, "Çimento Karışımı");
+		builder.add(ModItems.CEMENT, "Çimento");
 		builder.add(ModBlocks.FORMWORK, "Kalıp");
 		builder.add(ModBlocks.REBAR, "İnşaat Demiri");
 		builder.add(ModBlocks.CONCRETE, "Beton");

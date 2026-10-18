@@ -43,6 +43,10 @@ public final class ModItems {
 			Item::new,
 			new Item.Properties().humanoidArmor(HARD_HAT_MATERIAL, ArmorType.HELMET));
 
+	// Concrete chain: clay ball + bone meal (or calcite) -> Cement Mix -> smelt -> Cement -> Concrete Mixer.
+	public static final Item CEMENT_MIX = register("cement_mix", Item::new, new Item.Properties());
+	public static final Item CEMENT = register("cement", Item::new, new Item.Properties());
+
 	// TEST ITEM (Phase 1 ghost test). Creative only, no recipe. Replaced by the Survey Stake in Phase 5.
 	public static final Item GHOST_TEST = register("ghost_test",
 			GhostTestItem::new,
