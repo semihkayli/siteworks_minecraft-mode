@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "siteworks:wet_concrete",
+        "state": {
+          "reinforced": "true"
+        }
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "siteworks:rebar"
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

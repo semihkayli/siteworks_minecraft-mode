@@ -9,7 +9,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 |---|---|---|---|
 | Mattock (Kazma Çapa) | `siteworks:mattock` | 1 | ✅ tested in-game |
 | Sledgehammer (Balyoz) | `siteworks:sledgehammer` | 1 | ✅ tested in-game |
-| Hard Hat (Baret) | `siteworks:hard_hat` | 1 | ✅ built, durability choice OK by the user, anvil test pending |
+| Hard Hat (Baret) | `siteworks:hard_hat` | 1 | ✅ tested in-game (anvil + falling wet concrete, 2026-10-18) |
 | Safety Net (Güvenlik Ağı) — block | `siteworks:safety_net` | 1 | ✅ tested in-game |
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
 | Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
@@ -18,6 +18,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
+| Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 
 **Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
 
@@ -120,7 +121,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 |---|---|
 | ID | `siteworks:hard_hat` |
 | Names | EN "Hard Hat", TR "Baret" |
-| What it does | Helmet. **Cancels all damage from falling blocks:** falling anvil, falling dripstone, and any falling block that deals damage. Note: vanilla falling sand/gravel deal **no** damage, so today the hat matters for anvils and dripstone. Phase 2 decides how to give it more work (falling wet concrete hurts, Sledgehammer ceiling debris, ...) |
+| What it does | Helmet. **Cancels all damage from falling blocks:** falling anvil, falling dripstone, **falling Wet Concrete** (Phase 2), and any falling block that deals damage. Vanilla falling sand/gravel deal no damage. Phase 2 step 7 may add Sledgehammer ceiling debris |
 | Recipe | Shaped, `XXX / XYX` with X = iron ingot and Y = yellow dye (the iron helmet shape with dye in the hole) |
 | Recipe book | Unlocks when the player gets an iron ingot |
 | Armor | **2** (same as an iron helmet), toughness 0, knockback resistance 0 |
@@ -319,3 +320,35 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Look (placeholder) | Flat vanilla `item/gunpowder` icon (a gray powder: white mix → gray cement after the fire). A new look comes in Phase 6 |
 
 **Code:** `ModItems.CEMENT` (plain `Item`). Datagen: `ModRecipeProvider` (`oreSmelting` + `oreBlasting` → recipe IDs `siteworks:cement_from_smelting_cement_mix` and `siteworks:cement_from_blasting_cement_mix`), `ModModelProvider.flatItem`, both lang providers.
+
+---
+
+## Wet Concrete (Taze Beton) — block, no item
+
+| | |
+|---|---|
+| ID | `siteworks:wet_concrete` (block only, **no item**) |
+| Names | EN "Wet Concrete", TR "Taze Beton" (lang key `block.siteworks.wet_concrete`) |
+| How to get it | Only by **pouring** from a Concrete Bucket (step 4). For tests: `/setblock ~ ~ ~ siteworks:wet_concrete` or `/fill ...`. Not in the creative tab (it has no item) |
+| Block state | `reinforced` = `false` / `true`. `true` = rebar inside |
+| Curing | After **2400 ticks (2 minutes)** it turns into **Concrete** (`reinforced=false`) or **Reinforced Concrete** (`reinforced=true`). You can keep building while it cures. Only in loaded chunks (the timer is saved with the world and continues later) |
+| Gravity | Like sand. If the block below is removed (or it's placed in the air), it falls. After landing, **the 2 minutes start again** |
+| Falling damage | 1 damage per block fallen (minus 1), max **10** (5 hearts), damage type `minecraft:falling_block`. **The Hard Hat blocks it** |
+| Walking on it | Slow: speed **×0.4** (like soul sand) |
+| Strength | Hardness 0.5 (like dirt), fast with a shovel, mud sounds, map color = gray |
+| Drops | **Nothing** (wet concrete has no item). If `reinforced=true`, the **rebar comes back**. If it falls onto a torch or another block it can't stay on, it breaks, and the rebar comes back too |
+| Tags | `#minecraft:mineable/shovel` |
+| Look (placeholder) | Vanilla `block/gray_concrete_powder` texture, the same for both states |
+
+**How the timer works (technical):**
+- It's **one scheduled tick** per block (a light, built-in timer), no block entity.
+- Minecraft keeps **only one** scheduled tick per block position. While the 2-minute cure tick waits, a 2nd "should I fall?" tick would be ignored.
+- So wet concrete **falls directly** when a neighbor changes and the block below is free (`neighborChanged`), not with a 2-tick delay like vanilla sand.
+- `onPlace` removes any old tick at that position first (`clearArea`), so a block that lands where another one fell away from gets a fresh 2 minutes.
+- Known tiny edge case: wet concrete placed **in the air** waits 2 ticks before falling. If a block is put under it within those 2 ticks (0.1 s), it cures right away.
+
+**Code:**
+- `block/WetConcreteBlock.java` (extends vanilla `FallingBlock`, `CURE_TICKS = 2400`, `REINFORCED` property)
+- `ModBlocks.WET_CONCRETE`, registered with `registerBlockOnly` (no `BlockItem`)
+- Loot: `ModBlockLootProvider` (rebar when `match_block` with `reinforced=true`)
+- Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers

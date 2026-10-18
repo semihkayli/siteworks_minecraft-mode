@@ -1,11 +1,13 @@
 package io.github.semihkayli.siteworks.client.datagen;
 
+import io.github.semihkayli.siteworks.block.WetConcreteBlock;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootSubProvider;
 import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.predicates.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.MatchBlock;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
@@ -38,6 +41,14 @@ public class ModBlockLootProvider extends FabricBlockLootSubProvider {
 						.setRolls(ContextIntProviders.exactly(1))
 						.add(LootItem.lootTableItem(ModBlocks.REBAR))
 						.when(sledgehammerWithoutSilkTouch())));
+
+		// Wet concrete drops nothing. Only the rebar comes back, if the block has reinforced=true.
+		add(ModBlocks.WET_CONCRETE, block -> LootTable.lootTable()
+				.withPool(LootPool.lootPool()
+						.setRolls(ContextIntProviders.exactly(1))
+						.add(LootItem.lootTableItem(ModBlocks.REBAR))
+						.when(MatchBlock.blockMatches(blocks, block,
+								StatePropertiesPredicate.Builder.properties().hasProperty(WetConcreteBlock.REINFORCED, true)))));
 	}
 
 	/** One pool: gravel when broken with the Sledgehammer, otherwise the block itself. */

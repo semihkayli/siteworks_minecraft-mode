@@ -52,6 +52,7 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 				.add(key(ModBlocks.CONCRETE), key(ModBlocks.REINFORCED_CONCRETE), key(ModBlocks.REBAR));
 		builder(BlockTags.NEEDS_IRON_TOOL).add(key(ModBlocks.REINFORCED_CONCRETE));
 		builder(BlockTags.MINEABLE_WITH_AXE).add(key(ModBlocks.FORMWORK));
+		builder(BlockTags.MINEABLE_WITH_SHOVEL).add(key(ModBlocks.WET_CONCRETE));
 	}
 
 	private static ResourceKey<Block> key(Block block) {

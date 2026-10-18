@@ -3,6 +3,7 @@ package io.github.semihkayli.siteworks.registry;
 import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.block.RebarBlock;
 import io.github.semihkayli.siteworks.block.SafetyNetBlock;
+import io.github.semihkayli.siteworks.block.WetConcreteBlock;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -69,7 +70,23 @@ public final class ModBlocks {
 					.strength(5.0f, 1200.0f)
 					.sound(SoundType.STONE));
 
+	// Fresh concrete from a bucket. Soft (shovel), mud sounds, walking on it is slow (x0.4, like soul sand).
+	// No item: you only get it by pouring. Drops nothing, except the rebar if there is some.
+	public static final Block WET_CONCRETE = registerBlockOnly("wet_concrete",
+			WetConcreteBlock::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_GRAY)
+					.strength(0.5f)
+					.speedFactor(0.4f)
+					.sound(SoundType.MUD));
+
 	private ModBlocks() {
+	}
+
+	/** Registers a block WITHOUT an item (it can't be held, only placed by our code or by commands). */
+	private static <T extends Block> T registerBlockOnly(String name, Function<BlockBehaviour.Properties, T> factory, BlockBehaviour.Properties properties) {
+		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, SiteWorks.id(name));
+		return Registry.register(BuiltInRegistries.BLOCK, blockKey, factory.apply(properties.setId(blockKey)));
 	}
 
 	/** Registers a block and its BlockItem. Both need their own ID (setId) before they are created. */

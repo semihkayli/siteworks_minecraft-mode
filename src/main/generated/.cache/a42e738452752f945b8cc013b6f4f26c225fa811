@@ -4,6 +4,7 @@ cc2eb959c6be5f672ff565c41df22a847a242a94 assets/siteworks/blockstates/concrete.j
 a0e6d213ef6600d7f40c1dcf3be4c1d846768232 assets/siteworks/blockstates/rebar.json
 c8adb9a004d182a6a660291b64d54dea91063709 assets/siteworks/blockstates/reinforced_concrete.json
 e30fa890789b696525690b95b78ae0c6ec5f7326 assets/siteworks/blockstates/safety_net.json
+558d8b381a080636009695f6ede51891f3b35888 assets/siteworks/blockstates/wet_concrete.json
 aedbfa465ced5f0df64bce7635c33500236708c4 assets/siteworks/items/cement.json
 4ba8cfe98e3b48afb29d448755136c52d2d8d06f assets/siteworks/items/cement_mix.json
 1c1b3ce0c3a00eb17f18e3e5a39f3f066be53fe6 assets/siteworks/items/concrete.json
@@ -19,6 +20,7 @@ b6544eb70b1a0ef963c8e0ac28ba138260eb7eec assets/siteworks/models/block/concrete.
 d3c2edebd468588cf88af61afc26843f1fbd5851 assets/siteworks/models/block/formwork.json
 fc5bf587f4c0f70080be92fb521aedbf70caf435 assets/siteworks/models/block/reinforced_concrete.json
 746de44b33c21d741599955d3f916ce5d2581beb assets/siteworks/models/block/safety_net_top.json
+d15b642295deff74b23bb71fa4b1c083f9911cb2 assets/siteworks/models/block/wet_concrete.json
 c6deebadfc028d6d62f45fc649e6c7dd033f5af5 assets/siteworks/models/item/cement.json
 da5d98b464567d94836049cecc97328495fcfb10 assets/siteworks/models/item/cement_mix.json
 c64ed609ece68994ce23dd2809145040bce13579 assets/siteworks/models/item/ghost_test.json

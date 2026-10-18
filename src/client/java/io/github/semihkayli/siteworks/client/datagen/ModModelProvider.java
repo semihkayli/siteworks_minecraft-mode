@@ -33,6 +33,8 @@ public class ModModelProvider extends FabricModelProvider {
 		cubeBlock(generators, ModBlocks.FORMWORK, "block/spruce_planks");
 		cubeBlock(generators, ModBlocks.CONCRETE, "block/light_gray_concrete");
 		cubeBlock(generators, ModBlocks.REINFORCED_CONCRETE, "block/gray_concrete");
+		// Both states (with and without rebar) look the same.
+		cubeBlock(generators, ModBlocks.WET_CONCRETE, "block/gray_concrete_powder");
 
 		// Rebar: the model (4 bars + 2 rings) is written by hand in src/main/resources/assets/siteworks/models/block/rebar.json,
 		// because datagen can't draw custom shapes. Here we only point the blockstate to it.

@@ -27,6 +27,7 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add(ModBlocks.REBAR, "İnşaat Demiri");
 		builder.add(ModBlocks.CONCRETE, "Beton");
 		builder.add(ModBlocks.REINFORCED_CONCRETE, "Betonarme");
+		builder.add(ModBlocks.WET_CONCRETE, "Taze Beton");
 		builder.add(ModItems.GHOST_TEST, "Hayalet Testi (test eşyası)");
 		builder.add("message.siteworks.ghost_test.spawned", "%s hayalet blok oluşturuldu");
 		builder.add("message.siteworks.ghost_test.removed", "%s hayalet blok silindi");
