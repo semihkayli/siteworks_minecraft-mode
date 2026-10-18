@@ -14,13 +14,14 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
 | Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
 | Cement (Çimento) | `siteworks:cement` | 2 | ✅ tested in-game |
+| Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅ |
 | Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 
-**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
+**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
 
 **How to read the stats:**
 - "Attack damage" and "attack speed" are the numbers in the item's tooltip.
@@ -352,3 +353,44 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 - `ModBlocks.WET_CONCRETE`, registered with `registerBlockOnly` (no `BlockItem`)
 - Loot: `ModBlockLootProvider` (rebar when `match_block` with `reinforced=true`)
 - Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers
+
+---
+
+## Concrete Bucket (Beton Kovası)
+
+| | |
+|---|---|
+| ID | `siteworks:concrete_bucket` |
+| Names | EN "Concrete Bucket", TR "Beton Kovası" |
+| What it does | Right-click into a mold → pours up to **16 blocks** of Wet Concrete, from the bottom up (the **mold pour**, rules below) |
+| How to get it | At the Concrete Mixer (step 5): right-click it with a **vanilla empty bucket**. No crafting recipe. For now: creative tab or `/give @s siteworks:concrete_bucket` |
+| Amount | Data component `siteworks:concrete_amount` (1–16, default 16). The bucket **keeps what's left**: tooltip "Concrete: 11/16 blocks" + a gray bar under the icon (hidden when full) |
+| Empty | At 0 it turns into a **vanilla empty bucket** (reusable) |
+| Creative mode | Like vanilla buckets: the bucket **stays full** in creative. Test the amount/bar in survival |
+| Stack | 1 |
+| Sounds | Mud place + bucket empty, when something was poured |
+| Stats | Counts as "used" in the vanilla statistics (for advancements later) |
+| Look (placeholder) | Flat vanilla `item/powder_snow_bucket` icon. A new look comes in Phase 6 |
+
+**Mold pour rules** (concrete behaves like water):
+- **Where it starts:** click rebar or a plant inside the mold → right there. Click a wall, the floor or wet concrete → the cell next to the clicked face.
+- It **drops** to the lowest open cell under that point (max 32 down, deeper = leaks).
+- It fills that layer, **nearest cells first** (flood fill / taşma doldurma, sideways only), then **rises** layer by layer.
+- If a layer has an **open cell under it**, the concrete flows down there first. Example: the 2nd bucket poured on top of a half-filled floor finishes the floor first.
+- **Open** = air, water, lava, plants, snow layers (blocks a placed block would replace) and **Rebar**. **Wall** = everything else (including wet concrete, formwork, any solid block). So **a hole in the ground is a mold too**.
+- Rebar cells become `wet_concrete[reinforced=true]` → Reinforced Concrete.
+- **One mold layer is max 32 wide** in x and in z. Wider counts as open.
+- **First layer too wide = "The formwork leaks!"** (red, action bar). Nothing is used.
+- **Higher layer too wide** (it would spill over the lowest wall) **or a closed top = "The mold is full."** The bucket keeps the rest.
+- Every placed cell stands on a solid block or on concrete placed earlier in the same pour, so nothing falls.
+- **Protection:** cells under spawn protection or outside the world border / build height count as walls. The start cell checks `mayUseItemAt` (claim mods).
+
+**Unit tests** (`gradlew test`, `src/test/java/.../pour/MoldPourTest.java`), 14 tests, all ✅ (2026-10-18):
+closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mold full + keeps the rest, open mold leaks + uses nothing, no mold leaks, gap higher up stops at that level, hole in the ground, rebar cells filled, L-shaped mold, 2nd bucket finishes the lower layer first, 32 wide OK / 33 leaks, no floor leaks, closed top, every cell supported.
+
+**Code:**
+- `pour/MoldPour.java`: the pure pour logic (no Minecraft classes, so it can be unit tested). `MAX_LAYER_SIZE = 32`, `MAX_DROP = 32`
+- `item/ConcreteBucketItem.java`: reads the real blocks into the pour grid, places the wet concrete, messages, the bar and tooltip (`appendHoverText` is marked deprecated in 26.3 but still works)
+- `registry/ModDataComponents.java`: `CONCRETE_AMOUNT`
+- `ModItems.CONCRETE_BUCKET`. Datagen: `ModModelProvider.flatItem`, both lang providers (also the message and tooltip keys)
+- `build.gradle`: JUnit 5.13.4 (test only, not in the jar)

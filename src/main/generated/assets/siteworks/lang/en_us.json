@@ -7,11 +7,15 @@
   "block.siteworks.wet_concrete": "Wet Concrete",
   "item.siteworks.cement": "Cement",
   "item.siteworks.cement_mix": "Cement Mix",
+  "item.siteworks.concrete_bucket": "Concrete Bucket",
+  "item.siteworks.concrete_bucket.amount": "Concrete: %s/%s blocks",
   "item.siteworks.ghost_test": "Ghost Test (test item)",
   "item.siteworks.hard_hat": "Hard Hat",
   "item.siteworks.mattock": "Mattock",
   "item.siteworks.sledgehammer": "Sledgehammer",
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.ghost_test.removed": "Removed %s ghost blocks",
-  "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks"
+  "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks",
+  "message.siteworks.pour.full": "The mold is full.",
+  "message.siteworks.pour.leaks": "The formwork leaks!"
 }

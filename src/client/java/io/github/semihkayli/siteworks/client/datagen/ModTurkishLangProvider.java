@@ -23,6 +23,10 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add(ModBlocks.SAFETY_NET, "Güvenlik Ağı");
 		builder.add(ModItems.CEMENT_MIX, "Çimento Karışımı");
 		builder.add(ModItems.CEMENT, "Çimento");
+		builder.add(ModItems.CONCRETE_BUCKET, "Beton Kovası");
+		builder.add("item.siteworks.concrete_bucket.amount", "Beton: %s/%s blok");
+		builder.add("message.siteworks.pour.leaks", "Kalıp sızdırıyor!");
+		builder.add("message.siteworks.pour.full", "Kalıp dolu.");
 		builder.add(ModBlocks.FORMWORK, "Kalıp");
 		builder.add(ModBlocks.REBAR, "İnşaat Demiri");
 		builder.add(ModBlocks.CONCRETE, "Beton");

@@ -2,6 +2,7 @@ package io.github.semihkayli.siteworks.registry;
 
 import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.item.AreaToolItem;
+import io.github.semihkayli.siteworks.item.ConcreteBucketItem;
 import io.github.semihkayli.siteworks.item.GhostTestItem;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
@@ -46,6 +47,11 @@ public final class ModItems {
 	// Concrete chain: clay ball + bone meal (or calcite) -> Cement Mix -> smelt -> Cement -> Concrete Mixer.
 	public static final Item CEMENT_MIX = register("cement_mix", Item::new, new Item.Properties());
 	public static final Item CEMENT = register("cement", Item::new, new Item.Properties());
+
+	// Filled at the Concrete Mixer from a vanilla empty bucket. Pours up to 16 blocks, gives the empty bucket back.
+	public static final Item CONCRETE_BUCKET = register("concrete_bucket",
+			ConcreteBucketItem::new,
+			new Item.Properties().stacksTo(1).component(ModDataComponents.CONCRETE_AMOUNT, ConcreteBucketItem.CAPACITY));
 
 	// TEST ITEM (Phase 1 ghost test). Creative only, no recipe. Replaced by the Survey Stake in Phase 5.
 	public static final Item GHOST_TEST = register("ghost_test",

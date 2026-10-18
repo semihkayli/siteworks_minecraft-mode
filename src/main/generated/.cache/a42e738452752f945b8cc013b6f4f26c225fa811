@@ -8,6 +8,7 @@ e30fa890789b696525690b95b78ae0c6ec5f7326 assets/siteworks/blockstates/safety_net
 aedbfa465ced5f0df64bce7635c33500236708c4 assets/siteworks/items/cement.json
 4ba8cfe98e3b48afb29d448755136c52d2d8d06f assets/siteworks/items/cement_mix.json
 1c1b3ce0c3a00eb17f18e3e5a39f3f066be53fe6 assets/siteworks/items/concrete.json
+46fe0183eea0b533abe347e37529459c530c2b02 assets/siteworks/items/concrete_bucket.json
 66dc18afadd80a89d1a9517920c560576250399c assets/siteworks/items/formwork.json
 3007a786a733d718cf72ae89c6135fc2184c9ad8 assets/siteworks/items/ghost_test.json
 0c0467ce6a3240203def35df0b274f99642cb71e assets/siteworks/items/hard_hat.json
@@ -23,6 +24,7 @@ fc5bf587f4c0f70080be92fb521aedbf70caf435 assets/siteworks/models/block/reinforce
 d15b642295deff74b23bb71fa4b1c083f9911cb2 assets/siteworks/models/block/wet_concrete.json
 c6deebadfc028d6d62f45fc649e6c7dd033f5af5 assets/siteworks/models/item/cement.json
 da5d98b464567d94836049cecc97328495fcfb10 assets/siteworks/models/item/cement_mix.json
+c870067a5ecb4db4390888d820f57202f556cd4e assets/siteworks/models/item/concrete_bucket.json
 c64ed609ece68994ce23dd2809145040bce13579 assets/siteworks/models/item/ghost_test.json
 48ea8e6239a4222fd96cf83ed2d750446581160c assets/siteworks/models/item/hard_hat.json
 e60d7a163a34965d2423787bbca6a8630904d1bc assets/siteworks/models/item/mattock.json

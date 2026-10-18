@@ -7,11 +7,15 @@
   "block.siteworks.wet_concrete": "Taze Beton",
   "item.siteworks.cement": "Çimento",
   "item.siteworks.cement_mix": "Çimento Karışımı",
+  "item.siteworks.concrete_bucket": "Beton Kovası",
+  "item.siteworks.concrete_bucket.amount": "Beton: %s/%s blok",
   "item.siteworks.ghost_test": "Hayalet Testi (test eşyası)",
   "item.siteworks.hard_hat": "Baret",
   "item.siteworks.mattock": "Kazma Çapa",
   "item.siteworks.sledgehammer": "Balyoz",
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.ghost_test.removed": "%s hayalet blok silindi",
-  "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu"
+  "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu",
+  "message.siteworks.pour.full": "Kalıp dolu.",
+  "message.siteworks.pour.leaks": "Kalıp sızdırıyor!"
 }

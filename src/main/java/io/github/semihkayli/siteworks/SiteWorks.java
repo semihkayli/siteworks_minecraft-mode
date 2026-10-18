@@ -4,6 +4,7 @@ import io.github.semihkayli.siteworks.event.AreaMining;
 import io.github.semihkayli.siteworks.event.HardHatProtection;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModCreativeTabs;
+import io.github.semihkayli.siteworks.registry.ModDataComponents;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import net.fabricmc.api.ModInitializer;
 
@@ -26,6 +27,7 @@ public class SiteWorks implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		ModDataComponents.init();
 		ModBlocks.init();
 		ModItems.init();
 		ModCreativeTabs.init();

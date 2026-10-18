@@ -61,6 +61,7 @@ public class ModModelProvider extends FabricModelProvider {
 		// White raw mix -> gray cement after the furnace.
 		flatItem(generators, ModItems.CEMENT_MIX, "item/sugar");
 		flatItem(generators, ModItems.CEMENT, "item/gunpowder");
+		flatItem(generators, ModItems.CONCRETE_BUCKET, "item/powder_snow_bucket");
 	}
 
 	/** A normal flat item (like armor or ingots), using a vanilla texture. */

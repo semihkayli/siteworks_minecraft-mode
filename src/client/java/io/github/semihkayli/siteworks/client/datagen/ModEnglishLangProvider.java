@@ -22,6 +22,10 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add(ModBlocks.SAFETY_NET, "Safety Net");
 		builder.add(ModItems.CEMENT_MIX, "Cement Mix");
 		builder.add(ModItems.CEMENT, "Cement");
+		builder.add(ModItems.CONCRETE_BUCKET, "Concrete Bucket");
+		builder.add("item.siteworks.concrete_bucket.amount", "Concrete: %s/%s blocks");
+		builder.add("message.siteworks.pour.leaks", "The formwork leaks!");
+		builder.add("message.siteworks.pour.full", "The mold is full.");
 		builder.add(ModBlocks.FORMWORK, "Formwork");
 		builder.add(ModBlocks.REBAR, "Rebar");
 		builder.add(ModBlocks.CONCRETE, "Concrete");
