@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/template_cauldron_level2",
+  "textures": {
+    "particle": "minecraft:block/iron_block",
+    "top": "minecraft:block/iron_block",
+    "side": "minecraft:block/iron_block",
+    "bottom": "minecraft:block/cauldron_bottom",
+    "inside": "minecraft:block/cauldron_inner",
+    "content": "minecraft:block/gray_concrete_powder"
+  }
+}

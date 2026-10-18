@@ -1,6 +1,6 @@
 // 26.3	-999999999-01-01T00:00:00	Site Works/Tags for minecraft:block
 07277c58ec36c22a5b494dc54f07684ca1bfbe43 data/minecraft/tags/block/mineable/axe.json
-7ab0cfaa5699112c0995685f8e9cf45ffe1fa98e data/minecraft/tags/block/mineable/pickaxe.json
+fca02374ce99db400233c93c0367032192046fb3 data/minecraft/tags/block/mineable/pickaxe.json
 d586bbc5c97990ef8870c7075bbe5887428a53a5 data/minecraft/tags/block/mineable/shovel.json
 e3c1b6b8b3c7b6df7066ee403690d7f2ed817ab4 data/minecraft/tags/block/needs_iron_tool.json
 1a572e228503c9cd3be8d8c68e41b4ea6cf29c63 data/siteworks/tags/block/sledge_breakable.json

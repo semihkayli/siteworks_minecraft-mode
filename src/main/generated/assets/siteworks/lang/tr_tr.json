@@ -1,5 +1,6 @@
 {
   "block.siteworks.concrete": "Beton",
+  "block.siteworks.concrete_mixer": "Betoniyer",
   "block.siteworks.formwork": "Kalıp",
   "block.siteworks.rebar": "İnşaat Demiri",
   "block.siteworks.reinforced_concrete": "Betonarme",
@@ -16,6 +17,9 @@
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.ghost_test.removed": "%s hayalet blok silindi",
   "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu",
+  "message.siteworks.mixer.mixing": " · Karıştırıyor...",
+  "message.siteworks.mixer.no_concrete": "Henüz hazır beton yok.",
+  "message.siteworks.mixer.status": "Çimento %s · Kum %s · Çakıl %s · Su %s/%s · Hazır %s/%s",
   "message.siteworks.pour.full": "Kalıp dolu.",
   "message.siteworks.pour.leaks": "Kalıp sızdırıyor!"
 }

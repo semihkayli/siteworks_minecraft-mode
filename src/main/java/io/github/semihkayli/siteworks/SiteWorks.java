@@ -2,6 +2,7 @@ package io.github.semihkayli.siteworks;
 
 import io.github.semihkayli.siteworks.event.AreaMining;
 import io.github.semihkayli.siteworks.event.HardHatProtection;
+import io.github.semihkayli.siteworks.registry.ModBlockEntities;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModCreativeTabs;
 import io.github.semihkayli.siteworks.registry.ModDataComponents;
@@ -29,6 +30,7 @@ public class SiteWorks implements ModInitializer {
 
 		ModDataComponents.init();
 		ModBlocks.init();
+		ModBlockEntities.init();
 		ModItems.init();
 		ModCreativeTabs.init();
 		AreaMining.init();

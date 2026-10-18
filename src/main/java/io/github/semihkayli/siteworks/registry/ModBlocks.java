@@ -1,6 +1,7 @@
 package io.github.semihkayli.siteworks.registry;
 
 import io.github.semihkayli.siteworks.SiteWorks;
+import io.github.semihkayli.siteworks.block.ConcreteMixerBlock;
 import io.github.semihkayli.siteworks.block.RebarBlock;
 import io.github.semihkayli.siteworks.block.SafetyNetBlock;
 import io.github.semihkayli.siteworks.block.WetConcreteBlock;
@@ -79,6 +80,16 @@ public final class ModBlocks {
 					.strength(0.5f)
 					.speedFactor(0.4f)
 					.sound(SoundType.MUD));
+
+	// Like a cauldron: hardness 2, needs a pickaxe to drop. No full-cube look (it's a tub), so noOcclusion.
+	public static final Block CONCRETE_MIXER = register("concrete_mixer",
+			ConcreteMixerBlock::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.METAL)
+					.requiresCorrectToolForDrops()
+					.strength(2.0f)
+					.sound(SoundType.METAL)
+					.noOcclusion());
 
 	private ModBlocks() {
 	}

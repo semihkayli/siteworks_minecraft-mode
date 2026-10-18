@@ -2,13 +2,14 @@
 
 ## Current status
 
-- **Phase:** 2 — Concrete, **in progress** (discussed and decided 2026-10-18, see Phase 2 "Decisions"). **Step 1 (Formwork, Rebar, Concrete, Reinforced Concrete) done ✅ (tested, committed).** **Step 2 (Cement Mix + Cement) done ✅.** **Step 3 (Wet Concrete) done ✅** (incl. the Hard Hat anvil test). **Step 4 (Concrete Bucket + mold pour) done ✅** (14 unit tests). Step 5 (Concrete Mixer) in progress. Phase 1 is fully done ✅.
+- **Phase:** 2 — Concrete, **in progress** (discussed and decided 2026-10-18, see Phase 2 "Decisions"). **Step 1 (Formwork, Rebar, Concrete, Reinforced Concrete) done ✅ (tested, committed).** **Step 2 (Cement Mix + Cement) done ✅.** **Step 3 (Wet Concrete) done ✅** (incl. the Hard Hat anvil test). **Step 4 (Concrete Bucket + mold pour) done ✅** (14 unit tests). **Step 5 (Concrete Mixer) done ✅.** Step 6 (Mixer hopper input) in progress. Phase 1 is fully done ✅.
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Code layout:** `registry/` (ModItems, ModBlocks, ModTags, ModCreativeTabs), `item/`, `block/`, `event/` in `src/main/java/.../siteworks/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
 - **Datagen notes:** run `gradlew runDatagen` after changing any provider. Never edit `src/main/generated/` by hand. Vanilla tags must be added with `forceAddTag` (plain `addTag` fails because datagen can't see vanilla tags). A JNA `Win32Exception: Parametre hatalı` line in the datagen log is harmless.
 - **26.3 API notes (old tutorials are wrong here):**
   - Dyes: `Items.DYE.yellow()` (a `ColorCollection`), not `Items.YELLOW_DYE`.
+  - Colored blocks too: `Blocks.CONCRETE_POWDER.gray()`, not `Blocks.GRAY_CONCRETE_POWDER`. (26.3 also has vanilla `CONCRETE_STAIRS` and `CONCRETE_SLAB`.)
   - Entity types: `EntityTypes.BLOCK_DISPLAY` (plural class).
   - Block/item IDs for tags: `BlockItemIds.X`.
   - Tools: plain `Item` + `Properties.shovel/pickaxe(...)` (no `ShovelItem`).
@@ -18,7 +19,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** step 5 (Concrete Mixer: right-click input, water, mixing, filling buckets). Run `gradlew test` before each commit.
+- **Next step:** step 6 (Mixer hopper input with `WorldlyContainer`). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**

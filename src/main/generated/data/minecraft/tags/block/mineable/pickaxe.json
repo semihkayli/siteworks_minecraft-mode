@@ -2,6 +2,7 @@
   "values": [
     "siteworks:concrete",
     "siteworks:reinforced_concrete",
-    "siteworks:rebar"
+    "siteworks:rebar",
+    "siteworks:concrete_mixer"
   ]
 }

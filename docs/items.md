@@ -14,6 +14,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
 | Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
 | Cement (Çimento) | `siteworks:cement` | 2 | ✅ tested in-game |
+| Concrete Mixer (Betoniyer) — block | `siteworks:concrete_mixer` | 2 | ✅ tested in-game (right-click, water, mixing, buckets, save, drops) |
 | Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅ |
 | Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
@@ -21,7 +22,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 
-**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
+**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Mixer, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
 
 **How to read the stats:**
 - "Attack damage" and "attack speed" are the numbers in the item's tooltip.
@@ -363,7 +364,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | ID | `siteworks:concrete_bucket` |
 | Names | EN "Concrete Bucket", TR "Beton Kovası" |
 | What it does | Right-click into a mold → pours up to **16 blocks** of Wet Concrete, from the bottom up (the **mold pour**, rules below) |
-| How to get it | At the Concrete Mixer (step 5): right-click it with a **vanilla empty bucket**. No crafting recipe. For now: creative tab or `/give @s siteworks:concrete_bucket` |
+| How to get it | At the **Concrete Mixer**: right-click it with a **vanilla empty bucket** (takes up to 16 ready blocks). A half-full bucket can be topped up there. No crafting recipe. Creative tab or `/give @s siteworks:concrete_bucket` for tests |
 | Amount | Data component `siteworks:concrete_amount` (1–16, default 16). The bucket **keeps what's left**: tooltip "Concrete: 11/16 blocks" + a gray bar under the icon (hidden when full) |
 | Empty | At 0 it turns into a **vanilla empty bucket** (reusable) |
 | Creative mode | Like vanilla buckets: the bucket **stays full** in creative. Test the amount/bar in survival |
@@ -394,3 +395,31 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 - `registry/ModDataComponents.java`: `CONCRETE_AMOUNT`
 - `ModItems.CONCRETE_BUCKET`. Datagen: `ModModelProvider.flatItem`, both lang providers (also the message and tooltip keys)
 - `build.gradle`: JUnit 5.13.4 (test only, not in the jar)
+
+---
+
+## Concrete Mixer (Betoniyer) — block
+
+| | |
+|---|---|
+| ID | `siteworks:concrete_mixer` (block + block item, with a block entity) |
+| Names | EN "Concrete Mixer", TR "Betoniyer" |
+| What it does | Mixes concrete by itself. **1 batch = 1 cement + 4 sand + 4 gravel + 1 water → 16 blocks** of ready concrete, in **5 seconds**. No power, no redstone signal needed |
+| Recipe | Shaped, `.R. / ICI / I.I` (R = redstone, C = cauldron, I = iron ingot) → 1. Unlocks when the player gets a cauldron |
+| Storage | Cement, sand, gravel: up to **64 each** (one item type per slot). Water: up to **8 batches**. Ready concrete: up to **64 blocks** (4 buckets). It stops mixing when the ready concrete is full |
+| No GUI (right-click) | **Cement / sand / red sand / gravel** → the whole held stack goes in (as much as fits). **Water bucket** → water = 8/8, you get the empty bucket back. **Empty bucket** → a Concrete Bucket with up to 16 blocks ("No concrete ready yet." if 0). **Half-full Concrete Bucket** → topped up to 16. **Empty hand** (or any other item) → status in the action bar: `Cement 3 · Sand 12 · Gravel 12 · Water 6/8 · Ready 32/64 · Mixing...` |
+| Sneak + right-click | Vanilla behaviour (e.g. place sand next to the mixer instead of putting it in) |
+| Water source | A **water source block next to it** (any of the 6 sides, waterlogged blocks too) refills the water to 8/8 by itself, once per second |
+| Creative mode | Inserting doesn't use up your items (like vanilla) |
+| Sand slot | Holds sand **or** red sand, not both at the same time (a slot keeps one item type) |
+| Look | Vanilla cauldron shape with iron block sides. The **ready concrete shows inside**: state `fill` = 0 (empty), 1 (1–21 blocks), 2 (22–42), 3 (43–64), with the `gray_concrete_powder` texture. Particles (gray dust) + a grinding sound while mixing, a mud sound when a batch is done |
+| Strength | Hardness 2 (like a cauldron), metal sounds, needs a pickaxe to drop (`#minecraft:mineable/pickaxe`) |
+| Drops | Itself. The **stored cement, sand and gravel drop too**. Water and ready concrete are lost (they have no item) |
+| Hoppers | **Not yet** (step 6) |
+
+**Code:**
+- `block/ConcreteMixerBlock.java`: `BaseEntityBlock`, `FILL` property, right-click (`useItemOn` / `useWithoutItem`), ticker
+- `block/entity/ConcreteMixerBlockEntity.java`: storage (3 item slots + water + ready + progress), mixing every server tick, saving (`saveAdditional` / `loadAdditional`), drops on break (`preRemoveSideEffects`). All numbers are constants at the top
+- `registry/ModBlockEntities.java`: `CONCRETE_MIXER` block entity type
+- Models by hand: `src/main/resources/assets/siteworks/models/block/concrete_mixer{,_level1,_level2,_full}.json` (parents = vanilla cauldron models). Blockstate from datagen (`ModModelProvider`, `PropertyDispatch` on `fill`)
+- Datagen: `ModBlockLootProvider` (`dropSelf`), `ModBlockTagProvider`, `ModRecipeProvider`, both lang providers (also the status messages)

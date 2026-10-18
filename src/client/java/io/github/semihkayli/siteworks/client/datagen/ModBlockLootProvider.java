@@ -30,6 +30,7 @@ public class ModBlockLootProvider extends FabricBlockLootSubProvider {
 		dropSelf(ModBlocks.SAFETY_NET);
 		dropSelf(ModBlocks.FORMWORK);
 		dropSelf(ModBlocks.REBAR);
+		dropSelf(ModBlocks.CONCRETE_MIXER);
 
 		// Recycling: broken with the Sledgehammer (and no Silk Touch) -> gravel. Otherwise -> the block itself.
 		add(ModBlocks.CONCRETE, block -> LootTable.lootTable()

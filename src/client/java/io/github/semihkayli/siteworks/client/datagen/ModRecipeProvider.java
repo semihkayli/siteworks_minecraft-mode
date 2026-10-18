@@ -86,6 +86,17 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 				oreBlasting(List.of(ModItems.CEMENT_MIX), RecipeCategory.MISC, CookingBookCategory.MISC,
 						ModItems.CEMENT, 0.1f, 100, "cement");
 
+				// A cauldron as the drum, iron for the frame, redstone as the "motor".
+				shaped(RecipeCategory.MISC, ModBlocks.CONCRETE_MIXER)
+						.define('R', Items.REDSTONE)
+						.define('C', Items.CAULDRON)
+						.define('I', Items.IRON_INGOT)
+						.pattern(" R ")
+						.pattern("ICI")
+						.pattern("I I")
+						.unlockedBy("has_cauldron", has(Items.CAULDRON))
+						.save(output);
+
 				// 2 planks (any wood) + 2 sticks, diagonal -> 4 formwork. The mirrored shape works too.
 				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FORMWORK, 4)
 						.define('P', ItemTags.PLANKS)

@@ -1,5 +1,6 @@
 // 26.3	-999999999-01-01T00:00:00	Site Works/Block Loot Tables
 f2f36dcee7a6fa6f9490c3173297d21629321e70 data/siteworks/loot_table/blocks/concrete.json
+30d63d1dba445d51b41aa3bb9220ee6fe8340d07 data/siteworks/loot_table/blocks/concrete_mixer.json
 deabf7336342afd4db4b2976b205b2e7aab1fc58 data/siteworks/loot_table/blocks/formwork.json
 99a5599f988adc4808fa5736fe5f23c6003d2deb data/siteworks/loot_table/blocks/rebar.json
 f0dd48d65e20dea3f4e552f68fa68906eeccf911 data/siteworks/loot_table/blocks/reinforced_concrete.json

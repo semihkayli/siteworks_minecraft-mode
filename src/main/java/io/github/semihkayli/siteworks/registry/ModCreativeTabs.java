@@ -23,6 +23,7 @@ public final class ModCreativeTabs {
 						output.accept(ModBlocks.SAFETY_NET);
 						output.accept(ModItems.CEMENT_MIX);
 						output.accept(ModItems.CEMENT);
+						output.accept(ModBlocks.CONCRETE_MIXER);
 						output.accept(ModItems.CONCRETE_BUCKET);
 						output.accept(ModBlocks.FORMWORK);
 						output.accept(ModBlocks.REBAR);

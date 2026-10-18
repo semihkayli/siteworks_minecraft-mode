@@ -1,12 +1,15 @@
 package io.github.semihkayli.siteworks.client.datagen;
 
 import io.github.semihkayli.siteworks.SiteWorks;
+import io.github.semihkayli.siteworks.block.ConcreteMixerBlock;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
@@ -40,6 +43,14 @@ public class ModModelProvider extends FabricModelProvider {
 		// because datagen can't draw custom shapes. Here we only point the blockstate to it.
 		generators.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.REBAR,
 				BlockModelGenerators.plainVariant(SiteWorks.id("block/rebar"))));
+
+		// Concrete Mixer: hand-written models (a cauldron shape with iron sides). The FILL state shows the ready concrete inside.
+		generators.blockStateOutput.accept(MultiVariantGenerator.dispatch(ModBlocks.CONCRETE_MIXER)
+				.with(PropertyDispatch.initial(ConcreteMixerBlock.FILL)
+						.select(0, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer")))
+						.select(1, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_level1")))
+						.select(2, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_level2")))
+						.select(3, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_full")))));
 	}
 
 	/** A full cube block that uses a vanilla texture on all sides. */

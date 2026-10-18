@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "fill=0": {
+      "model": "siteworks:block/concrete_mixer"
+    },
+    "fill=1": {
+      "model": "siteworks:block/concrete_mixer_level1"
+    },
+    "fill=2": {
+      "model": "siteworks:block/concrete_mixer_level2"
+    },
+    "fill=3": {
+      "model": "siteworks:block/concrete_mixer_full"
+    }
+  }
+}

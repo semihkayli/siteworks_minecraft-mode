@@ -49,7 +49,8 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 		// Vanilla tool tags (data/minecraft/tags/block/*.json, "replace": false).
 		// mineable/pickaxe = a pickaxe mines it fast. needs_iron_tool = drops only with an iron pickaxe or better.
 		builder(BlockTags.MINEABLE_WITH_PICKAXE)
-				.add(key(ModBlocks.CONCRETE), key(ModBlocks.REINFORCED_CONCRETE), key(ModBlocks.REBAR));
+				.add(key(ModBlocks.CONCRETE), key(ModBlocks.REINFORCED_CONCRETE), key(ModBlocks.REBAR),
+						key(ModBlocks.CONCRETE_MIXER));
 		builder(BlockTags.NEEDS_IRON_TOOL).add(key(ModBlocks.REINFORCED_CONCRETE));
 		builder(BlockTags.MINEABLE_WITH_AXE).add(key(ModBlocks.FORMWORK));
 		builder(BlockTags.MINEABLE_WITH_SHOVEL).add(key(ModBlocks.WET_CONCRETE));

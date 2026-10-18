@@ -1,5 +1,6 @@
 // 26.3	-999999999-01-01T00:00:00	Site Works/Model Definitions
 cc2eb959c6be5f672ff565c41df22a847a242a94 assets/siteworks/blockstates/concrete.json
+e98028f42f0f4ff7f60b27b284a81ace2453b6eb assets/siteworks/blockstates/concrete_mixer.json
 8bd83069f30a02e7cf58d0a5073cacce5f35be2d assets/siteworks/blockstates/formwork.json
 a0e6d213ef6600d7f40c1dcf3be4c1d846768232 assets/siteworks/blockstates/rebar.json
 c8adb9a004d182a6a660291b64d54dea91063709 assets/siteworks/blockstates/reinforced_concrete.json
@@ -9,6 +10,7 @@ aedbfa465ced5f0df64bce7635c33500236708c4 assets/siteworks/items/cement.json
 4ba8cfe98e3b48afb29d448755136c52d2d8d06f assets/siteworks/items/cement_mix.json
 1c1b3ce0c3a00eb17f18e3e5a39f3f066be53fe6 assets/siteworks/items/concrete.json
 46fe0183eea0b533abe347e37529459c530c2b02 assets/siteworks/items/concrete_bucket.json
+0458740f95436f4fa09efcd6b9e8bd65552541e5 assets/siteworks/items/concrete_mixer.json
 66dc18afadd80a89d1a9517920c560576250399c assets/siteworks/items/formwork.json
 3007a786a733d718cf72ae89c6135fc2184c9ad8 assets/siteworks/items/ghost_test.json
 0c0467ce6a3240203def35df0b274f99642cb71e assets/siteworks/items/hard_hat.json
