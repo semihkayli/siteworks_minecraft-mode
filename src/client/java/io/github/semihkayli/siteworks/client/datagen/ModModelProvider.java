@@ -1,5 +1,6 @@
 package io.github.semihkayli.siteworks.client.datagen;
 
+import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -12,6 +13,7 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 /** Writes assets/siteworks/items/*.json and assets/siteworks/models/**. */
 public class ModModelProvider extends FabricModelProvider {
@@ -26,6 +28,23 @@ public class ModModelProvider extends FabricModelProvider {
 		TextureMapping netTexture = TextureMapping.defaultTexture(new Material(Identifier.withDefaultNamespace("block/cobweb")));
 		Identifier netModel = ModelTemplates.TRAPDOOR_TOP.create(ModBlocks.SAFETY_NET, netTexture, generators.modelOutput);
 		generators.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.SAFETY_NET, BlockModelGenerators.plainVariant(netModel)));
+
+		// Full cubes with one vanilla texture on all 6 sides. Their item models are made automatically.
+		cubeBlock(generators, ModBlocks.FORMWORK, "block/spruce_planks");
+		cubeBlock(generators, ModBlocks.CONCRETE, "block/light_gray_concrete");
+		cubeBlock(generators, ModBlocks.REINFORCED_CONCRETE, "block/gray_concrete");
+
+		// Rebar: the model (4 bars + 2 rings) is written by hand in src/main/resources/assets/siteworks/models/block/rebar.json,
+		// because datagen can't draw custom shapes. Here we only point the blockstate to it.
+		generators.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(ModBlocks.REBAR,
+				BlockModelGenerators.plainVariant(SiteWorks.id("block/rebar"))));
+	}
+
+	/** A full cube block that uses a vanilla texture on all sides. */
+	private static void cubeBlock(BlockModelGenerators generators, Block block, String vanillaTexture) {
+		TextureMapping texture = TextureMapping.cube(new Material(Identifier.withDefaultNamespace(vanillaTexture)));
+		Identifier model = ModelTemplates.CUBE_ALL.create(block, texture, generators.modelOutput);
+		generators.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, BlockModelGenerators.plainVariant(model)));
 	}
 
 	@Override

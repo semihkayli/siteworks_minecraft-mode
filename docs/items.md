@@ -12,8 +12,12 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Hard Hat (Baret) | `siteworks:hard_hat` | 1 | ✅ built, durability choice OK by the user, anvil test pending |
 | Safety Net (Güvenlik Ağı) — block | `siteworks:safety_net` | 1 | ✅ tested in-game |
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
+| Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
+| Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
+| Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
+| Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 
-**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Ghost Test.
+**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
 
 **How to read the stats:**
 - "Attack damage" and "attack speed" are the numbers in the item's tooltip.
@@ -201,3 +205,83 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 - `item/GhostTestItem.java`
 - `ModItems.GHOST_TEST`
 - `src/main/resources/siteworks.classtweaker`: makes the private `Display` setters usable (`setBlockState`, `setTransformation`, `setGlowColorOverride`, `setBrightnessOverride`). It's registered in `build.gradle` (`accessWidenerPath`) and in `fabric.mod.json` (`accessWidener`)
+
+---
+
+## Formwork (Kalıp) — block
+
+| | |
+|---|---|
+| ID | `siteworks:formwork` (block + block item) |
+| Names | EN "Formwork", TR "Kalıp" |
+| What it does | The wall of a concrete mold. Cheap and reusable: it **breaks fast** and **always drops itself** (by hand too) |
+| Recipe | Shaped, `PS / SP` (P = any planks `#minecraft:planks`, S = stick, diagonal) → **4**. The mirrored shape works too |
+| Recipe book | Unlocks when the player gets any planks |
+| Strength | Hardness **0.5** (like dirt): ~0.75 s by hand, ~0.15 s with an iron axe. Changed from 0 (instant) after the user test (2026-10-18): it broke too easily, even by accident. Wood sounds, map color = wood. Does not burn (not decided, can change later) |
+| Drops | Itself (vanilla `dropSelf`) |
+| Tags | `#minecraft:mineable/axe` |
+| Look (placeholder) | Full cube with the vanilla `block/spruce_planks` texture (looks exactly like spruce planks for now). A new look comes in Phase 6 |
+| Mold rule (step 4) | Any solid block can be a mold wall. Formwork is just the easiest one to remove |
+
+**Code:** `ModBlocks.FORMWORK` (plain `Block` + `strength(0.5f)`). Datagen: `ModModelProvider.cubeBlock`, `ModBlockLootProvider`, `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers.
+
+---
+
+## Rebar (İnşaat Demiri) — block
+
+| | |
+|---|---|
+| ID | `siteworks:rebar` (block + block item) |
+| Names | EN "Rebar", TR "İnşaat Demiri" |
+| What it does | A small cage of steel bars. Place it inside a mold **before pouring**. The pour fills rebar cells like air, and they cure into **Reinforced Concrete** (comes in steps 3–4) |
+| Recipe | Shaped, `I / I / I` (3 iron ingots in a column) → **8** (the same iron per piece as vanilla iron bars) |
+| Recipe book | Unlocks when the player gets an iron ingot |
+| Placement | Anywhere. It **floats** (needs no support) and stays when the blocks around it are removed |
+| Shape | Outline + collision = one box, pixels 3–13 wide, full height. You can't walk through it |
+| Strength | Hardness 1.0 (fast by hand, faster with a pickaxe), iron sounds, map color = metal |
+| Drops | Itself, with any tool or by hand |
+| Tags | `#minecraft:mineable/pickaxe` |
+| Look (placeholder) | 4 thin vertical bars + 2 rings (stirrups / etriye), vanilla `block/iron_bars` texture. Hand-written model (datagen can't draw shapes). The item shows the same 3D model |
+
+**Code:**
+- `block/RebarBlock.java` (`getShape` = `Block.box(3, 0, 3, 13, 16, 13)`)
+- `ModBlocks.REBAR`
+- Model by hand: `src/main/resources/assets/siteworks/models/block/rebar.json`. The blockstate + item model come from datagen (`ModModelProvider`)
+- Datagen: `ModBlockLootProvider`, `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers
+
+---
+
+## Concrete (Beton) — block
+
+| | |
+|---|---|
+| ID | `siteworks:concrete` (block + block item) |
+| Names | EN "Concrete", TR "Beton" |
+| What it does | A strong gray building block, like stone. In survival you get it **only by pouring** (wet concrete cures into it, steps 3–4). There is no crafting recipe. Once you have it, it's a normal block you can mine and place |
+| Recipe | None (comes from curing). Creative tab for testing |
+| Strength | Hardness **1.5**, blast resistance **6** (both like stone). Stone sounds, map color = light gray, note block = bass drum |
+| Tool | Needs a **pickaxe** (any tier) to drop. `#minecraft:mineable/pickaxe` |
+| Drops | Any pickaxe → **itself**. **Sledgehammer without Silk Touch → 1 gravel** (recycling). Sledgehammer with Silk Touch → itself |
+| Tags | `#minecraft:mineable/pickaxe`, `#siteworks:sledge_breakable` (the Sledgehammer breaks it 3×3) |
+| Look (placeholder) | Vanilla `block/light_gray_concrete` texture. ⚠️ It looks exactly like vanilla Light Gray Concrete for now. A new look comes in Phase 6 |
+
+**Code:** `ModBlocks.CONCRETE` (plain `Block`). Loot: `ModBlockLootProvider.selfOrGravel` (an `alternatives` entry: gravel when `match_tool` = Sledgehammer and no Silk Touch, otherwise the block). Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers.
+
+---
+
+## Reinforced Concrete (Betonarme) — block
+
+| | |
+|---|---|
+| ID | `siteworks:reinforced_concrete` (block + block item) |
+| Names | EN "Reinforced Concrete", TR "Betonarme" |
+| What it does | Concrete with rebar inside. Mines like an iron block, and **creepers and TNT can't break it** |
+| Recipe | None (wet concrete poured over rebar cures into it, steps 3–4). Creative tab for testing |
+| Strength | Hardness **5** (like an iron block), blast resistance **1200** (like obsidian). Stone sounds, map color = gray, note block = bass drum |
+| Tool | Needs an **iron pickaxe or better** to drop (`#minecraft:needs_iron_tool`). The Sledgehammer is iron tier, so it works |
+| Drops | Pickaxe → **itself**. **Sledgehammer without Silk Touch → 1 gravel + 1 rebar** (recycling, you get the rebar back). Sledgehammer with Silk Touch → itself |
+| Tags | `#minecraft:mineable/pickaxe`, `#minecraft:needs_iron_tool`, `#siteworks:sledge_breakable` |
+| Look (placeholder) | Vanilla `block/gray_concrete` texture (darker than Concrete). A new look comes in Phase 6 |
+| Known (Phase 6 balance note) | In a Sledgehammer 3×3, ring blocks harder than the center still break for free. Hit stone → reinforced concrete around it breaks too |
+
+**Code:** `ModBlocks.REINFORCED_CONCRETE` (plain `Block`). Loot: `ModBlockLootProvider` (pool 1 = `selfOrGravel`, pool 2 = rebar with the same Sledgehammer condition). Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers.

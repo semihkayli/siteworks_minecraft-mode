@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "P": "#minecraft:planks",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "PS",
+    "SP"
+  ],
+  "result": {
+    "count": 4,
+    "id": "siteworks:formwork"
+  }
+}

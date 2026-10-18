@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "siteworks:block/reinforced_concrete"
+    }
+  }
+}

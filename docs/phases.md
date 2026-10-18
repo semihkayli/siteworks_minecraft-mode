@@ -2,7 +2,7 @@
 
 ## Current status
 
-- **Phase:** 1 — Site basics, **done** ✅ (2026-10-12). Only the Hard Hat anvil test is still waiting for the user's in-game check. Next: **Phase 2 — Concrete, not started** (discuss the questions first, best in a new chat).
+- **Phase:** 2 — Concrete, **in progress** (discussed and decided 2026-10-18, see Phase 2 "Decisions"). **Step 1 (Formwork, Rebar, Concrete, Reinforced Concrete) done ✅ (tested, committed).** Step 2 (Cement Mix + Cement) in progress. Phase 1 is done ✅, but the Hard Hat anvil test is still pending (do it in step 3).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Code layout:** `registry/` (ModItems, ModBlocks, ModTags, ModCreativeTabs), `item/`, `block/`, `event/` in `src/main/java/.../siteworks/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
@@ -18,7 +18,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 2 discussion (exact recipes, mixer capacity, strength numbers, flood-fill unit tests, and the review notes under Phase 2).
+- **Next step:** step 2 (Cement Mix + Cement, 2 steps): build → user test → commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -133,8 +133,33 @@
 - [ ] Rebar inside → reinforced concrete survives a creeper
 - [ ] No lag with ~200 blocks curing at once
 
-**Decisions:**
-- _(write answers here)_
+**Decisions:** (2026-10-18, the user said "if I don't like one, we change it later")
+- **Recipes:**
+  - Cement Mix = shapeless clay ball + bone meal → 2 (or clay ball + calcite → 2), smelt → Cement (furnace or blast furnace). **2 steps kept** (user, 2026-10-18: "keep it for now"). If it feels boring in play, switch to crafting Cement directly.
+  - Formwork ×4 = `PS / SP` (any planks + sticks, diagonal)
+  - Rebar ×8 = `I / I / I` (3 iron ingots in a column)
+  - Concrete Mixer = `.R. / ICI / I.I` (cauldron + 4 iron + 1 redstone)
+  - **No new empty bucket:** the mixer fills a **vanilla bucket** → Concrete Bucket. Pouring gives the empty bucket back (reusable).
+- **Mixer:** 1 batch = 1 cement + 4 sand + 4 gravel + water → 16 blocks. Holds 64 of each input + 64 blocks of ready concrete. 5 s per batch, sound + particles, no power. **Water both ways:** a water bucket = 8 batches, or a water source block next to it refills by itself. No GUI: right-click puts the held stack in, empty hand shows the contents in the action bar. Right-click input first, hopper input (`WorldlyContainer`, by item type) as a second step. No hopper output in v1.0.
+- **Bucket:** remembers what's left (bar like durability). The mixer tops up half-full buckets.
+- **Pour = like water:** starts at the lowest point, rises layer by layer until 16 are used or the mold is full to its lowest wall. Open first layer → "The formwork leaks!" (nothing used). Higher layer would spill → stops ("The mold is full."). Walls = any solid block. Air, water and plants are filled, so a hole in the ground is a mold too. Max **32×32 per layer of one mold** (not a building limit; bigger = leak). Checks spawn protection like the 3×3 tools.
+- **Unit tests: yes** (JUnit 5, test-only, not in the jar). Claude writes and runs them.
+- **Wet Concrete:** no item (only from a bucket), gravity, walking ×0.4, breaking drops nothing (rebar comes back), cures in 2400 ticks, the timer restarts after a fall.
+- **Rebar:** a thin floating block. The pour fills rebar cells like air, and they cure into Reinforced Concrete.
+- **Hard Hat job:** falling wet concrete hurts (1 per block fallen, max 10), the hat blocks it. **Plus** Sledgehammer ceiling debris (½ heart when you break a 3×3 ceiling without a hat) as an optional last step.
+- **Strength:** Concrete = hardness 1.5 / blast 6 (stone), any pickaxe. Reinforced = hardness 5 / blast 1200 (obsidian-level), iron pickaxe or better. Formwork = hardness 0.5 (changed from instant after the step 1 test: it broke by accident), always drops itself.
+- **Recycling (loot tables):** Sledgehammer without Silk Touch → concrete gives gravel, reinforced gives gravel + 1 rebar. Other tools or Silk Touch → the block itself. Both join `sledge_breakable`.
+- **No structural collapse, no "foundation required" rule** in v1.0 (user agreed: rebar is a bonus, support matters only while wet). The user's "foundation required to start" idea is in `game-design.md` §5 as undecided.
+
+**Steps:**
+1. Simple blocks: Formwork, Rebar, Concrete, Reinforced Concrete (recipes, loot + recycling, tags)
+2. Cement Mix + Cement
+3. Wet Concrete: gravity, slow walking, curing, rebar, falling damage + the Hard Hat anvil test
+4. Concrete Bucket + mold pour + unit tests ⭐ (tested with creative buckets first)
+5. Mixer: right-click input, water, mixing, filling buckets
+6. Mixer hopper input
+7. (optional) Sledgehammer ceiling debris
+8. "Done when" checklist (incl. the 200-block lag test) → status → commit
 
 ---
 

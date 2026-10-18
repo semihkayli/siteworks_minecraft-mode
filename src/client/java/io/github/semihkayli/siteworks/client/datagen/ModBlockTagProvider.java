@@ -1,12 +1,15 @@
 package io.github.semihkayli.siteworks.client.datagen;
 
+import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModTags;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.references.BlockItemIds;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
 
 /** Writes data/siteworks/tags/block/*.json. */
 public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
@@ -36,10 +39,22 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 						BlockItemIds.CALCITE, BlockItemIds.DRIPSTONE_BLOCK, BlockItemIds.END_STONE,
 						BlockItemIds.END_STONE_BRICKS, BlockItemIds.NETHER_BRICKS, BlockItemIds.POLISHED_BLACKSTONE,
 						BlockItemIds.POLISHED_BLACKSTONE_BRICKS)
+				.add(key(ModBlocks.CONCRETE), key(ModBlocks.REINFORCED_CONCRETE))
 				.forceAddTag(BlockTags.BASE_STONE_OVERWORLD)
 				.forceAddTag(BlockTags.BASE_STONE_NETHER)
 				.forceAddTag(BlockTags.STONE_BRICKS)
 				.forceAddTag(BlockTags.TERRACOTTA)
 				.forceAddTag(BlockTags.CONCRETE);
+
+		// Vanilla tool tags (data/minecraft/tags/block/*.json, "replace": false).
+		// mineable/pickaxe = a pickaxe mines it fast. needs_iron_tool = drops only with an iron pickaxe or better.
+		builder(BlockTags.MINEABLE_WITH_PICKAXE)
+				.add(key(ModBlocks.CONCRETE), key(ModBlocks.REINFORCED_CONCRETE), key(ModBlocks.REBAR));
+		builder(BlockTags.NEEDS_IRON_TOOL).add(key(ModBlocks.REINFORCED_CONCRETE));
+		builder(BlockTags.MINEABLE_WITH_AXE).add(key(ModBlocks.FORMWORK));
+	}
+
+	private static ResourceKey<Block> key(Block block) {
+		return block.builtInRegistryHolder().key();
 	}
 }

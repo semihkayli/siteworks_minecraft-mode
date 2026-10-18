@@ -120,7 +120,7 @@ Concrete Mixer  +  cement + sand + gravel + water  →  fills Concrete Buckets
 |---|---|
 | **Concrete Mixer (betoniyer)** | No GUI. Right-click with ingredients, or feed it with a **hopper** (automation = no chore). It mixes by itself in a few seconds. Right-click with an empty Concrete Bucket to fill it |
 | **Concrete Bucket (beton kovası)** | Pours **16 blocks** of wet concrete into a mold |
-| **Formwork (kalıp)** | Cheap wooden panel. **Breaks instantly and always drops itself.** It's the wall of a mold |
+| **Formwork (kalıp)** | Cheap wooden panel. **Breaks fast (not by accident) and always drops itself.** It's the wall of a mold |
 | **Rebar (inşaat demiri)** | Thin bars. Place them inside the mold before pouring |
 | **Wet Concrete (taze beton)** | **Has gravity** like sand. Cures in ~2 minutes (tunable), and you can keep building while it cures |
 | **Concrete (beton)** | Strong gray block (like stone) |
@@ -204,6 +204,7 @@ Concrete Mixer  +  cement + sand + gravel + water  →  fills Concrete Buckets
   - The Multimeter shows problems.
   - Hollow bricks hide the lines.
   - The Blueprint gets a **Services view**.
+- **Idea, undecided (user, 2026-10-18):** a foundation is required before construction can start. Not in v1.0: it's a rule players must check, and it's unclear how it fits with vanilla builds and blueprints.
 - **Inspection:** an optional Inspector's Clipboard with a ⭐ certificate. Never mandatory, never blocks building.
 - **Finishing (ince inşaat):** plaster, tiles, fixtures, furniture, comfort and the "Well Rested" buff.
 - **Future:** Architect villager + house blueprint catalog, blueprint library (Creative → Survival), elevator, fire safety.

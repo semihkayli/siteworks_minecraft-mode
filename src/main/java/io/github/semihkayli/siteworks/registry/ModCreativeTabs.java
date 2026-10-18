@@ -21,6 +21,10 @@ public final class ModCreativeTabs {
 						output.accept(ModItems.MATTOCK);
 						output.accept(ModItems.SLEDGEHAMMER);
 						output.accept(ModBlocks.SAFETY_NET);
+						output.accept(ModBlocks.FORMWORK);
+						output.accept(ModBlocks.REBAR);
+						output.accept(ModBlocks.CONCRETE);
+						output.accept(ModBlocks.REINFORCED_CONCRETE);
 						output.accept(ModItems.GHOST_TEST);
 					})
 					.build());

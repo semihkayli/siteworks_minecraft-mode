@@ -64,6 +64,24 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 						.pattern("S S")
 						.unlockedBy("has_string", has(Items.STRING))
 						.save(output);
+
+				// 2 planks (any wood) + 2 sticks, diagonal -> 4 formwork. The mirrored shape works too.
+				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FORMWORK, 4)
+						.define('P', ItemTags.PLANKS)
+						.define('S', Items.STICK)
+						.pattern("PS")
+						.pattern("SP")
+						.unlockedBy("has_planks", has(ItemTags.PLANKS))
+						.save(output);
+
+				// 3 iron ingots in a column -> 8 rebar (the same iron per piece as vanilla iron bars).
+				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.REBAR, 8)
+						.define('I', Items.IRON_INGOT)
+						.pattern("I")
+						.pattern("I")
+						.pattern("I")
+						.unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+						.save(output);
 			}
 		};
 	}

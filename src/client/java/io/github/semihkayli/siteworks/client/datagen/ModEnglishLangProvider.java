@@ -20,6 +20,10 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add(ModItems.SLEDGEHAMMER, "Sledgehammer");
 		builder.add(ModItems.HARD_HAT, "Hard Hat");
 		builder.add(ModBlocks.SAFETY_NET, "Safety Net");
+		builder.add(ModBlocks.FORMWORK, "Formwork");
+		builder.add(ModBlocks.REBAR, "Rebar");
+		builder.add(ModBlocks.CONCRETE, "Concrete");
+		builder.add(ModBlocks.REINFORCED_CONCRETE, "Reinforced Concrete");
 		builder.add(ModItems.GHOST_TEST, "Ghost Test (test item)");
 		builder.add("message.siteworks.ghost_test.spawned", "Spawned %s ghost blocks");
 		builder.add("message.siteworks.ghost_test.removed", "Removed %s ghost blocks");
