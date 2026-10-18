@@ -13,8 +13,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -31,8 +34,9 @@ import net.minecraft.world.level.storage.ValueOutput;
  * A block entity (blok varlığı) is extra data + logic attached to one block; it's saved with the world.
  *
  * One batch = 1 cement + 4 sand + 4 gravel + 1 water -> 16 blocks of concrete, in 5 seconds.
+ * Hoppers can feed the ingredients from any side (WorldlyContainer), but can't take anything out.
  */
-public class ConcreteMixerBlockEntity extends BlockEntity {
+public class ConcreteMixerBlockEntity extends BlockEntity implements WorldlyContainer {
 	public static final int SLOT_CEMENT = 0;
 	public static final int SLOT_SAND = 1;
 	public static final int SLOT_GRAVEL = 2;
@@ -198,6 +202,78 @@ public class ConcreteMixerBlockEntity extends BlockEntity {
 				items.get(SLOT_CEMENT).getCount(), items.get(SLOT_SAND).getCount(), items.get(SLOT_GRAVEL).getCount(),
 				water, MAX_WATER, ready, MAX_READY);
 		return isMixing() ? status.copy().append(Component.translatable("message.siteworks.mixer.mixing")) : status;
+	}
+
+	// ---- Hoppers (WorldlyContainer) ----
+	// Hoppers (and droppers, hopper minecarts...) see the 3 ingredient slots from every side.
+	// Each item can only go into its own slot, and nothing can be taken out (no hopper output in v1.0).
+
+	private static final int[] ALL_SLOTS = {SLOT_CEMENT, SLOT_SAND, SLOT_GRAVEL};
+
+	@Override
+	public int[] getSlotsForFace(Direction side) {
+		return ALL_SLOTS;
+	}
+
+	@Override
+	public boolean canPlaceItem(int slot, ItemStack stack) {
+		return slotFor(stack) == slot;
+	}
+
+	@Override
+	public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
+		return canPlaceItem(slot, stack);
+	}
+
+	@Override
+	public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+		return false;
+	}
+
+	@Override
+	public int getContainerSize() {
+		return items.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return items.stream().allMatch(ItemStack::isEmpty);
+	}
+
+	@Override
+	public ItemStack getItem(int slot) {
+		return items.get(slot);
+	}
+
+	@Override
+	public ItemStack removeItem(int slot, int count) {
+		ItemStack removed = ContainerHelper.removeItem(items, slot, count);
+		if (!removed.isEmpty()) {
+			setChanged();
+		}
+		return removed;
+	}
+
+	@Override
+	public ItemStack removeItemNoUpdate(int slot) {
+		return ContainerHelper.takeItem(items, slot);
+	}
+
+	@Override
+	public void setItem(int slot, ItemStack stack) {
+		items.set(slot, stack);
+		stack.limitSize(getMaxStackSize(stack));
+		setChanged();
+	}
+
+	@Override
+	public boolean stillValid(Player player) {
+		return Container.stillValidBlockEntity(this, player);
+	}
+
+	@Override
+	public void clearContent() {
+		items.clear();
 	}
 
 	// ---- Saving ----

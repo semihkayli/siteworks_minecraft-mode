@@ -14,7 +14,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
 | Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
 | Cement (Çimento) | `siteworks:cement` | 2 | ✅ tested in-game |
-| Concrete Mixer (Betoniyer) — block | `siteworks:concrete_mixer` | 2 | ✅ tested in-game (right-click, water, mixing, buckets, save, drops) |
+| Concrete Mixer (Betoniyer) — block | `siteworks:concrete_mixer` | 2 | ✅ tested in-game (right-click, water, mixing, buckets, save, drops, hopper input) |
 | Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅ |
 | Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
@@ -415,11 +415,11 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 | Look | Vanilla cauldron shape with iron block sides. The **ready concrete shows inside**: state `fill` = 0 (empty), 1 (1–21 blocks), 2 (22–42), 3 (43–64), with the `gray_concrete_powder` texture. Particles (gray dust) + a grinding sound while mixing, a mud sound when a batch is done |
 | Strength | Hardness 2 (like a cauldron), metal sounds, needs a pickaxe to drop (`#minecraft:mineable/pickaxe`) |
 | Drops | Itself. The **stored cement, sand and gravel drop too**. Water and ready concrete are lost (they have no item) |
-| Hoppers | **Not yet** (step 6) |
+| Hoppers | **Input from every side** (top and sides; also droppers and hopper minecarts). Each item goes into its own slot automatically: cement, sand/red sand, gravel. Other items stay in the hopper. **Nothing can be taken out** by a hopper (no hopper output in v1.0). Water still comes from a water bucket or a water source next to the mixer, so a hopper + water source setup runs fully automatic |
 
 **Code:**
 - `block/ConcreteMixerBlock.java`: `BaseEntityBlock`, `FILL` property, right-click (`useItemOn` / `useWithoutItem`), ticker
-- `block/entity/ConcreteMixerBlockEntity.java`: storage (3 item slots + water + ready + progress), mixing every server tick, saving (`saveAdditional` / `loadAdditional`), drops on break (`preRemoveSideEffects`). All numbers are constants at the top
+- `block/entity/ConcreteMixerBlockEntity.java`: storage (3 item slots + water + ready + progress), mixing every server tick, saving (`saveAdditional` / `loadAdditional`), drops on break (`preRemoveSideEffects`), hopper input (implements vanilla `WorldlyContainer`: `canPlaceItemThroughFace` = the right slot only, `canTakeItemThroughFace` = always false). All numbers are constants at the top
 - `registry/ModBlockEntities.java`: `CONCRETE_MIXER` block entity type
 - Models by hand: `src/main/resources/assets/siteworks/models/block/concrete_mixer{,_level1,_level2,_full}.json` (parents = vanilla cauldron models). Blockstate from datagen (`ModModelProvider`, `PropertyDispatch` on `fill`)
 - Datagen: `ModBlockLootProvider` (`dropSelf`), `ModBlockTagProvider`, `ModRecipeProvider`, both lang providers (also the status messages)
