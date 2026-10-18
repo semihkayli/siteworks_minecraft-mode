@@ -8,7 +8,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Item | ID | Phase | Status |
 |---|---|---|---|
 | Mattock (Kazma Çapa) | `siteworks:mattock` | 1 | ✅ tested in-game |
-| Sledgehammer (Balyoz) | `siteworks:sledgehammer` | 1 | ✅ tested in-game |
+| Sledgehammer (Balyoz) | `siteworks:sledgehammer` | 1 | ✅ tested in-game (incl. Phase 2 ceiling debris) |
 | Hard Hat (Baret) | `siteworks:hard_hat` | 1 | ✅ tested in-game (anvil + falling wet concrete, 2026-10-18) |
 | Safety Net (Güvenlik Ağı) — block | `siteworks:safety_net` | 1 | ✅ tested in-game |
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
@@ -93,7 +93,8 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 
 **3×3 rules:** the same as the Mattock (same `AreaToolItem` code), but with the tag `#siteworks:sledge_breakable`.
 - If you hit an ore directly, it breaks normally, like with a pickaxe. Ores **around** the center are never broken.
-- **Later (Phase 2):** concrete → gravel, reinforced concrete → gravel + rebar (recycling).
+- **Recycling (Phase 2):** concrete → gravel, reinforced concrete → gravel + rebar (loot tables, see Concrete / Reinforced Concrete).
+- **Ceiling debris (Phase 2 step 7):** when you hit the **bottom face** of a block above you (a ceiling) and the 3×3 breaks **at least 1 extra block**, dust of the broken block falls down (vanilla `falling_dust` particles) and you take **2 damage (1 heart;** was ½ heart, the user wanted more after the test**)**, damage type `minecraft:falling_block`. **The Hard Hat blocks it** (and loses 1 durability). Not in creative mode (vanilla: no damage). Sneak (1 block) = no debris. The Mattock has no debris
 
 **Tag `#siteworks:sledge_breakable`** contains:
 - Vanilla tags:
@@ -112,7 +113,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 
 **Code:**
 - `ModItems.SLEDGEHAMMER` = `AreaToolItem(SLEDGE_BREAKABLE)` + `Item.Properties().pickaxe(ToolMaterial.IRON, 4.0f, -3.2f).durability(500)`
-- 3×3 logic: `event/AreaMining.java` (shared with the Mattock)
+- 3×3 logic + ceiling debris: `event/AreaMining.java` (shared with the Mattock; debris = `dropCeilingDebris`, `CEILING_DEBRIS_DAMAGE = 2`)
 - Tag key: `ModTags.SLEDGE_BREAKABLE`. Vanilla tags are added with `forceAddTag`
 
 ---
@@ -123,7 +124,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 |---|---|
 | ID | `siteworks:hard_hat` |
 | Names | EN "Hard Hat", TR "Baret" |
-| What it does | Helmet. **Cancels all damage from falling blocks:** falling anvil, falling dripstone, **falling Wet Concrete** (Phase 2), and any falling block that deals damage. Vanilla falling sand/gravel deal no damage. Phase 2 step 7 may add Sledgehammer ceiling debris |
+| What it does | Helmet. **Cancels all damage from falling blocks:** falling anvil, falling dripstone, **falling Wet Concrete** (Phase 2), **Sledgehammer ceiling debris** (Phase 2 step 7), and any falling block that deals damage. Vanilla falling sand/gravel deal no damage |
 | Recipe | Shaped, `XXX / XYX` with X = iron ingot and Y = yellow dye (the iron helmet shape with dye in the hole) |
 | Recipe book | Unlocks when the player gets an iron ingot |
 | Armor | **2** (same as an iron helmet), toughness 0, knockback resistance 0 |

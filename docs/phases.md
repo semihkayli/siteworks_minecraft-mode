@@ -2,7 +2,7 @@
 
 ## Current status
 
-- **Phase:** 2 — Concrete, **in progress** (discussed and decided 2026-10-18, see Phase 2 "Decisions"). **Step 1 (Formwork, Rebar, Concrete, Reinforced Concrete) done ✅ (tested, committed).** **Step 2 (Cement Mix + Cement) done ✅.** **Step 3 (Wet Concrete) done ✅** (incl. the Hard Hat anvil test). **Step 4 (Concrete Bucket + mold pour) done ✅** (14 unit tests). **Step 5 (Concrete Mixer) done ✅.** **Step 6 (Mixer hopper input) done ✅.** Step 7 (Sledgehammer ceiling debris) in progress. Phase 1 is fully done ✅.
+- **Phase:** 2 — Concrete, **in progress** (discussed and decided 2026-10-18, see Phase 2 "Decisions"). **Step 1 (Formwork, Rebar, Concrete, Reinforced Concrete) done ✅ (tested, committed).** **Step 2 (Cement Mix + Cement) done ✅.** **Step 3 (Wet Concrete) done ✅** (incl. the Hard Hat anvil test). **Step 4 (Concrete Bucket + mold pour) done ✅** (14 unit tests). **Step 5 (Concrete Mixer) done ✅.** **Step 6 (Mixer hopper input) done ✅.** **Step 7 (Sledgehammer ceiling debris) done ✅** (damage raised to 1 heart). Step 8 (Done-when checklist + lag test) in progress. Phase 1 is fully done ✅.
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Code layout:** `registry/` (ModItems, ModBlocks, ModTags, ModCreativeTabs), `item/`, `block/`, `event/` in `src/main/java/.../siteworks/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
@@ -19,7 +19,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** step 7 (optional Sledgehammer ceiling debris) → step 8 (Done-when checklist + 200-block lag test). Run `gradlew test` before each commit.
+- **Next step:** step 8 (Done-when checklist + 200-block lag test). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -147,7 +147,7 @@
 - **Unit tests: yes** (JUnit 5, test-only, not in the jar). Claude writes and runs them.
 - **Wet Concrete:** no item (only from a bucket), gravity, walking ×0.4, breaking drops nothing (rebar comes back), cures in 2400 ticks, the timer restarts after a fall.
 - **Rebar:** a thin floating block. The pour fills rebar cells like air, and they cure into Reinforced Concrete.
-- **Hard Hat job:** falling wet concrete hurts (1 per block fallen, max 10), the hat blocks it. **Plus** Sledgehammer ceiling debris (½ heart when you break a 3×3 ceiling without a hat) as an optional last step.
+- **Hard Hat job:** falling wet concrete hurts (1 per block fallen, max 10), the hat blocks it. **Plus** Sledgehammer ceiling debris when you break a 3×3 ceiling without a hat: **1 heart** (planned ½ heart, raised after the step 7 test: "it could lose more").
 - **Strength:** Concrete = hardness 1.5 / blast 6 (stone), any pickaxe. Reinforced = hardness 5 / blast 1200 (obsidian-level), iron pickaxe or better. Formwork = hardness 0.5 (changed from instant after the step 1 test: it broke by accident), always drops itself.
 - **Recycling (loot tables):** Sledgehammer without Silk Touch → concrete gives gravel, reinforced gives gravel + 1 rebar. Other tools or Silk Touch → the block itself. Both join `sledge_breakable`.
 - **No structural collapse, no "foundation required" rule** in v1.0 (user agreed: rebar is a bonus, support matters only while wet). The user's "foundation required to start" idea is in `game-design.md` §5 as undecided.
@@ -248,6 +248,7 @@
 - Any balance problems found while playing?
 - **From the Phase 1 review:** the 3×3 tools have no speed cost (9 blocks in the time of 1), and ring blocks harder than the center break for free (hit stone → deepslate around it breaks too). Test in play. Options: skip ring blocks harder than the center, and/or lower the mining speed (e.g. 4.0 instead of 6.0).
 - `sledge_breakable` misses some blocks: smooth/cut/chiseled sandstone, red nether bricks, cracked/chiseled deepslate bricks and tiles, cracked nether bricks, polished blackstone variants, quartz, prismarine, purpur, packed mud, smooth basalt.
+- Mixer: the user said "sneak + right-click with sand" (should place the sand, vanilla behaviour) "didn't work out, or maybe I didn't meet the conditions". Unclear, re-check in play.
 - Code cleanup: remove the empty mixin configs (`siteworks.mixins.json`, `siteworks.client.mixins.json` + the `"mixins"` entry in `fabric.mod.json`) if still unused. Merge `flatItem`/`handheldTool` in `ModModelProvider` into one helper.
 
 **Done when:**
