@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "siteworks:cement",
+    [
+      "minecraft:sand",
+      "minecraft:red_sand"
+    ],
+    [
+      "minecraft:sand",
+      "minecraft:red_sand"
+    ],
+    [
+      "minecraft:sand",
+      "minecraft:red_sand"
+    ],
+    [
+      "minecraft:sand",
+      "minecraft:red_sand"
+    ]
+  ],
+  "result": {
+    "count": 8,
+    "id": "siteworks:mortar"
+  }
+}

@@ -4,6 +4,7 @@ import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.block.ConcreteMixerBlock;
 import io.github.semihkayli.siteworks.block.RebarBlock;
 import io.github.semihkayli.siteworks.block.SafetyNetBlock;
+import io.github.semihkayli.siteworks.block.SteelBeamBlock;
 import io.github.semihkayli.siteworks.block.WetConcreteBlock;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
@@ -88,6 +89,18 @@ public final class ModBlocks {
 					.mapColor(MapColor.METAL)
 					.requiresCorrectToolForDrops()
 					.strength(2.0f)
+					.sound(SoundType.METAL)
+					.noOcclusion());
+
+	// Like an iron block: hardness 5, blast resistance 6, needs a stone pickaxe or better (tag #minecraft:needs_stone_tool).
+	// An I-profile shape, not a full cube, so noOcclusion.
+	public static final Block STEEL_BEAM = register("steel_beam",
+			SteelBeamBlock::new,
+			BlockBehaviour.Properties.of()
+					.mapColor(MapColor.METAL)
+					.instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+					.requiresCorrectToolForDrops()
+					.strength(5.0f, 6.0f)
 					.sound(SoundType.METAL)
 					.noOcclusion());
 

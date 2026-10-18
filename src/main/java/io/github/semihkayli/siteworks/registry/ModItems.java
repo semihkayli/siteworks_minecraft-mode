@@ -53,6 +53,12 @@ public final class ModItems {
 			ConcreteBucketItem::new,
 			new Item.Properties().stacksTo(1).component(ModDataComponents.CONCRETE_AMOUNT, ConcreteBucketItem.CAPACITY));
 
+	// Masonry: 1 Cement + 4 Sand -> 8 Mortar. The Trowel uses 1 Mortar for 8 blocks.
+	public static final Item MORTAR = register("mortar", Item::new, new Item.Properties());
+
+	// Frame: an Iron Ingot smelted again (furnace or blast furnace) -> Steel Ingot. 7 steel -> 8 Steel Beams.
+	public static final Item STEEL_INGOT = register("steel_ingot", Item::new, new Item.Properties());
+
 	// TEST ITEM (Phase 1 ghost test). Creative only, no recipe. Replaced by the Survey Stake in Phase 5.
 	public static final Item GHOST_TEST = register("ghost_test",
 			GhostTestItem::new,

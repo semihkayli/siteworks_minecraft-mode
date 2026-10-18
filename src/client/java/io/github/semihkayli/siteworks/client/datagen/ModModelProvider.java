@@ -8,15 +8,18 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 /** Writes assets/siteworks/items/*.json and assets/siteworks/models/**. */
 public class ModModelProvider extends FabricModelProvider {
@@ -51,6 +54,15 @@ public class ModModelProvider extends FabricModelProvider {
 						.select(1, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_level1")))
 						.select(2, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_level2")))
 						.select(3, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_full")))));
+
+		// Steel Beam: the hand-written I-beam model (models/block/steel_beam.json) stands up (axis Y).
+		// For the other axes it is turned like a log. SteelBeamBlock's hitboxes match these turns.
+		MultiVariant beam = BlockModelGenerators.plainVariant(SiteWorks.id("block/steel_beam"));
+		generators.blockStateOutput.accept(MultiVariantGenerator.dispatch(ModBlocks.STEEL_BEAM)
+				.with(PropertyDispatch.initial(BlockStateProperties.AXIS)
+						.select(Direction.Axis.Y, beam)
+						.select(Direction.Axis.Z, beam.with(BlockModelGenerators.X_ROT_90))
+						.select(Direction.Axis.X, beam.with(BlockModelGenerators.X_ROT_90).with(BlockModelGenerators.Y_ROT_90))));
 	}
 
 	/** A full cube block that uses a vanilla texture on all sides. */
@@ -73,6 +85,9 @@ public class ModModelProvider extends FabricModelProvider {
 		flatItem(generators, ModItems.CEMENT_MIX, "item/sugar");
 		flatItem(generators, ModItems.CEMENT, "item/gunpowder");
 		flatItem(generators, ModItems.CONCRETE_BUCKET, "item/powder_snow_bucket");
+		flatItem(generators, ModItems.MORTAR, "item/clay_ball");
+		// Dark gray, like steel.
+		flatItem(generators, ModItems.STEEL_INGOT, "item/netherite_ingot");
 	}
 
 	/** A normal flat item (like armor or ingots), using a vanilla texture. */

@@ -2,7 +2,8 @@
 
 ## Current status
 
-- **Phase:** 2 — Concrete, **done** ✅ (2026-10-18, all in one long session). Next: **Phase 3 — Masonry & frame, not started** (discuss the questions first, best in a new chat).
+- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (Mortar, Steel Ingot, Steel Beam block) done ✅ (tested in-game). Next: step 2 (Steel Beam extending).
+- **Phase 2:** Concrete, **done** ✅ (2026-10-18).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Phase 2 summary:** Formwork, Rebar, Concrete, Reinforced Concrete (Sledgehammer recycling via loot tables), Cement Mix → Cement, Wet Concrete (`WetConcreteBlock`: gravity + one scheduled tick for curing, falls directly in `neighborChanged` because Minecraft keeps only 1 scheduled tick per position), Concrete Bucket + the water-like mold pour (`pour/MoldPour`, pure Java, **14 JUnit tests**: `gradlew test`), Concrete Mixer (first **block entity**, right-click + hopper input via `WorldlyContainer`), Sledgehammer ceiling debris (1 heart, Hard Hat blocks it). Tests: creeper vs reinforced concrete ✅, 200 blocks curing at once = 12.1 ms/tick (13.0 before), 119 FPS ✅.
@@ -20,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3 discussion (masonry tag list, Steel Beam recipe + look, trowel preview with particles). Run `gradlew test` before each commit.
+- **Next step:** Phase 3 step 2 (Steel Beam extending), after the step 1 test + commit. Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -181,8 +182,32 @@
 - [ ] It never places blocks inside players/mobs or where vanilla wouldn't allow it
 - [ ] Steel beam extends straight up to 8 and keeps its axis
 
-**Decisions:**
-- _(write answers here)_
+**Decisions:** (2026-10-18, the user: "ok for now, maybe we change it later")
+- **Masonry tag** `siteworks:masonry_blocks`, **full blocks only:** bricks, all stone bricks (mossy, cracked, chiseled), mud bricks, deepslate bricks + tiles, tuff bricks, nether bricks, red nether bricks, end stone bricks, polished blackstone bricks, quartz bricks, resin bricks, cobblestone + mossy cobblestone, our Concrete + vanilla colored concrete. Stairs, slabs and walls are placed by hand (copying their direction is tricky).
+- **Mortar:** shapeless **1 Cement + 4 Sand → 8 Mortar** (the mixer's ratio). Look: `item/clay_ball`.
+- **Trowel:**
+  - **Block:** places the block you click (copies the wall). A masonry block in the **offhand** overrides it. Takes blocks from the whole inventory.
+  - **Mortar charge:** 1 Mortar = 8 blocks. The trowel stores the leftover charge (data component, shown as an item bar), so nothing is wasted.
+  - **Row (8):** click a face → up to 8 blocks go **straight out** from that face, stopping at the first blocked spot (top face = a column up).
+  - **Course (16):** click a face → every **connected matching block** on that face gets one new block in front of it (max 16, nearest first).
+  - **Mode switch:** sneak + right-click air, the mode is shown in the action bar.
+  - **Rules:** vanilla placement checks for every block (no blocks inside players/mobs, spawn protection, adventure mode). Creative = free. Out of blocks/mortar → places what it can + "Out of mortar!".
+  - **Recipe** `.I / S.` (1 iron ingot + 1 stick, diagonal). **No durability** (mortar is the cost). Look: `item/iron_shovel`.
+- **Preview:** **particles** on the target spots while holding the trowel and looking at a block. Real outlines maybe in Phase 6.
+- **Steel Ingot:** smelt an **Iron Ingot** in a **furnace or blast furnace** (user: "it could be a normal furnace" too). Look: `item/netherite_ingot`.
+- **Steel Beam:**
+  - Recipe `SSS / .S. / SSS` (7 steel) → **8 beams** (one craft = one 8-long bridge).
+  - Look: an **I-profile shape** with the `block/iron_block` texture, axis like logs. Hitbox = the same shape (the top is flat).
+  - **Extending:** right-click a beam with a beam → the new beam goes to the **end of that beam line** (searches up to 8 ahead). Sneak = normal placement. No physics, beams never fall.
+  - Strength like an iron block: hardness 5, blast 6, stone pickaxe or better, drops itself. Not in `sledge_breakable`.
+
+**Steps:**
+1. Mortar + Steel Ingot + Steel Beam (items, block, I-shape, recipes, tags, loot)
+2. Steel Beam extending
+3. Trowel: Row mode + mortar charge + mode switch
+4. Trowel: Course mode
+5. Trowel particle preview
+6. "Done when" checklist → status → commit
 
 ---
 

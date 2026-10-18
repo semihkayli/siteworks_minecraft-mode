@@ -21,8 +21,11 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
+| Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (recipe) |
+| Steel Ingot (Çelik Külçe) | `siteworks:steel_ingot` | 3 | ✅ tested in-game |
+| Steel Beam (Çelik Kiriş) — block | `siteworks:steel_beam` | 3 | ✅ block tested in-game (step 1). Extending: step 2 |
 
-**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Mixer, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Ghost Test.
+**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Mixer, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Mortar, Steel Ingot, Steel Beam, Ghost Test.
 
 **How to read the stats:**
 - "Attack damage" and "attack speed" are the numbers in the item's tooltip.
@@ -424,3 +427,60 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 - `registry/ModBlockEntities.java`: `CONCRETE_MIXER` block entity type
 - Models by hand: `src/main/resources/assets/siteworks/models/block/concrete_mixer{,_level1,_level2,_full}.json` (parents = vanilla cauldron models). Blockstate from datagen (`ModModelProvider`, `PropertyDispatch` on `fill`)
 - Datagen: `ModBlockLootProvider` (`dropSelf`), `ModBlockTagProvider`, `ModRecipeProvider`, both lang providers (also the status messages)
+
+---
+
+## Mortar (Harç)
+
+| | |
+|---|---|
+| ID | `siteworks:mortar` |
+| Names | EN "Mortar", TR "Harç" |
+| What it does | Fuel for the Trowel (Phase 3 steps 3–4): **1 Mortar = 8 masonry blocks**. No other use yet |
+| Recipe | Shapeless **1 Cement + 4 Sand → 8** (sand or red sand, the same sand as the mixer; not the vanilla `#sand` tag, because it has suspicious sand too). One craft = 8 mortar = 64 blocks = 1 stack |
+| Recipe book | Unlocks when the player gets Cement |
+| Stack | 64 |
+| Look (placeholder) | Flat vanilla `item/clay_ball` icon. A new look comes in Phase 6 |
+
+**Code:** `ModItems.MORTAR` (plain `Item`). Datagen: `ModRecipeProvider` (recipe ID `siteworks:mortar`), `ModModelProvider.flatItem`, both lang providers.
+
+---
+
+## Steel Ingot (Çelik Külçe)
+
+| | |
+|---|---|
+| ID | `siteworks:steel_ingot` |
+| Names | EN "Steel Ingot", TR "Çelik Külçe" |
+| What it does | Ingredient for the Steel Beam |
+| Recipe | Smelt an **Iron Ingot**: **furnace 10 s** (200 ticks) or **blast furnace 5 s** (100 ticks), 0.1 XP each. The coal you burn = "iron + coal", with no extra item. Recipe book group `steel_ingot`. (Planned: blast furnace only. The user allowed the normal furnace too) |
+| Recipe book | Unlocks when the player gets an iron ingot |
+| Stack | 64 |
+| Look (placeholder) | Flat vanilla `item/netherite_ingot` icon (dark gray, like steel). A new look comes in Phase 6 |
+
+**Code:** `ModItems.STEEL_INGOT` (plain `Item`). Datagen: `ModRecipeProvider` (`oreSmelting` + `oreBlasting` → recipe IDs `siteworks:steel_ingot_from_smelting_iron_ingot` and `siteworks:steel_ingot_from_blasting_iron_ingot`), `ModModelProvider.flatItem`, both lang providers.
+
+---
+
+## Steel Beam (Çelik Kiriş) — block
+
+| | |
+|---|---|
+| ID | `siteworks:steel_beam` (block + block item) |
+| Names | EN "Steel Beam", TR "Çelik Kiriş" |
+| What it does | A steel I-beam (I-profil) for frames, bridges and roofs. **Extending** (a beam on a beam goes to the end of the line, max 8 ahead) comes in step 2 |
+| Recipe | Shaped, `SSS / .S. / SSS` (S = Steel Ingot, an "I" shape, 7 steel) → **8** (one craft = one 8-long bridge) |
+| Recipe book | Unlocks when the player gets a Steel Ingot |
+| Placement | Has an **axis** like a log (`axis` = x / y / z): it points along the face you click. Click the top/bottom of a block = standing (column), click a side = lying (beam). Needs no support, never falls |
+| Shape | 2 flanges (3-pixel plates) + a web (4 pixels) in the middle. Lying beams have the flanges on the **top and bottom**, so the top is flat and you can walk on it. Outline + collision = the same I shape |
+| Strength | Like an iron block: hardness 5, blast resistance 6, metal sounds, map color = metal, note block = iron xylophone |
+| Drops | Itself, with a **stone pickaxe or better**. A wooden pickaxe or a hand breaks it but drops nothing |
+| Tags | `#minecraft:mineable/pickaxe`, `#minecraft:needs_stone_tool`. **Not** in `sledge_breakable` (it's metal) |
+| Mold | It is a normal mold wall for the Concrete Bucket (like any solid block) |
+| Look (placeholder) | I-profile, vanilla `block/iron_block` texture. Hand-written model (datagen can't draw shapes). The item shows the standing model |
+
+**Code:**
+- `block/SteelBeamBlock.java`: extends vanilla `RotatedPillarBlock` (axis + placement + rotation), `getShape` = 3 boxes per axis
+- `ModBlocks.STEEL_BEAM`
+- Model by hand: `src/main/resources/assets/siteworks/models/block/steel_beam.json` (standing, axis Y). The blockstate turns it like a log: axis Z = `x: 90`, axis X = `x: 90, y: 90` (datagen, `ModModelProvider`). The hitboxes in `SteelBeamBlock` match these turns
+- Datagen: `ModBlockLootProvider` (`dropSelf`), `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers

@@ -3,6 +3,7 @@
     "siteworks:concrete",
     "siteworks:reinforced_concrete",
     "siteworks:rebar",
-    "siteworks:concrete_mixer"
+    "siteworks:concrete_mixer",
+    "siteworks:steel_beam"
   ]
 }

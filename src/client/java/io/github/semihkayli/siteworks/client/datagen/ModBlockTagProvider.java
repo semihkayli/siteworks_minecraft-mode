@@ -50,7 +50,9 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 		// mineable/pickaxe = a pickaxe mines it fast. needs_iron_tool = drops only with an iron pickaxe or better.
 		builder(BlockTags.MINEABLE_WITH_PICKAXE)
 				.add(key(ModBlocks.CONCRETE), key(ModBlocks.REINFORCED_CONCRETE), key(ModBlocks.REBAR),
-						key(ModBlocks.CONCRETE_MIXER));
+						key(ModBlocks.CONCRETE_MIXER), key(ModBlocks.STEEL_BEAM));
+		// Like an iron block: a wooden pickaxe breaks it but gets nothing.
+		builder(BlockTags.NEEDS_STONE_TOOL).add(key(ModBlocks.STEEL_BEAM));
 		builder(BlockTags.NEEDS_IRON_TOOL).add(key(ModBlocks.REINFORCED_CONCRETE));
 		builder(BlockTags.MINEABLE_WITH_AXE).add(key(ModBlocks.FORMWORK));
 		builder(BlockTags.MINEABLE_WITH_SHOVEL).add(key(ModBlocks.WET_CONCRETE));

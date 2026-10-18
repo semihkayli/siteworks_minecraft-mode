@@ -14,6 +14,7 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 
 /**
@@ -113,6 +114,29 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 						.pattern("I")
 						.pattern("I")
 						.unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+						.save(output);
+
+				// 1 Cement + 4 Sand (sand or red sand) -> 8 Mortar (the mixer's ratio). 1 Mortar = 8 blocks with the Trowel.
+				shapeless(RecipeCategory.MISC, ModItems.MORTAR, 8)
+						.requires(ModItems.CEMENT)
+						// Not the vanilla #sand tag: it has suspicious sand too. The same sand as the mixer.
+						.requires(Ingredient.of(Items.SAND, Items.RED_SAND), 4)
+						.unlockedBy("has_cement", has(ModItems.CEMENT))
+						.save(output);
+
+				// Smelt an Iron Ingot again -> Steel Ingot (the coal fuel = "iron + coal"). Furnace 10 s, blast furnace 5 s.
+				oreSmelting(List.of(Items.IRON_INGOT), RecipeCategory.MISC, CookingBookCategory.MISC,
+						ModItems.STEEL_INGOT, 0.1f, 200, "steel_ingot");
+				oreBlasting(List.of(Items.IRON_INGOT), RecipeCategory.MISC, CookingBookCategory.MISC,
+						ModItems.STEEL_INGOT, 0.1f, 100, "steel_ingot");
+
+				// An "I" shape (7 steel) -> 8 beams: one craft = one 8-long bridge.
+				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.STEEL_BEAM, 8)
+						.define('S', ModItems.STEEL_INGOT)
+						.pattern("SSS")
+						.pattern(" S ")
+						.pattern("SSS")
+						.unlockedBy("has_steel_ingot", has(ModItems.STEEL_INGOT))
 						.save(output);
 			}
 		};
