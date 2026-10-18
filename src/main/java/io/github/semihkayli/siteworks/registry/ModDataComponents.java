@@ -2,6 +2,8 @@ package io.github.semihkayli.siteworks.registry;
 
 import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.item.ConcreteBucketItem;
+import io.github.semihkayli.siteworks.item.TrowelItem;
+import io.github.semihkayli.siteworks.item.TrowelMode;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,6 +20,24 @@ public final class ModDataComponents {
 			SiteWorks.id("concrete_amount"),
 			DataComponentType.<Integer>builder()
 					.persistent(ExtraCodecs.intRange(1, ConcreteBucketItem.CAPACITY))
+					.networkSynchronized(ByteBufCodecs.VAR_INT)
+					.build());
+
+	/** The Trowel's mode (Row / Course). */
+	public static final DataComponentType<TrowelMode> TROWEL_MODE = Registry.register(
+			BuiltInRegistries.DATA_COMPONENT_TYPE,
+			SiteWorks.id("trowel_mode"),
+			DataComponentType.<TrowelMode>builder()
+					.persistent(TrowelMode.CODEC)
+					.networkSynchronized(TrowelMode.STREAM_CODEC)
+					.build());
+
+	/** How many blocks the Trowel can still place with the mortar it already took (0-8). 1 Mortar = 8 blocks. */
+	public static final DataComponentType<Integer> MORTAR_CHARGE = Registry.register(
+			BuiltInRegistries.DATA_COMPONENT_TYPE,
+			SiteWorks.id("mortar_charge"),
+			DataComponentType.<Integer>builder()
+					.persistent(ExtraCodecs.intRange(0, TrowelItem.BLOCKS_PER_MORTAR))
 					.networkSynchronized(ByteBufCodecs.VAR_INT)
 					.build());
 

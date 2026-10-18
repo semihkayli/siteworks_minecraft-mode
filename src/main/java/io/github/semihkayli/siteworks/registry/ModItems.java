@@ -4,6 +4,8 @@ import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.item.AreaToolItem;
 import io.github.semihkayli.siteworks.item.ConcreteBucketItem;
 import io.github.semihkayli.siteworks.item.GhostTestItem;
+import io.github.semihkayli.siteworks.item.TrowelItem;
+import io.github.semihkayli.siteworks.item.TrowelMode;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -55,6 +57,13 @@ public final class ModItems {
 
 	// Masonry: 1 Cement + 4 Sand -> 8 Mortar. The Trowel uses 1 Mortar for 8 blocks.
 	public static final Item MORTAR = register("mortar", Item::new, new Item.Properties());
+
+	// A builder's wand for masonry. No durability: the mortar is the cost. Starts in Row mode with no mortar charge.
+	public static final Item TROWEL = register("trowel",
+			TrowelItem::new,
+			new Item.Properties().stacksTo(1)
+					.component(ModDataComponents.TROWEL_MODE, TrowelMode.ROW)
+					.component(ModDataComponents.MORTAR_CHARGE, 0));
 
 	// Frame: an Iron Ingot smelted again (furnace or blast furnace) -> Steel Ingot. 7 steel -> 8 Steel Beams.
 	public static final Item STEEL_INGOT = register("steel_ingot", Item::new, new Item.Properties());

@@ -13,6 +13,9 @@ public final class ModTags {
 	/** Blocks the Sledgehammer breaks in 3x3: stone, bricks, concrete... but no ores. */
 	public static final TagKey<Block> SLEDGE_BREAKABLE = TagKey.create(Registries.BLOCK, SiteWorks.id("sledge_breakable"));
 
+	/** Blocks the Trowel places: bricks, stone bricks, cobblestone, concrete... Full blocks only. */
+	public static final TagKey<Block> MASONRY_BLOCKS = TagKey.create(Registries.BLOCK, SiteWorks.id("masonry_blocks"));
+
 	private ModTags() {
 	}
 }

@@ -124,6 +124,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 						.unlockedBy("has_cement", has(ModItems.CEMENT))
 						.save(output);
 
+				// 1 iron ingot + 1 stick, diagonal (a blade on a handle). The mirrored shape works too.
+				shaped(RecipeCategory.TOOLS, ModItems.TROWEL)
+						.define('I', Items.IRON_INGOT)
+						.define('S', Items.STICK)
+						.pattern(" I")
+						.pattern("S ")
+						.unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+						.save(output);
+
 				// Smelt an Iron Ingot again -> Steel Ingot (the coal fuel = "iron + coal"). Furnace 10 s, blast furnace 5 s.
 				oreSmelting(List.of(Items.IRON_INGOT), RecipeCategory.MISC, CookingBookCategory.MISC,
 						ModItems.STEEL_INGOT, 0.1f, 200, "steel_ingot");

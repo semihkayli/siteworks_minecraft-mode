@@ -98,6 +98,7 @@ public class ModModelProvider extends FabricModelProvider {
 		flatItem(generators, ModItems.CEMENT, "item/gunpowder");
 		flatItem(generators, ModItems.CONCRETE_BUCKET, "item/powder_snow_bucket");
 		flatItem(generators, ModItems.MORTAR, "item/clay_ball");
+		handheldTool(generators, ModItems.TROWEL, "item/iron_shovel");
 		// Dark gray, like steel.
 		flatItem(generators, ModItems.STEEL_INGOT, "item/netherite_ingot");
 	}

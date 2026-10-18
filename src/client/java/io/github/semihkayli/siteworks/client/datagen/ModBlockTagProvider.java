@@ -46,6 +46,17 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 				.forceAddTag(BlockTags.TERRACOTTA)
 				.forceAddTag(BlockTags.CONCRETE);
 
+		// What the Trowel places. Full blocks only (stairs, slabs and walls are placed by hand).
+		builder(ModTags.MASONRY_BLOCKS)
+				.add(BlockItemIds.BRICKS, BlockItemIds.MUD_BRICKS, BlockItemIds.DEEPSLATE_BRICKS, BlockItemIds.DEEPSLATE_TILES,
+						BlockItemIds.TUFF_BRICKS, BlockItemIds.NETHER_BRICKS, BlockItemIds.RED_NETHER_BRICKS,
+						BlockItemIds.END_STONE_BRICKS, BlockItemIds.POLISHED_BLACKSTONE_BRICKS, BlockItemIds.QUARTZ_BRICKS,
+						BlockItemIds.RESIN_BRICKS, BlockItemIds.COBBLESTONE, BlockItemIds.MOSSY_COBBLESTONE)
+				.add(key(ModBlocks.CONCRETE))
+				// Stone bricks + mossy, cracked, chiseled. And the 16 colors of vanilla concrete.
+				.forceAddTag(BlockTags.STONE_BRICKS)
+				.forceAddTag(BlockTags.CONCRETE);
+
 		// Vanilla tool tags (data/minecraft/tags/block/*.json, "replace": false).
 		// mineable/pickaxe = a pickaxe mines it fast. needs_iron_tool = drops only with an iron pickaxe or better.
 		builder(BlockTags.MINEABLE_WITH_PICKAXE)

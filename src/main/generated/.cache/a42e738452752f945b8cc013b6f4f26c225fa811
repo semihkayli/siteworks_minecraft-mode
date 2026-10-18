@@ -23,6 +23,7 @@ aedbfa465ced5f0df64bce7635c33500236708c4 assets/siteworks/items/cement.json
 2512a39c4656983bd763e7f33426589a197ad66e assets/siteworks/items/sledgehammer.json
 b26c2c3f3b25f67ce46d357ae3fb4b063c724888 assets/siteworks/items/steel_beam.json
 9b1970e457cd9c16a430eb11eed0c59469a623b6 assets/siteworks/items/steel_ingot.json
+7f74362f248cd32fa0f4fd82418f27fb2b613f50 assets/siteworks/items/trowel.json
 b6544eb70b1a0ef963c8e0ac28ba138260eb7eec assets/siteworks/models/block/concrete.json
 d3c2edebd468588cf88af61afc26843f1fbd5851 assets/siteworks/models/block/formwork.json
 fc5bf587f4c0f70080be92fb521aedbf70caf435 assets/siteworks/models/block/reinforced_concrete.json
@@ -38,3 +39,4 @@ ea99cf7a4926cce9f3a93fef5118957f5a00b6b8 assets/siteworks/models/item/mortar.jso
 c5fdf5f65df93b4bdd15aa35390002aa9dd838e2 assets/siteworks/models/item/safety_net.json
 f2585033dd29b8895b974e4343906a18fe6e0d51 assets/siteworks/models/item/sledgehammer.json
 ae4d7d6a74f384ddb887bff3d6e427022bac550a assets/siteworks/models/item/steel_ingot.json
+3a1a298f6e18bd3d6a7b70b0f5cab9899a706c0f assets/siteworks/models/item/trowel.json

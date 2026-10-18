@@ -17,6 +17,12 @@
   "item.siteworks.mortar": "Mortar",
   "item.siteworks.sledgehammer": "Sledgehammer",
   "item.siteworks.steel_ingot": "Steel Ingot",
+  "item.siteworks.trowel": "Trowel",
+  "item.siteworks.trowel.charge": "Mortar: %s/%s blocks",
+  "item.siteworks.trowel.hint": "Sneak + right-click the air: change mode",
+  "item.siteworks.trowel.mode.course": "Course (16)",
+  "item.siteworks.trowel.mode.row": "Row (8)",
+  "item.siteworks.trowel.mode_line": "Mode: %s",
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.beam.blocked": "Something is in the way.",
   "message.siteworks.beam.too_far": "Too far! Walk closer to the end of the beam.",
@@ -26,5 +32,11 @@
   "message.siteworks.mixer.no_concrete": "No concrete ready yet.",
   "message.siteworks.mixer.status": "Cement %s · Sand %s · Gravel %s · Water %s/%s · Ready %s/%s",
   "message.siteworks.pour.full": "The mold is full.",
-  "message.siteworks.pour.leaks": "The formwork leaks!"
+  "message.siteworks.pour.leaks": "The formwork leaks!",
+  "message.siteworks.trowel.blocked": "Something is in the way.",
+  "message.siteworks.trowel.course_soon": "Course mode comes in the next step.",
+  "message.siteworks.trowel.mode": "Trowel mode: %s",
+  "message.siteworks.trowel.no_blocks": "No more %s!",
+  "message.siteworks.trowel.no_mortar": "Out of mortar!",
+  "message.siteworks.trowel.not_masonry": "The trowel only places masonry blocks (bricks, stone bricks, concrete...)."
 }

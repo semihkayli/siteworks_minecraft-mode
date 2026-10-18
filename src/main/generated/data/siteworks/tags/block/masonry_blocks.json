@@ -1,0 +1,20 @@
+{
+  "values": [
+    "minecraft:bricks",
+    "minecraft:mud_bricks",
+    "minecraft:deepslate_bricks",
+    "minecraft:deepslate_tiles",
+    "minecraft:tuff_bricks",
+    "minecraft:nether_bricks",
+    "minecraft:red_nether_bricks",
+    "minecraft:end_stone_bricks",
+    "minecraft:polished_blackstone_bricks",
+    "minecraft:quartz_bricks",
+    "minecraft:resin_bricks",
+    "minecraft:cobblestone",
+    "minecraft:mossy_cobblestone",
+    "siteworks:concrete",
+    "#minecraft:stone_bricks",
+    "#minecraft:concrete"
+  ]
+}

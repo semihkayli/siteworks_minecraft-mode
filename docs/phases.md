@@ -2,7 +2,7 @@
 
 ## Current status
 
-- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 is committed (`124c166`): Mortar + Steel Ingot tested OK in-game, the beam not yet. Steps 2 + 2b (beam extending, 16 per craft, climbable slim column) are built and build OK, **not committed, waiting for one beam test** (the step 2b report has the full list), then one commit. Next: step 3 (Trowel Row mode + mortar charge).
+- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (`124c166`) and steps 2 + 2b (`05491f3`: beam extending, 16 per craft, climbable slim column) are committed. Mortar + Steel Ingot are tested OK; the user hasn't confirmed the beam column test yet. Step 3 (Trowel: Row mode, mortar charge, mode switch, masonry tag) is committed and tested OK. **Next: step 3b, Row becomes "from → to"** (user, 2026-10-19: Row always placed up to 8, so a shorter row needed breaking blocks; 2 clicks = start + end, exact length). Then step 4 (Course mode).
 - **Phase 2:** Concrete, **done** ✅ (2026-10-18).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3 step 3 (Trowel Row mode + mortar charge), after the step 2 test + commit. Run `gradlew test` before each commit.
+- **Next step:** Phase 3 step 4 (Trowel Course mode; remove the temporary "Course mode comes in the next step." message), after the step 3 test + commit. Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**

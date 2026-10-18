@@ -5,5 +5,6 @@ ea4337d62a187ad9d00cd3244f702d8d086ea53a data/minecraft/tags/block/climbable.jso
 d586bbc5c97990ef8870c7075bbe5887428a53a5 data/minecraft/tags/block/mineable/shovel.json
 e3c1b6b8b3c7b6df7066ee403690d7f2ed817ab4 data/minecraft/tags/block/needs_iron_tool.json
 ea4337d62a187ad9d00cd3244f702d8d086ea53a data/minecraft/tags/block/needs_stone_tool.json
+89e795313a8b8f05fb314b986deb33aba7bc1122 data/siteworks/tags/block/masonry_blocks.json
 1a572e228503c9cd3be8d8c68e41b4ea6cf29c63 data/siteworks/tags/block/sledge_breakable.json
 2f18be29557c4801a5e13eacf0d6f3e0772a60f6 data/siteworks/tags/block/soft_ground.json

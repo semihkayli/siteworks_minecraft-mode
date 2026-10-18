@@ -17,6 +17,12 @@
   "item.siteworks.mortar": "Harç",
   "item.siteworks.sledgehammer": "Balyoz",
   "item.siteworks.steel_ingot": "Çelik Külçe",
+  "item.siteworks.trowel": "Mala",
+  "item.siteworks.trowel.charge": "Harç: %s/%s blok",
+  "item.siteworks.trowel.hint": "Eğil + havaya sağ tık: mod değiştir",
+  "item.siteworks.trowel.mode.course": "Duvar Katmanı (16)",
+  "item.siteworks.trowel.mode.row": "Sıra (8)",
+  "item.siteworks.trowel.mode_line": "Mod: %s",
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.beam.blocked": "Önünde bir engel var.",
   "message.siteworks.beam.too_far": "Çok uzak! Kirişin ucuna yaklaş.",
@@ -26,5 +32,11 @@
   "message.siteworks.mixer.no_concrete": "Henüz hazır beton yok.",
   "message.siteworks.mixer.status": "Çimento %s · Kum %s · Çakıl %s · Su %s/%s · Hazır %s/%s",
   "message.siteworks.pour.full": "Kalıp dolu.",
-  "message.siteworks.pour.leaks": "Kalıp sızdırıyor!"
+  "message.siteworks.pour.leaks": "Kalıp sızdırıyor!",
+  "message.siteworks.trowel.blocked": "Önünde bir engel var.",
+  "message.siteworks.trowel.course_soon": "Duvar katmanı modu bir sonraki adımda geliyor.",
+  "message.siteworks.trowel.mode": "Mala modu: %s",
+  "message.siteworks.trowel.no_blocks": "%s bitti!",
+  "message.siteworks.trowel.no_mortar": "Harç bitti!",
+  "message.siteworks.trowel.not_masonry": "Mala sadece örgü blokları koyar (tuğla, taş tuğla, beton...)."
 }

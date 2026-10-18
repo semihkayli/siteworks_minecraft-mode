@@ -22,10 +22,11 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 | Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (2026-10-18) |
+| Trowel (Mala) | `siteworks:trowel` | 3 | ✅ Row mode + mortar charge + mode switch tested in-game (2026-10-19). Row → "from → to" change and Course mode: next steps |
 | Steel Ingot (Çelik Külçe) | `siteworks:steel_ingot` | 3 | ✅ tested in-game (2026-10-18) |
 | Steel Beam (Çelik Kiriş) — block | `siteworks:steel_beam` | 3 | 🔨 block (step 1), extending (step 2), 16 per craft + climbing (step 2b) built. A user screenshot shows a lying beam bridge, the full test is not done yet |
 
-**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Mixer, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Mortar, Steel Ingot, Steel Beam, Ghost Test.
+**Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Mixer, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Trowel, Mortar, Steel Ingot, Steel Beam, Ghost Test.
 
 **How to read the stats:**
 - "Attack damage" and "attack speed" are the numbers in the item's tooltip.
@@ -487,3 +488,36 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 - `ModBlocks.STEEL_BEAM` (registered with `SteelBeamItem::new` instead of a plain `BlockItem`)
 - Models by hand: `src/main/resources/assets/siteworks/models/block/steel_beam.json` (full I, standing) and `steel_beam_column.json` (slim column at the north side). The blockstate (datagen, `ModModelProvider`, dispatch on `axis` + `facing`): lying Z = `steel_beam` with `x: 90`, lying X = `x: 90, y: 90`, standing = `steel_beam_column` turned by facing (`y: 0/90/180/270`). The hitboxes in `SteelBeamBlock` match these turns
 - Datagen: `ModBlockLootProvider` (`dropSelf`), `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers (also `message.siteworks.beam.blocked` / `too_far`)
+
+---
+
+## Trowel (Mala)
+
+| | |
+|---|---|
+| ID | `siteworks:trowel` |
+| Names | EN "Trowel", TR "Mala" |
+| What it does | A **builder's wand for masonry**. Right-click a masonry block: it places many blocks at once, from your inventory, and uses **Mortar** (1 Mortar = 8 blocks) |
+| Which block | A **masonry block in your other hand** wins. Otherwise the **block you click** (it copies the wall), if it is masonry. Anything else → "The trowel only places masonry blocks (bricks, stone bricks, concrete...)." |
+| Blocks from | Your **whole inventory** (hotbar, main inventory, off hand), not only the hand |
+| Mode: **Row (8)** | Click a face → up to **8 blocks in a straight line out from that face**. The first blocked spot ends the line (a block, a player or mob, the build height, spawn protection, the world border). Click the side of a block = a line along the ground (the first row of a wall); click the top = a column up. If you click grass or snow, the line starts in it (it replaces it, like vanilla) |
+| Mode: **Course (16)** | Step 4 (for now: "Course mode comes in the next step.") |
+| Mode switch | **Sneak + right-click the air** → the next mode, shown in the action bar ("Trowel mode: Row (8)"). Saved on the item (data component `siteworks:trowel_mode`) |
+| Mortar charge | **1 Mortar = 8 blocks.** When the charge is 0 and a block can really be placed, the trowel takes 1 Mortar from your inventory → charge 8. Each placed block costs 1 charge. The rest stays in the trowel (data component `siteworks:mortar_charge`, 0–8), so **nothing is wasted**: 64 blocks = exactly 8 Mortar. A beige bar under the icon shows the charge (hidden at 0) |
+| Messages (red, action bar) | "Out of mortar!", "No more Bricks!" (the block's name), "Something is in the way." (only when **nothing** was placed), "The trowel only places masonry blocks..." |
+| Placement rules | Every block is placed by vanilla's `BlockItem.place()`, like a normal right-click on that spot: not inside players or mobs, the normal place sound, 1 block used per placement. Adventure mode can't use it |
+| Creative mode | Free: no blocks and no mortar needed, the charge doesn't change |
+| Tooltip | "Mode: Row (8)", "Mortar: 5/8 blocks", "Sneak + right-click the air: change mode" |
+| Recipe | Shaped, `.I / S.` (1 iron ingot + 1 stick, diagonal). The mirrored shape works too |
+| Recipe book | Unlocks when the player gets an iron ingot |
+| Stats | Stack 1, **no durability** (the mortar is the cost), no enchanting, no repair |
+| Look (placeholder) | Vanilla `item/iron_shovel` texture, held like a tool. A new look comes in Phase 6 |
+
+**Masonry tag** `siteworks:masonry_blocks` (full blocks only; stairs, slabs and walls are placed by hand): bricks, `#minecraft:stone_bricks` (stone, mossy, cracked, chiseled stone bricks), mud bricks, deepslate bricks + tiles, tuff bricks, nether bricks, red nether bricks, end stone bricks, polished blackstone bricks, quartz bricks, resin bricks, cobblestone, mossy cobblestone, `siteworks:concrete`, `#minecraft:concrete` (the 16 vanilla colors).
+
+**Code:**
+- `item/TrowelItem.java`: `use` (sneak + air = next mode), `useOn` (Row placing loop, mortar charge, messages), `pickBlock`, `findStack`, bar + tooltip. `BLOCKS_PER_MORTAR = 8`
+- `item/TrowelMode.java`: the enum (`ROW` 8, `COURSE` 16) with its save codec and network codec
+- `registry/ModDataComponents.java`: `TROWEL_MODE`, `MORTAR_CHARGE`
+- `registry/ModItems.java` (`TROWEL`), `registry/ModTags.java` (`MASONRY_BLOCKS`), `registry/ModCreativeTabs.java`
+- Datagen: `ModBlockTagProvider` (masonry tag), `ModRecipeProvider`, `ModModelProvider.handheldTool`, both lang providers (name, modes, tooltip, messages)

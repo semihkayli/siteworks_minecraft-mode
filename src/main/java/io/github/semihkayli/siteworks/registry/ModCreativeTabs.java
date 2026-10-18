@@ -29,6 +29,7 @@ public final class ModCreativeTabs {
 						output.accept(ModBlocks.REBAR);
 						output.accept(ModBlocks.CONCRETE);
 						output.accept(ModBlocks.REINFORCED_CONCRETE);
+						output.accept(ModItems.TROWEL);
 						output.accept(ModItems.MORTAR);
 						output.accept(ModItems.STEEL_INGOT);
 						output.accept(ModBlocks.STEEL_BEAM);
