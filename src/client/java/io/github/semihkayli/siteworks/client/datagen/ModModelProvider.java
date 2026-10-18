@@ -2,6 +2,7 @@ package io.github.semihkayli.siteworks.client.datagen;
 
 import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.block.ConcreteMixerBlock;
+import io.github.semihkayli.siteworks.block.SteelBeamBlock;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -55,14 +56,25 @@ public class ModModelProvider extends FabricModelProvider {
 						.select(2, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_level2")))
 						.select(3, BlockModelGenerators.plainVariant(SiteWorks.id("block/concrete_mixer_full")))));
 
-		// Steel Beam: the hand-written I-beam model (models/block/steel_beam.json) stands up (axis Y).
-		// For the other axes it is turned like a log. SteelBeamBlock's hitboxes match these turns.
+		// Steel Beam, 2 hand-written models (models/block/):
+		// - steel_beam.json = the full I-beam standing up. Lying beams turn it like a log (Z = x 90, X = x 90 + y 90).
+		//   It is also the item model.
+		// - steel_beam_column.json = the slim column at the north side. Standing beams turn it by FACING, like a ladder.
+		// SteelBeamBlock's hitboxes match these turns.
 		MultiVariant beam = BlockModelGenerators.plainVariant(SiteWorks.id("block/steel_beam"));
-		generators.blockStateOutput.accept(MultiVariantGenerator.dispatch(ModBlocks.STEEL_BEAM)
-				.with(PropertyDispatch.initial(BlockStateProperties.AXIS)
-						.select(Direction.Axis.Y, beam)
-						.select(Direction.Axis.Z, beam.with(BlockModelGenerators.X_ROT_90))
-						.select(Direction.Axis.X, beam.with(BlockModelGenerators.X_ROT_90).with(BlockModelGenerators.Y_ROT_90))));
+		MultiVariant column = BlockModelGenerators.plainVariant(SiteWorks.id("block/steel_beam_column"));
+		PropertyDispatch.C2<MultiVariant, Direction.Axis, Direction> beamDispatch =
+				PropertyDispatch.initial(BlockStateProperties.AXIS, SteelBeamBlock.FACING);
+		for (Direction facing : Direction.Plane.HORIZONTAL) {
+			// Lying beams ignore FACING: the same model for all 4 values.
+			beamDispatch.select(Direction.Axis.Z, facing, beam.with(BlockModelGenerators.X_ROT_90));
+			beamDispatch.select(Direction.Axis.X, facing, beam.with(BlockModelGenerators.X_ROT_90).with(BlockModelGenerators.Y_ROT_90));
+		}
+		beamDispatch.select(Direction.Axis.Y, Direction.NORTH, column);
+		beamDispatch.select(Direction.Axis.Y, Direction.EAST, column.with(BlockModelGenerators.Y_ROT_90));
+		beamDispatch.select(Direction.Axis.Y, Direction.SOUTH, column.with(BlockModelGenerators.Y_ROT_180));
+		beamDispatch.select(Direction.Axis.Y, Direction.WEST, column.with(BlockModelGenerators.Y_ROT_270));
+		generators.blockStateOutput.accept(MultiVariantGenerator.dispatch(ModBlocks.STEEL_BEAM).with(beamDispatch));
 	}
 
 	/** A full cube block that uses a vanilla texture on all sides. */

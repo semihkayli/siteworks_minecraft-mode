@@ -130,8 +130,9 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 				oreBlasting(List.of(Items.IRON_INGOT), RecipeCategory.MISC, CookingBookCategory.MISC,
 						ModItems.STEEL_INGOT, 0.1f, 100, "steel_ingot");
 
-				// An "I" shape (7 steel) -> 8 beams: one craft = one 8-long bridge.
-				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.STEEL_BEAM, 8)
+				// An "I" shape (7 steel) -> 16 beams (about the iron per piece of vanilla iron bars).
+				// One craft = two 8-long bridges. Was 8, the user wanted it more generous (Phase 3 step 2b).
+				shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.STEEL_BEAM, 16)
 						.define('S', ModItems.STEEL_INGOT)
 						.pattern("SSS")
 						.pattern(" S ")

@@ -159,8 +159,9 @@ Concrete Mixer  +  cement + sand + gravel + water  →  fills Concrete Buckets
 
 - **Concrete frame:** made with the molds (columns, beams, slabs).
 - **Steel Beam (çelik kiriş, I-profil):**
-  - Made from **Steel Ingot** = iron + coal in a **blast furnace**.
+  - Made from **Steel Ingot** = an iron ingot smelted with coal (furnace or blast furnace). 7 steel → **16 beams**.
   - **Functional:** right-click the end of a beam with another beam → it **extends straight into the air** (max 8), like scaffolding. Great for bridges, roof frames and gaps.
+  - **Climbable columns:** a standing beam works like a ladder for players, so the same beam that frames the next floor also takes you up there (user idea, Phase 3).
   - Has an axis (X/Y/Z) like logs.
 - **Wood frame:** vanilla logs and planks.
 

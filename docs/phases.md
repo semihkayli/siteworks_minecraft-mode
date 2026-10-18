@@ -2,7 +2,7 @@
 
 ## Current status
 
-- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (Mortar, Steel Ingot, Steel Beam block) done ✅ (tested in-game). Next: step 2 (Steel Beam extending).
+- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 is committed (`124c166`): Mortar + Steel Ingot tested OK in-game, the beam not yet. Steps 2 + 2b (beam extending, 16 per craft, climbable slim column) are built and build OK, **not committed, waiting for one beam test** (the step 2b report has the full list), then one commit. Next: step 3 (Trowel Row mode + mortar charge).
 - **Phase 2:** Concrete, **done** ✅ (2026-10-18).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3 step 2 (Steel Beam extending), after the step 1 test + commit. Run `gradlew test` before each commit.
+- **Next step:** Phase 3 step 3 (Trowel Row mode + mortar charge), after the step 2 test + commit. Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -196,7 +196,8 @@
 - **Preview:** **particles** on the target spots while holding the trowel and looking at a block. Real outlines maybe in Phase 6.
 - **Steel Ingot:** smelt an **Iron Ingot** in a **furnace or blast furnace** (user: "it could be a normal furnace" too). Look: `item/netherite_ingot`.
 - **Steel Beam:**
-  - Recipe `SSS / .S. / SSS` (7 steel) → **8 beams** (one craft = one 8-long bridge).
+  - Recipe `SSS / .S. / SSS` (7 steel) → **16 beams** (one craft = two 8-long bridges). Was 8, changed after the step 2 talk (user: more generous, "it's a game, it shouldn't be boring"). Copper was discussed but not used (copper can't make steel).
+  - **Climbing (step 2b, user idea):** a **standing** beam is a **slim column at the far side of its block** (with a `facing`), in vanilla's `#climbable` tag, so you climb **inside** it like a ladder. No mixin. Mobs can climb it too (like ladders). History: the first try was a mixin (climb on the outside of the full I-beam, players only). Claude misread the user's answer, and in the test you got stuck under the next floor's beam, so it was replaced the same day. The look may change later.
   - Look: an **I-profile shape** with the `block/iron_block` texture, axis like logs. Hitbox = the same shape (the top is flat).
   - **Extending:** right-click a beam with a beam → the new beam goes to the **end of that beam line** (searches up to 8 ahead). Sneak = normal placement. No physics, beams never fall.
   - Strength like an iron block: hardness 5, blast 6, stone pickaxe or better, drops itself. Not in `sledge_breakable`.
@@ -204,6 +205,7 @@
 **Steps:**
 1. Mortar + Steel Ingot + Steel Beam (items, block, I-shape, recipes, tags, loot)
 2. Steel Beam extending
+   - 2b. 16 beams per craft + climbing standing beams (slim column, `#climbable`)
 3. Trowel: Row mode + mortar charge + mode switch
 4. Trowel: Course mode
 5. Trowel particle preview

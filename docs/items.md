@@ -21,9 +21,9 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
-| Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (recipe) |
-| Steel Ingot (Çelik Külçe) | `siteworks:steel_ingot` | 3 | ✅ tested in-game |
-| Steel Beam (Çelik Kiriş) — block | `siteworks:steel_beam` | 3 | ✅ block tested in-game (step 1). Extending: step 2 |
+| Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (2026-10-18) |
+| Steel Ingot (Çelik Külçe) | `siteworks:steel_ingot` | 3 | ✅ tested in-game (2026-10-18) |
+| Steel Beam (Çelik Kiriş) — block | `siteworks:steel_beam` | 3 | 🔨 block (step 1), extending (step 2), 16 per craft + climbing (step 2b) built. A user screenshot shows a lying beam bridge, the full test is not done yet |
 
 **Creative tab:** "Site Works" (`siteworks:site_works`), icon = Hard Hat. Order: Hard Hat, Mattock, Sledgehammer, Safety Net, Cement Mix, Cement, Concrete Mixer, Concrete Bucket, Formwork, Rebar, Concrete, Reinforced Concrete, Mortar, Steel Ingot, Steel Beam, Ghost Test.
 
@@ -468,19 +468,22 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 |---|---|
 | ID | `siteworks:steel_beam` (block + block item) |
 | Names | EN "Steel Beam", TR "Çelik Kiriş" |
-| What it does | A steel I-beam (I-profil) for frames, bridges and roofs. **Extending** (a beam on a beam goes to the end of the line, max 8 ahead) comes in step 2 |
-| Recipe | Shaped, `SSS / .S. / SSS` (S = Steel Ingot, an "I" shape, 7 steel) → **8** (one craft = one 8-long bridge) |
+| What it does | A steel I-beam (I-profil) for frames, bridges and roofs. **Extending:** right-click a beam with a beam, and the new beam goes to the **end of that beam line**, so you can build an 8-long bridge from safe ground (like vanilla scaffolding) |
+| Extending rules | **Direction:** you click an end of the beam → out of that end. You click the side of a **standing** beam → **up**. You click the side or top of a **lying** beam → the way you **look** along it. **Reach:** the new spot can be up to **8 blocks** from the beam you click. Only beams with the **same axis** count as the line. **Stops** with a red action bar message: "Something is in the way." (a solid block, another beam with a different axis, spawn protection, world border) or "Too far! Walk closer to the end of the beam." (the line is longer than 8). Above the build height = vanilla's height limit message. Water, grass, snow layers are replaced like normal placement. Not inside players/mobs (vanilla check). Creative = no item used. **Sneak** + right-click = normal placement next to the face |
+| Recipe | Shaped, `SSS / .S. / SSS` (S = Steel Ingot, an "I" shape, 7 steel) → **16** (one craft = two 8-long bridges; about the iron per piece of vanilla iron bars). Was 8, made more generous in step 2b (user: "it's a game, it shouldn't be boring") |
+| Climbing (step 2b) | A **standing** beam is a slim column at one side of its block, with room for you in front, and the block is in vanilla's `#minecraft:climbable` tag. So it works **exactly like a ladder**: walk into the column → you stand **inside its block space** and climb up. Sneak → stay in place. Let go → slide down slowly, **no fall damage**. Because you climb inside the column's own block, a beam of the next floor next to the column doesn't block your head. At the top you stand on the column's top and step onto the floor. Leave the space above the column free (like a ladder hole). Lying beams can't be climbed (no room inside). ⚠️ Like ladders, **mobs** can climb it too (vanilla tag, no mixin). First version used a mixin (climbing on the outside of the full I-beam); replaced the same day, because the user wanted to try the ladder version, and the outside version got stuck under the next floor's beam |
 | Recipe book | Unlocks when the player gets a Steel Ingot |
-| Placement | Has an **axis** like a log (`axis` = x / y / z): it points along the face you click. Click the top/bottom of a block = standing (column), click a side = lying (beam). Needs no support, never falls |
-| Shape | 2 flanges (3-pixel plates) + a web (4 pixels) in the middle. Lying beams have the flanges on the **top and bottom**, so the top is flat and you can walk on it. Outline + collision = the same I shape |
+| Placement | Has an **axis** like a log (`axis` = x / y / z): it points along the face you click. Click the top/bottom of a block = **standing** (column), click a side = **lying** (beam). A standing beam also has a **facing** (`facing` = north/east/south/west): it stands at the **far side** of its block (the way you look), so you can walk straight into it. On top of or under another column it copies that column's facing, so a column stays one straight line (extending too). Needs no support, never falls |
+| Shape | **Lying:** full width, 2 flanges (3-pixel plates) on the **top and bottom** + a web (4 pixels), so the top is flat and you can walk on it. **Standing:** a slim I at one side of the block (flanges 12×2 pixels, web 2×2, 6 pixels deep); the free 10 pixels (0.625 blocks) fit a player (0.6). Outline + collision = the same shapes |
 | Strength | Like an iron block: hardness 5, blast resistance 6, metal sounds, map color = metal, note block = iron xylophone |
 | Drops | Itself, with a **stone pickaxe or better**. A wooden pickaxe or a hand breaks it but drops nothing |
-| Tags | `#minecraft:mineable/pickaxe`, `#minecraft:needs_stone_tool`. **Not** in `sledge_breakable` (it's metal) |
+| Tags | `#minecraft:mineable/pickaxe`, `#minecraft:needs_stone_tool`, `#minecraft:climbable`. **Not** in `sledge_breakable` (it's metal) |
 | Mold | It is a normal mold wall for the Concrete Bucket (like any solid block) |
-| Look (placeholder) | I-profile, vanilla `block/iron_block` texture. Hand-written model (datagen can't draw shapes). The item shows the standing model |
+| Look (placeholder) | I-profile, vanilla `block/iron_block` texture. 2 hand-written models (datagen can't draw shapes): `steel_beam.json` (full I, used for lying beams and the item) and `steel_beam_column.json` (the slim standing column). The user may change the look later |
 
 **Code:**
-- `block/SteelBeamBlock.java`: extends vanilla `RotatedPillarBlock` (axis + placement + rotation), `getShape` = 3 boxes per axis
-- `ModBlocks.STEEL_BEAM`
-- Model by hand: `src/main/resources/assets/siteworks/models/block/steel_beam.json` (standing, axis Y). The blockstate turns it like a log: axis Z = `x: 90`, axis X = `x: 90, y: 90` (datagen, `ModModelProvider`). The hitboxes in `SteelBeamBlock` match these turns
-- Datagen: `ModBlockLootProvider` (`dropSelf`), `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers
+- `block/SteelBeamBlock.java`: extends vanilla `RotatedPillarBlock` (axis + placement + rotation). Adds `FACING` for standing beams (`getStateForPlacement`: copies a column above/below, else the way you look). `getShape`: lying = 3 boxes per axis, standing = `Shapes.rotateHorizontal` of the north column (like vanilla ladders). `rotate`/`mirror` turn the facing
+- `item/SteelBeamItem.java`: the block item. Overrides `updatePlacementContext` (like vanilla `ScaffoldingBlockItem`): walks along the line and returns a placement context at the end, with the extend direction as the "clicked face" (so the axis stays the same). `MAX_REACH = 8`
+- `ModBlocks.STEEL_BEAM` (registered with `SteelBeamItem::new` instead of a plain `BlockItem`)
+- Models by hand: `src/main/resources/assets/siteworks/models/block/steel_beam.json` (full I, standing) and `steel_beam_column.json` (slim column at the north side). The blockstate (datagen, `ModModelProvider`, dispatch on `axis` + `facing`): lying Z = `steel_beam` with `x: 90`, lying X = `x: 90, y: 90`, standing = `steel_beam_column` turned by facing (`y: 0/90/180/270`). The hitboxes in `SteelBeamBlock` match these turns
+- Datagen: `ModBlockLootProvider` (`dropSelf`), `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers (also `message.siteworks.beam.blocked` / `too_far`)

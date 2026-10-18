@@ -18,6 +18,8 @@
   "item.siteworks.sledgehammer": "Sledgehammer",
   "item.siteworks.steel_ingot": "Steel Ingot",
   "itemGroup.siteworks.site_works": "Site Works",
+  "message.siteworks.beam.blocked": "Something is in the way.",
+  "message.siteworks.beam.too_far": "Too far! Walk closer to the end of the beam.",
   "message.siteworks.ghost_test.removed": "Removed %s ghost blocks",
   "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks",
   "message.siteworks.mixer.mixing": " · Mixing...",

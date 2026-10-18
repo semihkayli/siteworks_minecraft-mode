@@ -18,6 +18,8 @@
   "item.siteworks.sledgehammer": "Balyoz",
   "item.siteworks.steel_ingot": "Çelik Külçe",
   "itemGroup.siteworks.site_works": "Site Works",
+  "message.siteworks.beam.blocked": "Önünde bir engel var.",
+  "message.siteworks.beam.too_far": "Çok uzak! Kirişin ucuna yaklaş.",
   "message.siteworks.ghost_test.removed": "%s hayalet blok silindi",
   "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu",
   "message.siteworks.mixer.mixing": " · Karıştırıyor...",

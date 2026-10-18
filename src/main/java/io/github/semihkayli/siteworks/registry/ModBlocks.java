@@ -6,6 +6,8 @@ import io.github.semihkayli.siteworks.block.RebarBlock;
 import io.github.semihkayli.siteworks.block.SafetyNetBlock;
 import io.github.semihkayli.siteworks.block.SteelBeamBlock;
 import io.github.semihkayli.siteworks.block.WetConcreteBlock;
+import io.github.semihkayli.siteworks.item.SteelBeamItem;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -93,7 +95,7 @@ public final class ModBlocks {
 					.noOcclusion());
 
 	// Like an iron block: hardness 5, blast resistance 6, needs a stone pickaxe or better (tag #minecraft:needs_stone_tool).
-	// An I-profile shape, not a full cube, so noOcclusion.
+	// An I-profile shape, not a full cube, so noOcclusion. Its item (SteelBeamItem) extends beam lines.
 	public static final Block STEEL_BEAM = register("steel_beam",
 			SteelBeamBlock::new,
 			BlockBehaviour.Properties.of()
@@ -102,7 +104,8 @@ public final class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.strength(5.0f, 6.0f)
 					.sound(SoundType.METAL)
-					.noOcclusion());
+					.noOcclusion(),
+			SteelBeamItem::new);
 
 	private ModBlocks() {
 	}
@@ -113,15 +116,21 @@ public final class ModBlocks {
 		return Registry.register(BuiltInRegistries.BLOCK, blockKey, factory.apply(properties.setId(blockKey)));
 	}
 
-	/** Registers a block and its BlockItem. Both need their own ID (setId) before they are created. */
+	/** Registers a block and a normal BlockItem. */
 	private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> factory, BlockBehaviour.Properties properties) {
+		return register(name, factory, properties, BlockItem::new);
+	}
+
+	/** Registers a block and its item (made by itemFactory). Both need their own ID (setId) before they are created. */
+	private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> factory, BlockBehaviour.Properties properties,
+			BiFunction<Block, Item.Properties, Item> itemFactory) {
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, SiteWorks.id(name));
 		T block = Registry.register(BuiltInRegistries.BLOCK, blockKey, factory.apply(properties.setId(blockKey)));
 
 		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, SiteWorks.id(name));
 		// useBlockDescriptionPrefix: the item uses the block's name ("block.siteworks.safety_net").
 		Registry.register(BuiltInRegistries.ITEM, itemKey,
-				new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
+				itemFactory.apply(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
 		return block;
 	}
 

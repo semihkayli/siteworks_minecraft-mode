@@ -53,6 +53,9 @@ public class ModBlockTagProvider extends FabricTagsProvider.BlockTagsProvider {
 						key(ModBlocks.CONCRETE_MIXER), key(ModBlocks.STEEL_BEAM));
 		// Like an iron block: a wooden pickaxe breaks it but gets nothing.
 		builder(BlockTags.NEEDS_STONE_TOOL).add(key(ModBlocks.STEEL_BEAM));
+		// Like a ladder: you climb when your feet are inside the block. Only a standing beam (the slim column)
+		// has room for you inside, so lying beams can't be climbed.
+		builder(BlockTags.CLIMBABLE).add(key(ModBlocks.STEEL_BEAM));
 		builder(BlockTags.NEEDS_IRON_TOOL).add(key(ModBlocks.REINFORCED_CONCRETE));
 		builder(BlockTags.MINEABLE_WITH_AXE).add(key(ModBlocks.FORMWORK));
 		builder(BlockTags.MINEABLE_WITH_SHOVEL).add(key(ModBlocks.WET_CONCRETE));

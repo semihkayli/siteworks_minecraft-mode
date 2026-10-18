@@ -1,14 +1,53 @@
 {
   "variants": {
-    "axis=x": {
+    "axis=x,facing=east": {
       "model": "siteworks:block/steel_beam",
       "x": 90,
       "y": 90
     },
-    "axis=y": {
-      "model": "siteworks:block/steel_beam"
+    "axis=x,facing=north": {
+      "model": "siteworks:block/steel_beam",
+      "x": 90,
+      "y": 90
     },
-    "axis=z": {
+    "axis=x,facing=south": {
+      "model": "siteworks:block/steel_beam",
+      "x": 90,
+      "y": 90
+    },
+    "axis=x,facing=west": {
+      "model": "siteworks:block/steel_beam",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y,facing=east": {
+      "model": "siteworks:block/steel_beam_column",
+      "y": 90
+    },
+    "axis=y,facing=north": {
+      "model": "siteworks:block/steel_beam_column"
+    },
+    "axis=y,facing=south": {
+      "model": "siteworks:block/steel_beam_column",
+      "y": 180
+    },
+    "axis=y,facing=west": {
+      "model": "siteworks:block/steel_beam_column",
+      "y": 270
+    },
+    "axis=z,facing=east": {
+      "model": "siteworks:block/steel_beam",
+      "x": 90
+    },
+    "axis=z,facing=north": {
+      "model": "siteworks:block/steel_beam",
+      "x": 90
+    },
+    "axis=z,facing=south": {
+      "model": "siteworks:block/steel_beam",
+      "x": 90
+    },
+    "axis=z,facing=west": {
       "model": "siteworks:block/steel_beam",
       "x": 90
     }

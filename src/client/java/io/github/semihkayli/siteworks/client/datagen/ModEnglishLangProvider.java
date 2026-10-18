@@ -38,6 +38,8 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add(ModItems.MORTAR, "Mortar");
 		builder.add(ModItems.STEEL_INGOT, "Steel Ingot");
 		builder.add(ModBlocks.STEEL_BEAM, "Steel Beam");
+		builder.add("message.siteworks.beam.blocked", "Something is in the way.");
+		builder.add("message.siteworks.beam.too_far", "Too far! Walk closer to the end of the beam.");
 		builder.add(ModItems.GHOST_TEST, "Ghost Test (test item)");
 		builder.add("message.siteworks.ghost_test.spawned", "Spawned %s ghost blocks");
 		builder.add("message.siteworks.ghost_test.removed", "Removed %s ghost blocks");
