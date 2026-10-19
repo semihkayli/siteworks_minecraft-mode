@@ -2,7 +2,7 @@
 
 ## Current status
 
-- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (`124c166`) and steps 2 + 2b (`05491f3`: beam extending, 16 per craft, climbable slim column) are committed. Mortar + Steel Ingot are tested OK; the user hasn't confirmed the beam column test yet. Step 3 (Trowel: Row mode, mortar charge, mode switch, masonry tag) is committed and tested OK. **Next: step 3b, Row becomes "from → to"** (user, 2026-10-19: Row always placed up to 8, so a shorter row needed breaking blocks; 2 clicks = start + end, exact length). Then step 4 (Course mode).
+- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (`124c166`) and steps 2 + 2b (`05491f3`: beam extending, 16 per craft, climbable slim column) are committed. Mortar + Steel Ingot are tested OK; the user hasn't confirmed the beam column test yet. Step 3 (Trowel: Row mode, mortar charge, mode switch, masonry tag) is committed and tested OK. Step 3b (Row "from → to", max 8; 1st version got stuck in the user's video, fixed the same day) is committed and tested OK. Next: step 4 (Course mode).
 - **Phase 2:** Concrete, **done** ✅ (2026-10-18).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
@@ -188,7 +188,7 @@
 - **Trowel:**
   - **Block:** places the block you click (copies the wall). A masonry block in the **offhand** overrides it. Takes blocks from the whole inventory.
   - **Mortar charge:** 1 Mortar = 8 blocks. The trowel stores the leftover charge (data component, shown as an item bar), so nothing is wasted.
-  - **Row (8):** click a face → up to 8 blocks go **straight out** from that face, stopping at the first blocked spot (top face = a column up).
+  - **Row (8):** ~~click a face → up to 8 blocks go straight out from that face~~ → **changed in step 3b (2026-10-19): "from → to"**. 1st click = the start block, 2nd click = where the row ends → exactly that many blocks (1–8; user chose to keep max 8). Reason: the old Row always tried 8, so shorter rows needed breaking blocks. **Fixed after the user's video (2026-10-19):** both clicks mark brick **spots** (in front of the clicked face), the row is start → end **inclusive**, a wrong 2nd click becomes the **new start** (never stuck), sneak + air cancels a start. Block: other hand → masonry of the 1st click → masonry of the 2nd click.
   - **Course (16):** click a face → every **connected matching block** on that face gets one new block in front of it (max 16, nearest first).
   - **Mode switch:** sneak + right-click air, the mode is shown in the action bar.
   - **Rules:** vanilla placement checks for every block (no blocks inside players/mobs, spawn protection, adventure mode). Creative = free. Out of blocks/mortar → places what it can + "Out of mortar!".
@@ -207,6 +207,7 @@
 2. Steel Beam extending
    - 2b. 16 beams per craft + climbing standing beams (slim column, `#climbable`)
 3. Trowel: Row mode + mortar charge + mode switch
+   - 3b. Row becomes "from → to" (2 clicks, exact length, max 8)
 4. Trowel: Course mode
 5. Trowel particle preview
 6. "Done when" checklist → status → commit

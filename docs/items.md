@@ -22,7 +22,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 | Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (2026-10-18) |
-| Trowel (Mala) | `siteworks:trowel` | 3 | ✅ Row mode + mortar charge + mode switch tested in-game (2026-10-19). Row → "from → to" change and Course mode: next steps |
+| Trowel (Mala) | `siteworks:trowel` | 3 | ✅ tested in-game: mortar charge + mode switch (step 3), Row "from → to" (step 3b fix, 2026-10-19) |
 | Steel Ingot (Çelik Külçe) | `siteworks:steel_ingot` | 3 | ✅ tested in-game (2026-10-18) |
 | Steel Beam (Çelik Kiriş) — block | `siteworks:steel_beam` | 3 | 🔨 block (step 1), extending (step 2), 16 per craft + climbing (step 2b) built. A user screenshot shows a lying beam bridge, the full test is not done yet |
 
@@ -498,16 +498,16 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 | ID | `siteworks:trowel` |
 | Names | EN "Trowel", TR "Mala" |
 | What it does | A **builder's wand for masonry**. Right-click a masonry block: it places many blocks at once, from your inventory, and uses **Mortar** (1 Mortar = 8 blocks) |
-| Which block | A **masonry block in your other hand** wins. Otherwise the **block you click** (it copies the wall), if it is masonry. Anything else → "The trowel only places masonry blocks (bricks, stone bricks, concrete...)." |
+| Which block | 1. a **masonry block in your other hand**; 2. else the **masonry block you clicked at the 1st click** (it copies the wall; saved on the trowel as `siteworks:row_block`); 3. else the masonry block you clicked at the 2nd click. None → "Hold the bricks in your other hand, or click a masonry block." |
 | Blocks from | Your **whole inventory** (hotbar, main inventory, off hand), not only the hand |
-| Mode: **Row (8)** | Click a face → up to **8 blocks in a straight line out from that face**. The first blocked spot ends the line (a block, a player or mob, the build height, spawn protection, the world border). Click the side of a block = a line along the ground (the first row of a wall); click the top = a column up. If you click grass or snow, the line starts in it (it replaces it, like vanilla) |
+| Mode: **Row (8)** = "from → to" (step 3b, fixed after the user's video) | **Both clicks mark a spot where a brick goes:** the spot in front of the clicked face (grass/snow: the clicked spot itself), like the Measuring Tape corners. **1st click** = the start spot → green sparkles there + "Row start set. Now click where the row ends (max 8)." (saved as `siteworks:row_start` with the dimension, shown in the tooltip). **2nd click** = the end spot → the straight line **from the start spot to the end spot, both included**, 1–8 blocks. Same spot twice = 1 block. Examples: click the **top** of a wall at both ends = a new layer on top; click the **top of the ground** at both ends = a first row on bare ground. **A wrong 2nd click never gets you stuck:** not straight → "Not a straight line. New row start set here.", longer than 8 → "Too long (max 8)! New row start set here." (red, and that click becomes the new start). **Cancel:** sneak + right-click the air while a start is set → "Row start removed." (the mode does NOT change; the next sneak + air click changes the mode). The first blocked spot still ends the row early. A start in another dimension is ignored. History: the 1st version used the start **block** (row after it, start kept after a wrong click) → in the user's video every click said "Not a straight line." (stuck with an invisible old start, and rows on top of a wall were impossible) |
 | Mode: **Course (16)** | Step 4 (for now: "Course mode comes in the next step.") |
-| Mode switch | **Sneak + right-click the air** → the next mode, shown in the action bar ("Trowel mode: Row (8)"). Saved on the item (data component `siteworks:trowel_mode`) |
+| Mode switch | **Sneak + right-click the air** → the next mode, shown in the action bar ("Trowel mode: Row (8)"). Saved on the item (data component `siteworks:trowel_mode`). If a row start is set, this click only removes the start first |
 | Mortar charge | **1 Mortar = 8 blocks.** When the charge is 0 and a block can really be placed, the trowel takes 1 Mortar from your inventory → charge 8. Each placed block costs 1 charge. The rest stays in the trowel (data component `siteworks:mortar_charge`, 0–8), so **nothing is wasted**: 64 blocks = exactly 8 Mortar. A beige bar under the icon shows the charge (hidden at 0) |
-| Messages (red, action bar) | "Out of mortar!", "No more Bricks!" (the block's name), "Something is in the way." (only when **nothing** was placed), "The trowel only places masonry blocks..." |
+| Messages (red, action bar) | "Out of mortar!", "No more Bricks!" (the block's name), "Something is in the way." (only when **nothing** was placed), "Not a straight line. New row start set here.", "Too long (max 8)! New row start set here.", "Hold the bricks in your other hand, or click a masonry block." Normal (white): "Row start set...", "Row start removed.", "Trowel mode: ...". ("The trowel only places masonry blocks..." is kept for Course mode) |
 | Placement rules | Every block is placed by vanilla's `BlockItem.place()`, like a normal right-click on that spot: not inside players or mobs, the normal place sound, 1 block used per placement. Adventure mode can't use it |
 | Creative mode | Free: no blocks and no mortar needed, the charge doesn't change |
-| Tooltip | "Mode: Row (8)", "Mortar: 5/8 blocks", "Sneak + right-click the air: change mode" |
+| Tooltip | "Mode: Row (8)", "Mortar: 5/8 blocks", (yellow, only when set) "Row start: x y z", (Row mode) "Row: click where the row starts, then where it ends", "Sneak + right-click the air: change mode" |
 | Recipe | Shaped, `.I / S.` (1 iron ingot + 1 stick, diagonal). The mirrored shape works too |
 | Recipe book | Unlocks when the player gets an iron ingot |
 | Stats | Stack 1, **no durability** (the mortar is the cost), no enchanting, no repair |
@@ -516,8 +516,8 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 **Masonry tag** `siteworks:masonry_blocks` (full blocks only; stairs, slabs and walls are placed by hand): bricks, `#minecraft:stone_bricks` (stone, mossy, cracked, chiseled stone bricks), mud bricks, deepslate bricks + tiles, tuff bricks, nether bricks, red nether bricks, end stone bricks, polished blackstone bricks, quartz bricks, resin bricks, cobblestone, mossy cobblestone, `siteworks:concrete`, `#minecraft:concrete` (the 16 vanilla colors).
 
 **Code:**
-- `item/TrowelItem.java`: `use` (sneak + air = next mode), `useOn` (Row placing loop, mortar charge, messages), `pickBlock`, `findStack`, bar + tooltip. `BLOCKS_PER_MORTAR = 8`
+- `item/TrowelItem.java`: `use` (sneak + air = cancel a row start, else next mode), `useOn` (Row: 1st click → `setRowStart`, 2nd click checks the line, picks the block → `placeLine`), `setRowStart` (start spot + block + sparkles + message), `clearRowStart`, `placeLine` (the placing loop from the start spot, mortar charge, messages), `straightDirection`, `otherHandBlock`, `masonryBlock`, `findStack`, bar + tooltip. `BLOCKS_PER_MORTAR = 8`
 - `item/TrowelMode.java`: the enum (`ROW` 8, `COURSE` 16) with its save codec and network codec
-- `registry/ModDataComponents.java`: `TROWEL_MODE`, `MORTAR_CHARGE`
+- `registry/ModDataComponents.java`: `TROWEL_MODE`, `MORTAR_CHARGE`, `ROW_START` (a vanilla `GlobalPos`: dimension + the start spot), `ROW_BLOCK` (the masonry item of the 1st click)
 - `registry/ModItems.java` (`TROWEL`), `registry/ModTags.java` (`MASONRY_BLOCKS`), `registry/ModCreativeTabs.java`
 - Datagen: `ModBlockTagProvider` (masonry tag), `ModRecipeProvider`, `ModModelProvider.handheldTool`, both lang providers (name, modes, tooltip, messages)

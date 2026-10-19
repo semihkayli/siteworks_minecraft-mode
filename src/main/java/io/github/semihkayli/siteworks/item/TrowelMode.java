@@ -10,7 +10,7 @@ import net.minecraft.util.StringRepresentable;
 
 /** The Trowel's modes. Sneak + right-click the air switches to the next one. */
 public enum TrowelMode implements StringRepresentable {
-	/** Up to 8 blocks in a straight line out from the face you click. */
+	/** "From -> to": click where the row starts, then where it ends (both included). Up to 8 blocks in a straight line. */
 	ROW("row", 8),
 	/** Up to 16 blocks: one new layer on the whole wall face (Phase 3 step 4). */
 	COURSE("course", 16);

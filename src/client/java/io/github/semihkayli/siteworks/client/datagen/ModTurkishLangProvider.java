@@ -43,6 +43,13 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add("item.siteworks.trowel.mode_line", "Mod: %s");
 		builder.add("item.siteworks.trowel.charge", "Harç: %s/%s blok");
 		builder.add("item.siteworks.trowel.hint", "Eğil + havaya sağ tık: mod değiştir");
+		builder.add("item.siteworks.trowel.row_hint", "Sıra: önce sıranın başlayacağı, sonra biteceği yere tıkla");
+		builder.add("item.siteworks.trowel.row_start_line", "Sıra başlangıcı: %s %s %s");
+		builder.add("message.siteworks.trowel.row_start", "Sıra başlangıcı seçildi. Şimdi sıranın biteceği yere tıkla (en fazla %s).");
+		builder.add("message.siteworks.trowel.row_cancel", "Sıra başlangıcı kaldırıldı.");
+		builder.add("message.siteworks.trowel.not_straight", "Düz bir çizgi değil. Yeni sıra başlangıcı burası.");
+		builder.add("message.siteworks.trowel.too_long", "Çok uzun (en fazla %s)! Yeni sıra başlangıcı burası.");
+		builder.add("message.siteworks.trowel.need_block", "Tuğlaları diğer elinde tut ya da bir örgü bloğuna tıkla.");
 		builder.add("message.siteworks.trowel.mode", "Mala modu: %s");
 		builder.add("message.siteworks.trowel.not_masonry", "Mala sadece örgü blokları koyar (tuğla, taş tuğla, beton...).");
 		builder.add("message.siteworks.trowel.no_mortar", "Harç bitti!");

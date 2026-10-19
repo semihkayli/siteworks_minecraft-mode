@@ -42,6 +42,13 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add("item.siteworks.trowel.mode_line", "Mode: %s");
 		builder.add("item.siteworks.trowel.charge", "Mortar: %s/%s blocks");
 		builder.add("item.siteworks.trowel.hint", "Sneak + right-click the air: change mode");
+		builder.add("item.siteworks.trowel.row_hint", "Row: click where the row starts, then where it ends");
+		builder.add("item.siteworks.trowel.row_start_line", "Row start: %s %s %s");
+		builder.add("message.siteworks.trowel.row_start", "Row start set. Now click where the row ends (max %s).");
+		builder.add("message.siteworks.trowel.row_cancel", "Row start removed.");
+		builder.add("message.siteworks.trowel.not_straight", "Not a straight line. New row start set here.");
+		builder.add("message.siteworks.trowel.too_long", "Too long (max %s)! New row start set here.");
+		builder.add("message.siteworks.trowel.need_block", "Hold the bricks in your other hand, or click a masonry block.");
 		builder.add("message.siteworks.trowel.mode", "Trowel mode: %s");
 		builder.add("message.siteworks.trowel.not_masonry", "The trowel only places masonry blocks (bricks, stone bricks, concrete...).");
 		builder.add("message.siteworks.trowel.no_mortar", "Out of mortar!");

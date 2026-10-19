@@ -4,9 +4,12 @@ import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.item.ConcreteBucketItem;
 import io.github.semihkayli.siteworks.item.TrowelItem;
 import io.github.semihkayli.siteworks.item.TrowelMode;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.ExtraCodecs;
 
@@ -39,6 +42,24 @@ public final class ModDataComponents {
 			DataComponentType.<Integer>builder()
 					.persistent(ExtraCodecs.intRange(0, TrowelItem.BLOCKS_PER_MORTAR))
 					.networkSynchronized(ByteBufCodecs.VAR_INT)
+					.build());
+
+	/** Row mode: the start SPOT of a "from -> to" row (1st click), with its dimension. Removed after the row is built. */
+	public static final DataComponentType<GlobalPos> ROW_START = Registry.register(
+			BuiltInRegistries.DATA_COMPONENT_TYPE,
+			SiteWorks.id("row_start"),
+			DataComponentType.<GlobalPos>builder()
+					.persistent(GlobalPos.CODEC)
+					.networkSynchronized(GlobalPos.STREAM_CODEC)
+					.build());
+
+	/** Row mode: the masonry block chosen at the 1st click (if there was one), e.g. the brick you clicked. */
+	public static final DataComponentType<Item> ROW_BLOCK = Registry.register(
+			BuiltInRegistries.DATA_COMPONENT_TYPE,
+			SiteWorks.id("row_block"),
+			DataComponentType.<Item>builder()
+					.persistent(BuiltInRegistries.ITEM.byNameCodec())
+					.networkSynchronized(ByteBufCodecs.registry(Registries.ITEM))
 					.build());
 
 	private ModDataComponents() {

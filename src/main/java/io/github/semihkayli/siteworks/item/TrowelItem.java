@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
@@ -27,8 +29,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Trowel (mala) = a builder's wand for masonry. Right-click a masonry block: it places many blocks of the same
- * kind at once, from your inventory, and uses Mortar (1 Mortar = 8 blocks). Sneak + right-click the air = next mode.
+ * The Trowel (mala) = a builder's wand for masonry. It places many blocks at once, from your inventory,
+ * and uses Mortar (1 Mortar = 8 blocks). Sneak + right-click the air = next mode.
+ * Row mode is "from -> to" (Phase 3 step 3b): 1st click = where the row starts, 2nd click = where it ends (both included).
  * Every block is placed by vanilla's BlockItem.place(), so all vanilla rules apply (entities, sounds, creative...).
  */
 public class TrowelItem extends Item {
@@ -48,7 +51,10 @@ public class TrowelItem extends Item {
 		return stack.getOrDefault(ModDataComponents.MORTAR_CHARGE, 0);
 	}
 
-	/** Sneak + right-click the air: switch to the next mode. */
+	/**
+	 * Sneak + right-click the air: if a row start is set, remove it (cancel).
+	 * Otherwise switch to the next mode.
+	 */
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		if (!player.isShiftKeyDown()) {
@@ -56,9 +62,14 @@ public class TrowelItem extends Item {
 		}
 		if (!level.isClientSide()) {
 			ItemStack stack = player.getItemInHand(hand);
-			TrowelMode mode = getMode(stack).next();
-			stack.set(ModDataComponents.TROWEL_MODE, mode);
-			player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.mode", mode.displayName()));
+			if (stack.has(ModDataComponents.ROW_START)) {
+				clearRowStart(stack);
+				player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.row_cancel"));
+			} else {
+				TrowelMode mode = getMode(stack).next();
+				stack.set(ModDataComponents.TROWEL_MODE, mode);
+				player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.mode", mode.displayName()));
+			}
 		}
 		return InteractionResult.SUCCESS;
 	}
@@ -71,8 +82,7 @@ public class TrowelItem extends Item {
 		}
 		Player player = context.getPlayer();
 		ItemStack trowel = context.getItemInHand();
-		TrowelMode mode = getMode(trowel);
-		if (mode == TrowelMode.COURSE) {
+		if (getMode(trowel) == TrowelMode.COURSE) {
 			// TEMPORARY until Phase 3 step 4.
 			player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.course_soon"));
 			return InteractionResult.FAIL;
@@ -82,23 +92,101 @@ public class TrowelItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
+		// Both clicks mark a SPOT where a brick goes: in front of the clicked face (or in it, for grass and snow).
 		BlockPos clicked = context.getClickedPos();
 		BlockState clickedState = level.getBlockState(clicked);
-		BlockItem blockItem = pickBlock(player, context.getHand(), clickedState);
-		if (blockItem == null) {
-			message(player, Component.translatable("message.siteworks.trowel.not_masonry"));
+		Direction face = context.getClickedFace();
+		BlockPos spot = clickedState.canBeReplaced() ? clicked : clicked.relative(face);
+		InteractionHand hand = context.getHand();
+		GlobalPos start = trowel.get(ModDataComponents.ROW_START);
+
+		// 1st click (or the start is in another dimension): remember the start spot.
+		if (start == null || !start.dimension().equals(level.dimension())) {
+			setRowStart(level, player, hand, trowel, spot, clickedState,
+					Component.translatable("message.siteworks.trowel.row_start", TrowelMode.ROW.maxBlocks()), false);
+			return InteractionResult.SUCCESS;
+		}
+
+		// 2nd click: the row goes from the start spot to this spot, both included.
+		BlockPos from = start.pos();
+		Direction direction = spot.equals(from) ? face.getOpposite() : straightDirection(from, spot);
+		int length = from.distManhattan(spot) + 1;
+		// A wrong 2nd click never gets you stuck: it simply becomes the new start.
+		if (direction == null) {
+			setRowStart(level, player, hand, trowel, spot, clickedState,
+					Component.translatable("message.siteworks.trowel.not_straight"), true);
+			return InteractionResult.FAIL;
+		}
+		if (length > TrowelMode.ROW.maxBlocks()) {
+			setRowStart(level, player, hand, trowel, spot, clickedState,
+					Component.translatable("message.siteworks.trowel.too_long", TrowelMode.ROW.maxBlocks()), true);
 			return InteractionResult.FAIL;
 		}
 
-		// Row: a straight line out from the clicked face. (If you click grass or snow, the line starts in it.)
-		Direction face = context.getClickedFace();
-		BlockPos first = clickedState.canBeReplaced() ? clicked : clicked.relative(face);
+		// Which brick: the other hand, else the masonry block of the 1st click, else of this click.
+		BlockItem blockItem = otherHandBlock(player, hand);
+		if (blockItem == null && trowel.get(ModDataComponents.ROW_BLOCK) instanceof BlockItem first) {
+			blockItem = first;
+		}
+		if (blockItem == null) {
+			blockItem = masonryBlock(clickedState);
+		}
+		clearRowStart(trowel);
+		if (blockItem == null) {
+			message(player, Component.translatable("message.siteworks.trowel.need_block"));
+			return InteractionResult.FAIL;
+		}
+
+		int placed = placeLine(level, player, hand, trowel, blockItem, from, direction, length);
+		if (placed > 0) {
+			player.awardStat(Stats.ITEM_USED.get(this));
+			return InteractionResult.SUCCESS;
+		}
+		return InteractionResult.FAIL;
+	}
+
+	/**
+	 * Saves the row start spot (+ the masonry block of this click, if any), shows green sparkles there and a message.
+	 * {@code warning} = the message is red (a wrong 2nd click that became the new start).
+	 */
+	private static void setRowStart(ServerLevel level, Player player, InteractionHand hand, ItemStack trowel,
+			BlockPos spot, BlockState clickedState, Component text, boolean warning) {
+		trowel.set(ModDataComponents.ROW_START, GlobalPos.of(level.dimension(), spot));
+		BlockItem block = otherHandBlock(player, hand);
+		if (block == null) {
+			block = masonryBlock(clickedState);
+		}
+		if (block != null) {
+			trowel.set(ModDataComponents.ROW_BLOCK, block);
+		} else {
+			trowel.remove(ModDataComponents.ROW_BLOCK);
+		}
+		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, spot.getX() + 0.5, spot.getY() + 0.5, spot.getZ() + 0.5,
+				10, 0.25, 0.25, 0.25, 0.0);
+		if (warning) {
+			message(player, text);
+		} else {
+			player.sendOverlayMessage(text);
+		}
+	}
+
+	private static void clearRowStart(ItemStack trowel) {
+		trowel.remove(ModDataComponents.ROW_START);
+		trowel.remove(ModDataComponents.ROW_BLOCK);
+	}
+
+	/**
+	 * Places up to {@code count} blocks in a line starting AT {@code from}, going {@code direction}.
+	 * Stops at the first blocked spot, or when blocks or mortar run out. Returns how many were placed.
+	 */
+	private static int placeLine(ServerLevel level, Player player, InteractionHand hand, ItemStack trowel,
+			BlockItem blockItem, BlockPos from, Direction direction, int count) {
 		boolean creative = player.hasInfiniteMaterials();
 		int charge = getCharge(trowel);
 		int placed = 0;
 		Component problem = null;
-		for (int i = 0; i < mode.maxBlocks(); i++) {
-			BlockPos pos = first.relative(face, i);
+		for (int i = 0; i < count; i++) {
+			BlockPos pos = from.relative(direction, i);
 			// The first blocked spot ends the row: a block, the build height, spawn protection, the world border.
 			if (!level.isInWorldBounds(pos) || !level.mayInteract(player, pos) || !level.getBlockState(pos).canBeReplaced()) {
 				if (placed == 0) {
@@ -124,9 +212,8 @@ public class TrowelItem extends Item {
 			// Place it like a normal right-click on the spot: vanilla checks entities, plays the sound,
 			// and uses up 1 block from the stack (not in creative).
 			BlockPlaceContext placeContext = BlockPlaceContext.at(
-					new BlockPlaceContext(player, context.getHand(), blocks,
-							new BlockHitResult(Vec3.atCenterOf(pos), face, pos, false)),
-					pos, face);
+					new BlockPlaceContext(player, hand, blocks, new BlockHitResult(Vec3.atCenterOf(pos), direction, pos, false)),
+					pos, direction);
 			if (!blockItem.place(placeContext).consumesAction()) {
 				// A player or a mob stands there. The mortar charge stays in the trowel.
 				if (placed == 0) {
@@ -139,29 +226,40 @@ public class TrowelItem extends Item {
 				charge--;
 			}
 		}
-
 		trowel.set(ModDataComponents.MORTAR_CHARGE, charge);
 		if (problem != null) {
 			message(player, problem);
 		}
-		if (placed > 0) {
-			player.awardStat(Stats.ITEM_USED.get(this));
-			return InteractionResult.SUCCESS;
-		}
-		return InteractionResult.FAIL;
+		return placed;
 	}
 
-	/**
-	 * Which block to place: a masonry block in your OTHER hand wins. Otherwise the block you clicked,
-	 * if it is masonry. Null = nothing the trowel can place.
-	 */
-	private static BlockItem pickBlock(Player player, InteractionHand hand, BlockState clicked) {
+	/** The direction from {@code from} to {@code to} if they are on one straight line (only 1 coordinate differs), else null. */
+	private static Direction straightDirection(BlockPos from, BlockPos to) {
+		int dx = to.getX() - from.getX();
+		int dy = to.getY() - from.getY();
+		int dz = to.getZ() - from.getZ();
+		int nonZero = (dx != 0 ? 1 : 0) + (dy != 0 ? 1 : 0) + (dz != 0 ? 1 : 0);
+		if (nonZero != 1) {
+			return null;
+		}
+		Direction.Axis axis = dx != 0 ? Direction.Axis.X : dy != 0 ? Direction.Axis.Y : Direction.Axis.Z;
+		int delta = dx + dy + dz;
+		return Direction.fromAxisAndDirection(axis, delta > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE);
+	}
+
+	/** A masonry block in the hand that does NOT hold the trowel, or null. */
+	private static BlockItem otherHandBlock(Player player, InteractionHand hand) {
 		InteractionHand other = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
 		if (player.getItemInHand(other).getItem() instanceof BlockItem held
 				&& held.getBlock().defaultBlockState().is(ModTags.MASONRY_BLOCKS)) {
 			return held;
 		}
-		if (clicked.is(ModTags.MASONRY_BLOCKS) && clicked.getBlock().asItem() instanceof BlockItem item) {
+		return null;
+	}
+
+	/** The item of a clicked block if it is masonry (copy the wall), or null. */
+	private static BlockItem masonryBlock(BlockState state) {
+		if (state.is(ModTags.MASONRY_BLOCKS) && state.getBlock().asItem() instanceof BlockItem item) {
 			return item;
 		}
 		return null;
@@ -205,6 +303,14 @@ public class TrowelItem extends Item {
 				.withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("item.siteworks.trowel.charge", getCharge(stack), BLOCKS_PER_MORTAR)
 				.withStyle(ChatFormatting.GRAY));
+		GlobalPos start = stack.get(ModDataComponents.ROW_START);
+		if (start != null) {
+			tooltip.accept(Component.translatable("item.siteworks.trowel.row_start_line",
+					start.pos().getX(), start.pos().getY(), start.pos().getZ()).withStyle(ChatFormatting.YELLOW));
+		}
+		if (getMode(stack) == TrowelMode.ROW) {
+			tooltip.accept(Component.translatable("item.siteworks.trowel.row_hint").withStyle(ChatFormatting.DARK_GRAY));
+		}
 		tooltip.accept(Component.translatable("item.siteworks.trowel.hint").withStyle(ChatFormatting.DARK_GRAY));
 	}
 }

@@ -23,6 +23,8 @@
   "item.siteworks.trowel.mode.course": "Duvar Katmanı (16)",
   "item.siteworks.trowel.mode.row": "Sıra (8)",
   "item.siteworks.trowel.mode_line": "Mod: %s",
+  "item.siteworks.trowel.row_hint": "Sıra: önce sıranın başlayacağı, sonra biteceği yere tıkla",
+  "item.siteworks.trowel.row_start_line": "Sıra başlangıcı: %s %s %s",
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.beam.blocked": "Önünde bir engel var.",
   "message.siteworks.beam.too_far": "Çok uzak! Kirişin ucuna yaklaş.",
@@ -36,7 +38,12 @@
   "message.siteworks.trowel.blocked": "Önünde bir engel var.",
   "message.siteworks.trowel.course_soon": "Duvar katmanı modu bir sonraki adımda geliyor.",
   "message.siteworks.trowel.mode": "Mala modu: %s",
+  "message.siteworks.trowel.need_block": "Tuğlaları diğer elinde tut ya da bir örgü bloğuna tıkla.",
   "message.siteworks.trowel.no_blocks": "%s bitti!",
   "message.siteworks.trowel.no_mortar": "Harç bitti!",
-  "message.siteworks.trowel.not_masonry": "Mala sadece örgü blokları koyar (tuğla, taş tuğla, beton...)."
+  "message.siteworks.trowel.not_masonry": "Mala sadece örgü blokları koyar (tuğla, taş tuğla, beton...).",
+  "message.siteworks.trowel.not_straight": "Düz bir çizgi değil. Yeni sıra başlangıcı burası.",
+  "message.siteworks.trowel.row_cancel": "Sıra başlangıcı kaldırıldı.",
+  "message.siteworks.trowel.row_start": "Sıra başlangıcı seçildi. Şimdi sıranın biteceği yere tıkla (en fazla %s).",
+  "message.siteworks.trowel.too_long": "Çok uzun (en fazla %s)! Yeni sıra başlangıcı burası."
 }
