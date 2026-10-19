@@ -79,6 +79,7 @@ public class ConcreteBucketItem extends Item {
 			switch (result.status()) {
 				case LEAKS -> Messages.error(player, Component.translatable("message.siteworks.pour.leaks"));
 				case PROTECTED -> Messages.error(player, Component.translatable("message.siteworks.pour.protected"));
+				case NO_FORMWORK -> Messages.error(player, Component.translatable("message.siteworks.pour.no_formwork"));
 				case FULL -> player.sendOverlayMessage(Component.translatable("message.siteworks.pour.full"));
 				case POURED -> {
 				}
@@ -130,6 +131,10 @@ public class ConcreteBucketItem extends Item {
 		}
 		if (state.is(ModBlocks.WET_CONCRETE) || state.is(ModBlocks.CONCRETE) || state.is(ModBlocks.REINFORCED_CONCRETE)) {
 			return MoldPour.Cell.CONCRETE;
+		}
+		// Good mold sides: Formwork, and a Steel Beam standing in the mold.
+		if (state.is(ModBlocks.FORMWORK) || state.is(ModBlocks.STEEL_BEAM)) {
+			return MoldPour.Cell.FORMWORK;
 		}
 		// Air, water, lava, plants, snow layers... = blocks that a placed block would replace.
 		return state.canBeReplaced() ? MoldPour.Cell.OPEN : MoldPour.Cell.SOLID;

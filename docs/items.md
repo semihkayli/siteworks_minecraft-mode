@@ -15,8 +15,8 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
 | Cement (Çimento) | `siteworks:cement` | 2 | ✅ tested in-game |
 | Concrete Mixer (Betoniyer) — block | `siteworks:concrete_mixer` | 2 | ✅ tested in-game (right-click, water, mixing, buckets, save, drops, hopper input). "Slot taken" message (Phase 3½ R1): ✅ tested in-game (2026-10-19). Comparator (R2): ✅ tested in-game (2026-10-19) |
-| Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅. No hand dip (Phase 3½ R1): ✅ tested in-game (2026-10-19). Pour preview + aim help + new messages (R3): ✅ tested in-game (2026-10-19). 20 unit tests ✅ |
-| Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
+| Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅. No hand dip (Phase 3½ R1): ✅ tested in-game (2026-10-19). Pour preview + aim help + new messages (R3): ✅ tested in-game (2026-10-19). Formwork rule (Phase 3¾ step 1): ✅ tested in-game (2026-10-19). 24 unit tests ✅ |
+| Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game. The only good mold side (Phase 3¾ step 1): ✅ tested in-game (2026-10-19) |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
@@ -232,7 +232,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Drops | Itself (vanilla `dropSelf`) |
 | Tags | `#minecraft:mineable/axe` |
 | Look (placeholder) | Full cube with the vanilla `block/spruce_planks` texture (looks exactly like spruce planks for now). A new look comes in Phase 6 |
-| Mold rule (step 4) | Any solid block can be a mold wall. Formwork is just the easiest one to remove |
+| Mold rule | **The mold sides must be Formwork** (Phase 3¾ step 1, user's formwork rule; before: any solid block). Also OK at a side: our concrete (pour big slabs in parts) and Steel Beams. Soil, stone, wood, bricks... at a side = "Wet concrete needs formwork here!". The floor can be any solid block |
 
 **Code:** `ModBlocks.FORMWORK` (plain `Block` + `strength(0.5f)`). Datagen: `ModModelProvider.cubeBlock`, `ModBlockLootProvider`, `ModRecipeProvider`, `ModBlockTagProvider`, both lang providers.
 
@@ -385,7 +385,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 - It **drops** to the lowest open cell under that point (max 32 down, deeper = leaks).
 - It fills that layer, **nearest cells first** (flood fill / taşma doldurma, sideways only), then **rises** layer by layer.
 - If a layer has an **open cell under it**, the concrete flows down there first. Example: the 2nd bucket poured on top of a half-filled floor finishes the floor first.
-- **Open** = air, water, lava, plants, snow layers (blocks a placed block would replace) and **Rebar**. **Wall** = everything else (including wet concrete, concrete, formwork, any solid block). So **a hole in the ground is a mold too**.
+- **Open** = air, water, lava, plants, snow layers (blocks a placed block would replace) and **Rebar**. **Good sides** = **Formwork**, our **concrete** (wet, cured, reinforced) and **Steel Beams**. **Floor** = any solid block (soil too). **Formwork rule (Phase 3¾ step 1, user):** any other block at a SIDE of the concrete (soil, stone, wood, bricks, glass...) stops the pour with the red message "Wet concrete needs formwork here! (red dots)": nothing is poured if it's on the first layer, otherwise the layers below it are poured. The preview shows red dots on the face of that block. So **a hole dug in the ground needs formwork against its sides**.
 - Rebar cells become `wet_concrete[reinforced=true]` → Reinforced Concrete.
 - **One mold layer is max 32 wide** in x and in z. Wider counts as open.
 - **First layer too wide = "The formwork leaks!"** (red, action bar). Nothing is used.
@@ -397,11 +397,11 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 
 **Pour preview (Phase 3½ R3):** while you hold the bucket (either hand) and look at a block, dust particles show what a click would do, **only for you** (made on your computer), 5 times per second. **Gray** dots = where the concrete goes. A **red** dot = the **hole** where the mold leaks (or the protected spot that stops it). Nothing = the mold is full. It uses the same start spot and the same plan as the real pour (`ConcreteBucketItem.startFor` + `plan`). How the hole is found: the leak path from the start to the far end is walked back; the hole = the last narrow spot on it (walls on both sides, like a missing formwork block), else the last spot next to a wall (an open side), else the start (no mold at all). Deeper than 32 = the red dot is where it starts to fall.
 
-**Unit tests** (`gradlew test`, `src/test/java/.../pour/MoldPourTest.java`), **20 tests**, all ✅ (2026-10-19):
-closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mold full + keeps the rest, open mold leaks + uses nothing, no mold leaks, gap higher up stops at that level, hole in the ground, rebar cells filled, L-shaped mold, 2nd bucket finishes the lower layer first, 32 wide OK / 33 leaks, no floor leaks (red dot at the start), closed top, every cell supported. New in R3: the leak points at the missing wall block, the open end of a 1-wide channel, clicking the top of a wall pours into the mold, clicking the top of a full mold = full, a protected cell under the mold / beside the layer stops the pour.
+**Unit tests** (`gradlew test`, `src/test/java/.../pour/MoldPourTest.java`), **24 tests**, all ✅ (2026-10-19):
+closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mold full + keeps the rest, open mold leaks + uses nothing, no mold leaks, gap higher up stops at that level, rebar cells filled, L-shaped mold, 2nd bucket finishes the lower layer first, 32 wide OK / 33 leaks, no floor leaks (red dot at the start), closed top, every cell supported. New in R3: the leak points at the missing wall block, the open end of a 1-wide channel, clicking the top of a wall pours into the mold, clicking the top of a full mold = full, a protected cell under the mold / beside the layer stops the pour. New in Phase 3¾ step 1: a pit in the ground needs formwork, a pit lined with formwork is a mold, a stone side stops the pour (and says where), a side without formwork higher up pours the layers below, concrete and beams count as sides.
 
 **Code:**
-- `pour/MoldPour.java`: the pure pour logic (no Minecraft classes, so it can be unit tested). `MAX_LAYER_SIZE = 32`, `MAX_DROP = 32`, `AIM_HELP = 2`. Cells: `OPEN`, `REBAR`, `CONCRETE`, `SOLID`, `BLOCKED`. Statuses: `POURED`, `FULL`, `LEAKS`, `PROTECTED`. `Result.problem` = the hole / protected spot
+- `pour/MoldPour.java`: the pure pour logic (no Minecraft classes, so it can be unit tested). `MAX_LAYER_SIZE = 32`, `MAX_DROP = 32`, `AIM_HELP = 2`. Cells: `OPEN`, `REBAR`, `FORMWORK` (formwork or a steel beam), `CONCRETE`, `SOLID` (floor only), `BLOCKED`. Statuses: `POURED`, `FULL`, `LEAKS`, `PROTECTED`, `NO_FORMWORK`. `Result.problem` = the hole / protected spot / the open cell next to a bad side; `Result.wall` = the bad side block
 - `item/ConcreteBucketItem.java`: `startFor` + `plan` (also used by the preview), reads the real blocks into the pour grid (`cellAt`), places the wet concrete, messages, the bar and tooltip (`appendHoverText` is marked deprecated in 26.3 but still works)
 - `client/PourPreview.java` (client only): the particle preview, client tick event (every 4 ticks). `client/PreviewParticles.java`: the dust-dot helper shared with `TrowelPreview`
 - `registry/ModDataComponents.java`: `CONCRETE_AMOUNT`
@@ -487,7 +487,7 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 | Strength | Like an iron block: hardness 5, blast resistance 6, metal sounds, map color = metal, note block = iron xylophone |
 | Drops | Itself, with a **stone pickaxe or better**. A wooden pickaxe or a hand breaks it but drops nothing |
 | Tags | `#minecraft:mineable/pickaxe`, `#minecraft:needs_stone_tool`, `#minecraft:climbable`. **Not** in `sledge_breakable` (it's metal) |
-| Mold | It is a normal mold wall for the Concrete Bucket (like any solid block) |
+| Mold | A good mold side for the Concrete Bucket, like Formwork (a column standing in the mold doesn't stop the pour; Phase 3¾ step 1) |
 | Look (placeholder) | I-profile, vanilla `block/iron_block` texture. 2 hand-written models (datagen can't draw shapes): `steel_beam.json` (full I, used for lying beams and the item) and `steel_beam_column.json` (the slim standing column). The user may change the look later |
 
 **Code:**

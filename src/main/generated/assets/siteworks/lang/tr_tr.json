@@ -33,6 +33,7 @@
   "message.siteworks.mixer.status": "Çimento %s · Kum %s · Çakıl %s · Su %s/%s · Hazır %s/%s",
   "message.siteworks.pour.full": "Kalıp dolu.",
   "message.siteworks.pour.leaks": "Kalıp sızdırıyor!",
+  "message.siteworks.pour.no_formwork": "Taze betona burada kalıp gerekli! (kırmızı noktalar)",
   "message.siteworks.pour.protected": "Buraya beton dökemezsin (korunan alan ya da dünyanın sınırı).",
   "message.siteworks.trowel.blocked": "Önünde bir engel var.",
   "message.siteworks.trowel.need_block": "Tuğlaları diğer elinde tut ya da bir örgü bloğuna tıkla.",

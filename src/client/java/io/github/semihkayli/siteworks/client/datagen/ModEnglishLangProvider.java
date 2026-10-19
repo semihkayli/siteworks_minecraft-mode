@@ -32,6 +32,7 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add("message.siteworks.pour.leaks", "The formwork leaks!");
 		builder.add("message.siteworks.pour.full", "The mold is full.");
 		builder.add("message.siteworks.pour.protected", "You can't pour concrete here (protected area or the edge of the world).");
+		builder.add("message.siteworks.pour.no_formwork", "Wet concrete needs formwork here! (red dots)");
 		builder.add(ModBlocks.FORMWORK, "Formwork");
 		builder.add(ModBlocks.REBAR, "Rebar");
 		builder.add(ModBlocks.CONCRETE, "Concrete");

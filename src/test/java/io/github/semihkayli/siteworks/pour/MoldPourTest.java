@@ -36,14 +36,14 @@ class MoldPourTest {
 			return this;
 		}
 
-		/** A ring of walls around an inside area from (x0, z0) to (x1, z1), from y = 0 up to height - 1. */
+		/** A ring of formwork around an inside area from (x0, z0) to (x1, z1), from y = 0 up to height - 1. */
 		FakeGrid mold(int x0, int z0, int x1, int z1, int height) {
 			for (int y = 0; y < height; y++) {
 				for (int x = x0 - 1; x <= x1 + 1; x++) {
 					for (int z = z0 - 1; z <= z1 + 1; z++) {
 						boolean inside = x >= x0 && x <= x1 && z >= z0 && z <= z1;
 						if (!inside) {
-							set(x, y, z, Cell.SOLID);
+							set(x, y, z, Cell.FORMWORK);
 						}
 					}
 				}
@@ -128,8 +128,8 @@ class MoldPourTest {
 	}
 
 	@Test
-	void holeInTheGroundIsAMold() {
-		// A 2x2 pit, 2 deep, dug into the ground. It fills (8), then the ground level spreads = full.
+	void pitInTheGroundNeedsFormwork() {
+		// A 2x2 pit, 2 deep, dug into the ground: soil at the sides doesn't hold wet concrete.
 		FakeGrid grid = new FakeGrid();
 		for (int x = 0; x <= 1; x++) {
 			for (int z = 0; z <= 1; z++) {
@@ -138,9 +138,65 @@ class MoldPourTest {
 		}
 		Result result = pour(grid, 0, 0, 0, 16);
 
+		assertEquals(Status.NO_FORMWORK, result.status());
+		assertTrue(result.cells().isEmpty());
+	}
+
+	@Test
+	void pitLinedWithFormworkIsAMold() {
+		// The same pit, with formwork against the soil: it fills (8), then the ground level spreads = full.
+		FakeGrid grid = new FakeGrid();
+		for (int y = -2; y <= -1; y++) {
+			for (int x = -1; x <= 2; x++) {
+				for (int z = -1; z <= 2; z++) {
+					boolean inside = x >= 0 && x <= 1 && z >= 0 && z <= 1;
+					grid.set(x, y, z, inside ? Cell.OPEN : Cell.FORMWORK);
+				}
+			}
+		}
+		Result result = pour(grid, 0, 0, 0, 16);
+
 		assertEquals(Status.FULL, result.status());
 		assertEquals(8, result.cells().size());
 		assertTrue(result.cells().stream().allMatch(pos -> pos.y() < 0));
+	}
+
+	@Test
+	void stoneSideNeedsFormwork() {
+		// One wall block of the mold is stone (or soil, wood...): nothing is poured, and it says where.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 3).set(3, 0, 1, Cell.SOLID);
+		Result result = pour(grid, 1, 0, 1, 16);
+
+		assertEquals(Status.NO_FORMWORK, result.status());
+		assertTrue(result.cells().isEmpty());
+		assertEquals(new Pos(3, 0, 1), result.wall());
+		assertEquals(new Pos(2, 0, 1), result.problem());
+	}
+
+	@Test
+	void noFormworkHigherUpPoursTheLayersBelow() {
+		// The 2nd layer has a stone side: the 1st layer is poured, then it stops there.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 3).set(3, 1, 1, Cell.SOLID);
+		Result result = pour(grid, 1, 0, 1, 16);
+
+		assertEquals(Status.NO_FORMWORK, result.status());
+		assertEquals(9, result.cells().size());
+		assertEquals(9, countAtY(result, 0));
+		assertEquals(new Pos(3, 1, 1), result.wall());
+	}
+
+	@Test
+	void concreteAndBeamsCountAsSides() {
+		// A big slab poured in parts: the east side is old concrete, and a steel beam stands inside the mold.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 1);
+		for (int z = 0; z <= 2; z++) {
+			grid.set(3, 0, z, Cell.CONCRETE);
+		}
+		grid.set(1, 0, 1, Cell.FORMWORK); // the beam (FORMWORK = formwork or a steel beam)
+		Result result = pour(grid, 0, 0, 0, 16);
+
+		assertEquals(Status.FULL, result.status());
+		assertEquals(8, result.cells().size());
 	}
 
 	@Test
@@ -154,13 +210,13 @@ class MoldPourTest {
 
 	@Test
 	void lShapedMoldFillsBothLegs() {
-		// Inside cells: (0..3, z=0) and (0, z=1..3) = an L of 7 cells, 1 high. Everything else is wall.
+		// Inside cells: (0..3, z=0) and (0, z=1..3) = an L of 7 cells, 1 high. Everything else is formwork.
 		FakeGrid grid = new FakeGrid();
 		for (int x = -1; x <= 4; x++) {
 			for (int z = -1; z <= 4; z++) {
 				boolean inside = (z == 0 && x >= 0 && x <= 3) || (x == 0 && z >= 1 && z <= 3);
 				if (!inside) {
-					grid.set(x, 0, z, Cell.SOLID);
+					grid.set(x, 0, z, Cell.FORMWORK);
 				}
 			}
 		}
@@ -219,9 +275,9 @@ class MoldPourTest {
 	@Test
 	void openEndOfAChannelIsTheHole() {
 		// A 1-wide channel from x = 0 to 4, closed at x = -1, open at the x = 5 end.
-		FakeGrid grid = new FakeGrid().set(-1, 0, 0, Cell.SOLID);
+		FakeGrid grid = new FakeGrid().set(-1, 0, 0, Cell.FORMWORK);
 		for (int x = -1; x <= 4; x++) {
-			grid.set(x, 0, -1, Cell.SOLID).set(x, 0, 1, Cell.SOLID);
+			grid.set(x, 0, -1, Cell.FORMWORK).set(x, 0, 1, Cell.FORMWORK);
 		}
 		Result result = pour(grid, 0, 0, 0, 16);
 

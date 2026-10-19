@@ -17,6 +17,7 @@ import net.minecraft.world.phys.HitResult;
  * it runs the same pour plan as the real pour (MoldPour, on your copy of the world) and shows it with dust:
  * - GRAY dots: where the concrete will go.
  * - A RED dot: where the mold leaks (the hole), or the protected spot that stops the pour.
+ * - RED dots on a block's face: that side block must be Formwork (stone, soil, wood... don't hold wet concrete).
  * - Nothing: the mold is full (or there's nothing to fill).
  */
 public final class PourPreview {
@@ -53,6 +54,11 @@ public final class PourPreview {
 		MoldPour.Result result = ConcreteBucketItem.plan(level, minecraft.player, start, ConcreteBucketItem.getAmount(bucket));
 		for (MoldPour.Pos cell : result.cells()) {
 			PreviewParticles.dot(level, CONCRETE, toBlockPos(cell), 1);
+		}
+		if (result.status() == MoldPour.Status.NO_FORMWORK && result.wall() != null && result.problem() != null) {
+			// Red dots on the face of the block that should be formwork (stone, soil, wood...).
+			PreviewParticles.dotOnFace(level, PROBLEM, toBlockPos(result.problem()), toBlockPos(result.wall()), 4);
+			return;
 		}
 		boolean failed = result.status() == MoldPour.Status.LEAKS || result.status() == MoldPour.Status.PROTECTED;
 		if (failed && result.problem() != null) {

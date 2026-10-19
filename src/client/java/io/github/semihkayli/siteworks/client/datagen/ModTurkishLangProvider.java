@@ -33,6 +33,7 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add("message.siteworks.pour.leaks", "Kalıp sızdırıyor!");
 		builder.add("message.siteworks.pour.full", "Kalıp dolu.");
 		builder.add("message.siteworks.pour.protected", "Buraya beton dökemezsin (korunan alan ya da dünyanın sınırı).");
+		builder.add("message.siteworks.pour.no_formwork", "Taze betona burada kalıp gerekli! (kırmızı noktalar)");
 		builder.add(ModBlocks.FORMWORK, "Kalıp");
 		builder.add(ModBlocks.REBAR, "İnşaat Demiri");
 		builder.add(ModBlocks.CONCRETE, "Beton");

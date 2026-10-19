@@ -23,6 +23,8 @@ import java.util.Set;
  * (more than {@link #MAX_LAYER_SIZE} in x or z). Too wide on the FIRST layer = the formwork leaks,
  * and nothing is used. Too wide on a higher layer = the concrete would spill over the lowest wall,
  * so the mold is full. A protected cell (spawn protection, world border, outside the world) stops the pour.
+ * The SIDES must be Formwork (or concrete, or a Steel Beam): soil, stone, wood... at a side stop the pour
+ * ("needs formwork"). The floor can be any solid block (Phase 3¾, user's formwork rule).
  *
  * The result also tells WHERE the problem is (the hole in the formwork), so the preview can show a red dot there.
  *
@@ -45,9 +47,11 @@ public final class MoldPour {
 		OPEN,
 		/** Rebar: concrete can go here, and it cures into Reinforced Concrete. */
 		REBAR,
-		/** Wet or cured concrete: a wall or floor. Landing on it with nothing to fill = the mold is already full. */
+		/** Formwork or a Steel Beam: a good mold side (and a floor). */
+		FORMWORK,
+		/** Wet or cured concrete: a good side and floor. Landing on it with nothing to fill = the mold is already full. */
 		CONCRETE,
-		/** Anything else: a mold wall or floor. */
+		/** Anything else (soil, stone, wood, bricks...): a floor, but NOT a mold side. */
 		SOLID,
 		/** An open cell where concrete may NOT go: spawn protection, the world border, outside the world. */
 		BLOCKED
@@ -80,14 +84,17 @@ public final class MoldPour {
 		/** The first layer is open: nothing was poured. "The formwork leaks!" */
 		LEAKS,
 		/** It ran into a protected cell before anything was poured. Nothing was poured. */
-		PROTECTED
+		PROTECTED,
+		/** A layer touches a side that isn't Formwork. The layers below it (maybe none) are poured. */
+		NO_FORMWORK
 	}
 
 	/**
 	 * {@code cells} are in a safe placing order: every cell is on a solid block or an earlier cell.
-	 * {@code problem} = where it leaks (the hole), the protected cell it ran into, or null.
+	 * {@code problem} = where it leaks (the hole), the protected cell it ran into, or the open cell next to
+	 * a bad side; null if there's no problem. {@code wall} = that bad side block (only for NO_FORMWORK), else null.
 	 */
-	public record Result(Status status, List<Pos> cells, Pos problem) {
+	public record Result(Status status, List<Pos> cells, Pos problem, Pos wall) {
 	}
 
 	private static final int[][] SIDES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
@@ -95,6 +102,7 @@ public final class MoldPour {
 	private final Grid grid;
 	private final Set<Pos> planned = new LinkedHashSet<>();
 	private Pos problem;
+	private Pos wall;
 	private boolean blocked;
 
 	private MoldPour(Grid grid) {
@@ -104,19 +112,21 @@ public final class MoldPour {
 	/** Plans a pour of up to {@code amount} blocks, starting at {@code start}. */
 	public static Result plan(Grid grid, Pos start, int amount) {
 		Result result = new MoldPour(grid).run(start, amount);
-		if (result.status() != Status.LEAKS) {
+		boolean failed = result.cells().isEmpty()
+				&& (result.status() == Status.LEAKS || result.status() == Status.NO_FORMWORK);
+		if (!failed) {
 			return result;
 		}
 		// Aim help: maybe you clicked a bit too high (e.g. the top of a mold wall). Try the spots right next to it.
 		for (Pos near : spotsNear(grid, start)) {
 			Result retry = new MoldPour(grid).run(near, amount);
-			if (retry.status() == Status.POURED || retry.status() == Status.FULL) {
+			if (!retry.cells().isEmpty() || retry.status() == Status.FULL) {
 				return retry;
 			}
 		}
 		// Nothing to fill, and the concrete would land on concrete: the mold under it is already full.
 		if (landsOnConcrete(grid, start)) {
-			return new Result(Status.FULL, List.of(), result.problem());
+			return new Result(Status.FULL, List.of(), null, null);
 		}
 		return result;
 	}
@@ -165,7 +175,7 @@ public final class MoldPour {
 			for (Pos pos : layer) {
 				planned.add(pos);
 				if (planned.size() == amount) {
-					return new Result(Status.POURED, List.copyOf(planned), null);
+					return new Result(Status.POURED, List.copyOf(planned), null, null);
 				}
 			}
 
@@ -183,15 +193,24 @@ public final class MoldPour {
 
 	/** Ends the pour with what is planned so far. */
 	private Result stop() {
-		if (planned.isEmpty()) {
-			return new Result(blocked ? Status.PROTECTED : Status.LEAKS, List.of(), problem);
+		if (wall != null) {
+			return new Result(Status.NO_FORMWORK, List.copyOf(planned), problem, wall);
 		}
-		return new Result(Status.FULL, List.copyOf(planned), problem);
+		if (planned.isEmpty()) {
+			return new Result(blocked ? Status.PROTECTED : Status.LEAKS, List.of(), problem, null);
+		}
+		return new Result(Status.FULL, List.copyOf(planned), problem, null);
 	}
 
 	private void markBlocked(Pos pos) {
 		blocked = true;
 		problem = pos;
+	}
+
+	/** {@code cell} (open, in the layer) touches {@code side}, which isn't Formwork: the concrete can't stay there. */
+	private void markNoFormwork(Pos cell, Pos side) {
+		problem = cell;
+		wall = side;
 	}
 
 	/** Falls straight down from an open cell to the lowest open cell. Null = no floor within MAX_DROP, or protected. */
@@ -214,7 +233,8 @@ public final class MoldPour {
 
 	/**
 	 * All open cells on one y level that connect to the seeds (sideways only), nearest first.
-	 * Null = wider than MAX_LAYER_SIZE in x or z (then {@code problem} = the hole), or it touches a protected cell.
+	 * Null = wider than MAX_LAYER_SIZE in x or z (then {@code problem} = the hole), or it touches a protected cell
+	 * or a side that isn't Formwork.
 	 */
 	private List<Pos> layerFrom(List<Pos> seeds) {
 		List<Pos> layer = new ArrayList<>();
@@ -243,6 +263,10 @@ public final class MoldPour {
 				Pos next = pos.offset(side[0], side[1]);
 				if (cell(next) == Cell.BLOCKED) {
 					markBlocked(next);
+					return null;
+				}
+				if (cell(next) == Cell.SOLID) {
+					markNoFormwork(pos, next);
 					return null;
 				}
 				if (isOpen(next) && !cameFrom.containsKey(next)) {
@@ -298,10 +322,10 @@ public final class MoldPour {
 		return isFillable(cell(pos)) && !planned.contains(pos);
 	}
 
-	/** Floor = concrete can stand on it: a solid block, concrete, or concrete planned earlier in this pour. */
+	/** Floor = concrete can stand on it: any solid block, formwork, concrete, or concrete planned earlier in this pour. */
 	private boolean isFloor(Pos pos) {
 		Cell cell = cell(pos);
-		return cell == Cell.SOLID || cell == Cell.CONCRETE || planned.contains(pos);
+		return cell == Cell.SOLID || cell == Cell.FORMWORK || cell == Cell.CONCRETE || planned.contains(pos);
 	}
 
 	private static boolean isFillable(Cell cell) {

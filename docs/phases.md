@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3½ is done ✅ (R1–R3 tested + committed 2026-10-19). Now the Phase 3¾ (Foundations) discussion, plus the user's new formwork rule idea (2026-10-19). Then the Phase 3¾ (Foundations) discussion. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
+- **Next step:** Phase 3¾ (Foundations): discussion done (2026-10-19). Step 1 (formwork rule) done ✅ (tested + committed 2026-10-19). Now step 2 (finding foundations). After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -274,8 +274,23 @@
 - [ ] Placing above the limit is stopped with a message; a thicker foundation allows it
 - [ ] No lag with a big TNT explosion near a protected base
 
-**Decisions:**
-- _(write answers here)_
+**Decisions:** (2026-10-19, discussion round 1)
+- **Formwork rule (new, user):** the **sides** of a pour must be **Formwork**, not soil and not stone either ("use only formwork for every wet concrete"). Also OK at the side: **our concrete** (wet, cured, reinforced: big slabs are poured in parts, like a real construction joint / döküm derzi) and **Steel Beams** (a column standing in the mold). Everything else at the side (soil, stone, wood, bricks, glass...) = "Wet concrete needs formwork here!". The **floor** can be any solid block (round 2, user OK).
+- **Height:** every foundation layer = **8 blocks** of building height. Layers needed = height ÷ 8, rounded up: up to 8 high = 1 layer, 9–16 = 2 layers (e.g. 5 high → 1, 12 high → 2), 17–24 = 3...
+- **Measured per column** (each x/z spot, straight down). The foundation layers are **Reinforced Concrete only**. The building's height = how many blocks above the foundation top, **whatever they are made of** (bricks, wood, glass... all count, and all are protected) (round 2, user).
+- **No minimum size.**
+- **Firm ground** = every solid block the Mattock can't dig, **plus gravel** (gravel bed / blokaj). Dirt, sand, grass, mud, clay: no.
+- **Info:** right-click Reinforced Concrete with an empty hand → "Foundation: 2 layers on firm ground → up to 16 blocks high" / "Not a foundation: ...". (User: OK for now; building planning may work differently later, e.g. with blueprints.)
+- **Hard stop:** only blocks placed by **players** (hand, Trowel, Steel Beam, Bucket pour), in Survival and Adventure. **Creative ignores the limit.** Pistons, falling blocks, Endermen, growing trees, liquids are not stopped.
+- **The Wither breaking blocks by touching them: also blocked** in a protected building (user chose the alternative). Needs its own small mixin (the Wither's block breaking), next to the explosion mixin.
+- **PvP servers:** a game rule to turn the protection off, later (Phase 7).
+
+**Steps:**
+1. The formwork rule in the pour (`MoldPour` + tests, message, red preview marker on the bad side block) — ✅ done, tested in-game (2026-10-19), 24 unit tests ✅
+2. Finding foundations (pure logic, unit tested) + the right-click info on Reinforced Concrete
+3. Explosion + Wither protection (our first mixins)
+4. The hard stop + its message
+5. "Done when" checklist → status → commit
 
 ---
 
