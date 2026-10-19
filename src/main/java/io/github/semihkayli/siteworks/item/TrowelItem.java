@@ -79,7 +79,7 @@ public class TrowelItem extends Item {
 		BlockPos clicked = context.getClickedPos();
 		BlockState clickedState = level.getBlockState(clicked);
 		Direction face = context.getClickedFace();
-		BlockPos spot = clickedState.canBeReplaced() ? clicked : clicked.relative(face);
+		BlockPos spot = spotFor(clicked, clickedState, face);
 		InteractionHand hand = context.getHand();
 		GlobalPos start = trowel.get(ModDataComponents.ROW_START);
 
@@ -216,8 +216,16 @@ public class TrowelItem extends Item {
 		return placed;
 	}
 
+	/**
+	 * The spot a click marks: in front of the clicked face, or the clicked block itself if it can be replaced
+	 * (grass, snow). Also used by the client preview (TrowelPreview), so both always agree.
+	 */
+	public static BlockPos spotFor(BlockPos clicked, BlockState clickedState, Direction face) {
+		return clickedState.canBeReplaced() ? clicked : clicked.relative(face);
+	}
+
 	/** The direction from {@code from} to {@code to} if they are on one straight line (only 1 coordinate differs), else null. */
-	private static Direction straightDirection(BlockPos from, BlockPos to) {
+	public static Direction straightDirection(BlockPos from, BlockPos to) {
 		int dx = to.getX() - from.getX();
 		int dy = to.getY() - from.getY();
 		int dz = to.getZ() - from.getZ();
