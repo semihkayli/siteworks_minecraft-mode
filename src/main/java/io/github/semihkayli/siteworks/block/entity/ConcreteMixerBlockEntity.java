@@ -116,6 +116,15 @@ public class ConcreteMixerBlockEntity extends BlockEntity implements WorldlyCont
 		return progress > 0;
 	}
 
+	/**
+	 * The comparator signal: 0 = no ready concrete, 15 = full (64 blocks). Like vanilla containers, any concrete
+	 * gives at least 1. One batch (16) = 4, two = 8, three = 11, four = 15.
+	 * Comparators are told about changes by setChanged() (when a batch is done, or a bucket takes concrete).
+	 */
+	public int comparatorSignal() {
+		return ready == 0 ? 0 : 1 + ready * 14 / MAX_READY;
+	}
+
 	private static boolean hasWaterSourceNextTo(Level level, BlockPos pos) {
 		for (Direction direction : Direction.values()) {
 			if (level.getFluidState(pos.relative(direction)).isSourceOfType(Fluids.WATER)) {

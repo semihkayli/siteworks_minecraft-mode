@@ -7,6 +7,7 @@ import io.github.semihkayli.siteworks.registry.ModDataComponents;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import io.github.semihkayli.siteworks.util.Messages;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -122,5 +123,16 @@ public class ConcreteMixerBlock extends BaseEntityBlock {
 			player.sendOverlayMessage(mixer.statusMessage());
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	// A comparator next to the mixer reads the ready concrete (0 = none, 15 = full), so redstone can react to it.
+	@Override
+	protected boolean hasAnalogOutputSignal(BlockState state) {
+		return true;
+	}
+
+	@Override
+	protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+		return level.getBlockEntity(pos) instanceof ConcreteMixerBlockEntity mixer ? mixer.comparatorSignal() : 0;
 	}
 }

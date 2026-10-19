@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3½ step R1 done ✅ (tested + committed 2026-10-19). Now R2 (mixer comparator), then R3. Then the Phase 3¾ (Foundations) discussion. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
+- **Next step:** Phase 3½ step R1 done ✅ (tested + committed 2026-10-19). R2 (mixer comparator) done ✅ (tested + committed 2026-10-19). Now R3 (pour preview). Then the Phase 3¾ (Foundations) discussion. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -237,14 +237,14 @@
 
 **Steps:**
 - R1. Quick fixes: hand animation, red sand message, Safety Net burns, mixer saving, message helper, old comments/docs, pin Loom, `items.md` notes — ✅ done, tested in-game (2026-10-19)
-- R2. Mixer comparator output
+- R2. Mixer comparator output — ✅ done, tested in-game (2026-10-19)
 - R3. Pour preview + red leak dot + clearer pour messages + protected cells + new `MoldPour` unit tests
 
 **Done when:**
 - [x] The trowel and the bucket no longer dip when used (R1)
 - [x] Red sand into a sand-filled mixer shows a message (R1)
 - [x] Fire burns a Safety Net (R1)
-- [ ] A comparator next to the mixer shows the ready concrete
+- [x] A comparator next to the mixer shows the ready concrete (R2)
 - [ ] The bucket shows where the concrete goes, and a red dot at the hole of a leaking mold
 - [ ] Clicking the top of a wall or a full mold gives a correct message
 
