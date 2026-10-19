@@ -7,5 +7,6 @@ public class SiteWorksClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		TrowelPreview.register();
+		PourPreview.register();
 	}
 }

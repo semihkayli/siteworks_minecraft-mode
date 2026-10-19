@@ -2,12 +2,12 @@
 
 ## Current status
 
-- **Phase:** 3 — Masonry & frame, **done** ✅ (2026-10-19). Next: **Phase 3½ — Review fixes** (steps R1–R3, decided 2026-10-19), then **Phase 3¾ — Foundations** (new v1.0 content, user 2026-10-19), then **Phase 4 — Blueprints, not started** (discuss the questions first, best in a new chat).
+- **Phase:** 3½ — Review fixes, **done** ✅ (2026-10-19). Next: **Phase 3¾ — Foundations** (new v1.0 content, user 2026-10-19), then **Phase 4 — Blueprints, not started** (discuss the questions first, best in a new chat).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18.4 (pinned 2026-10-19, was 1.18-SNAPSHOT), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Phase 2 summary:** Formwork, Rebar, Concrete, Reinforced Concrete (Sledgehammer recycling via loot tables), Cement Mix → Cement, Wet Concrete (`WetConcreteBlock`: gravity + one scheduled tick for curing, falls directly in `neighborChanged` because Minecraft keeps only 1 scheduled tick per position), Concrete Bucket + the water-like mold pour (`pour/MoldPour`, pure Java, **14 JUnit tests**: `gradlew test`), Concrete Mixer (first **block entity**, right-click + hopper input via `WorldlyContainer`), Sledgehammer ceiling debris (1 heart, Hard Hat blocks it). Tests: creeper vs reinforced concrete ✅, 200 blocks curing at once = 12.1 ms/tick (13.0 before), 119 FPS ✅.
 - **Phase 3 summary:** Mortar (1 Cement + 4 Sand → 8), Steel Ingot (iron ingot smelted, furnace or blast furnace), Steel Beam (`SteelBeamBlock` = `RotatedPillarBlock` + `facing`; lying = full I-beam you walk on, standing = slim column in vanilla `#climbable`, climbed inside like a ladder; `SteelBeamItem` extends the line up to 8 ahead like scaffolding via `updatePlacementContext`; 7 steel → 16), Trowel (`TrowelItem`: Row "from → to" = 2 clicks on brick spots, inclusive, max 8, a wrong 2nd click becomes the new start; mortar charge 1 Mortar = 8 blocks kept on the item; every block via vanilla `BlockItem.place()`; `masonry_blocks` tag), client particle preview (`client/TrowelPreview`, white/yellow/green/red dust, client tick event). **Dropped by the user:** Course mode (step 4), the climbing mixin (replaced by the slim `#climbable` column). New data components: `trowel_mode` (only `row`), `mortar_charge`, `row_start`, `row_block`. Lessons: write every step report and discussion in the chat; ask back when an answer is unclear; only the user marks tests as passed (all in `docs/rules.md`).
-- **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `event/`, `util/` (`Messages`: red action bar messages) in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`) in `src/client/java/.../client/`. No mixins (the mixin configs are empty). Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
+- **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `event/`, `util/` (`Messages`: red action bar messages) in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`, `PourPreview`, `PreviewParticles`) in `src/client/java/.../client/`. No mixins (the mixin configs are empty). Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
 - **Datagen notes:** run `gradlew runDatagen` after changing any provider. Never edit `src/main/generated/` by hand. Vanilla tags must be added with `forceAddTag` (plain `addTag` fails because datagen can't see vanilla tags). A JNA `Win32Exception: Parametre hatalı` line in the datagen log is harmless.
 - **26.3 API notes (old tutorials are wrong here):**
   - Dyes: `Items.DYE.yellow()` (a `ColorCollection`), not `Items.YELLOW_DYE`.
@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3½ step R1 done ✅ (tested + committed 2026-10-19). R2 (mixer comparator) done ✅ (tested + committed 2026-10-19). Now R3 (pour preview). Then the Phase 3¾ (Foundations) discussion. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
+- **Next step:** Phase 3½ is done ✅ (R1–R3 tested + committed 2026-10-19). Now the Phase 3¾ (Foundations) discussion, plus the user's new formwork rule idea (2026-10-19). Then the Phase 3¾ (Foundations) discussion. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -238,15 +238,15 @@
 **Steps:**
 - R1. Quick fixes: hand animation, red sand message, Safety Net burns, mixer saving, message helper, old comments/docs, pin Loom, `items.md` notes — ✅ done, tested in-game (2026-10-19)
 - R2. Mixer comparator output — ✅ done, tested in-game (2026-10-19)
-- R3. Pour preview + red leak dot + clearer pour messages + protected cells + new `MoldPour` unit tests
+- R3. Pour preview + red leak dot + clearer pour messages + protected cells + new `MoldPour` unit tests — ✅ done, tested in-game (2026-10-19), 20 unit tests ✅
 
 **Done when:**
 - [x] The trowel and the bucket no longer dip when used (R1)
 - [x] Red sand into a sand-filled mixer shows a message (R1)
 - [x] Fire burns a Safety Net (R1)
 - [x] A comparator next to the mixer shows the ready concrete (R2)
-- [ ] The bucket shows where the concrete goes, and a red dot at the hole of a leaking mold
-- [ ] Clicking the top of a wall or a full mold gives a correct message
+- [x] The bucket shows where the concrete goes, and a red dot at the hole of a leaking mold (R3)
+- [x] Clicking the top of a wall or a full mold gives a correct message (R3)
 
 ---
 

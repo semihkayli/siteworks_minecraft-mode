@@ -51,9 +51,9 @@ class MoldPourTest {
 			return this;
 		}
 
-		/** Places the planned cells, like the game does (wet concrete = SOLID). */
+		/** Places the planned cells, like the game does (wet concrete = CONCRETE). */
 		void apply(Result result) {
-			result.cells().forEach(pos -> cells.put(pos, Cell.SOLID));
+			result.cells().forEach(pos -> cells.put(pos, Cell.CONCRETE));
 		}
 	}
 
@@ -199,7 +199,78 @@ class MoldPourTest {
 	void noFloorLeaks() {
 		FakeGrid grid = new FakeGrid();
 		grid.ground = false;
-		assertEquals(Status.LEAKS, pour(grid, 0, 0, 0, 16).status());
+		Result result = pour(grid, 0, 0, 0, 16);
+
+		assertEquals(Status.LEAKS, result.status());
+		// The red dot goes where it starts to fall, not 32 blocks down.
+		assertEquals(new Pos(0, 0, 0), result.problem());
+	}
+
+	@Test
+	void leakPointsAtTheHole() {
+		// One wall block is missing: the problem spot is exactly that hole.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 3).set(3, 0, 1, Cell.OPEN);
+		Result result = pour(grid, 1, 0, 1, 16);
+
+		assertEquals(Status.LEAKS, result.status());
+		assertEquals(new Pos(3, 0, 1), result.problem());
+	}
+
+	@Test
+	void openEndOfAChannelIsTheHole() {
+		// A 1-wide channel from x = 0 to 4, closed at x = -1, open at the x = 5 end.
+		FakeGrid grid = new FakeGrid().set(-1, 0, 0, Cell.SOLID);
+		for (int x = -1; x <= 4; x++) {
+			grid.set(x, 0, -1, Cell.SOLID).set(x, 0, 1, Cell.SOLID);
+		}
+		Result result = pour(grid, 0, 0, 0, 16);
+
+		assertEquals(Status.LEAKS, result.status());
+		assertEquals(new Pos(4, 0, 0), result.problem());
+	}
+
+	@Test
+	void clickOnTopOfAWallPoursIntoTheMold() {
+		// Aim help: you click the top of the west wall (x = -1), the concrete still goes into the mold.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 2);
+		Result result = pour(grid, -1, 2, 1, 16);
+
+		assertEquals(Status.POURED, result.status());
+		assertEquals(9, countAtY(result, 0));
+		assertEquals(7, countAtY(result, 1));
+	}
+
+	@Test
+	void clickOnTopOfAFullMoldSaysFull() {
+		// A 2x2 mold, 1 high, already filled. Clicking the top of the concrete = "The mold is full.", not a leak.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 1, 1, 1);
+		grid.apply(pour(grid, 0, 0, 0, 16));
+		Result result = pour(grid, 0, 1, 0, 16);
+
+		assertEquals(Status.FULL, result.status());
+		assertTrue(result.cells().isEmpty());
+	}
+
+	@Test
+	void protectedCellUnderTheMoldStopsThePour() {
+		// The floor under the middle is missing, and that cell is protected (e.g. spawn protection).
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 2).set(1, -1, 1, Cell.BLOCKED);
+		Result result = pour(grid, 1, 0, 1, 16);
+
+		assertEquals(Status.PROTECTED, result.status());
+		assertTrue(result.cells().isEmpty());
+		assertEquals(new Pos(1, -1, 1), result.problem());
+	}
+
+	@Test
+	void protectedCellBesideTheLayerStopsThePour() {
+		// A wall block is missing, and that open cell is protected: the concrete may not flow there.
+		FakeGrid grid = new FakeGrid().mold(0, 0, 2, 2, 2).set(3, 0, 1, Cell.BLOCKED);
+		Result result = pour(grid, 1, 0, 1, 16);
+
+		assertEquals(Status.PROTECTED, result.status());
+		assertTrue(result.cells().isEmpty());
+		assertEquals(new Pos(3, 0, 1), result.problem());
 	}
 
 	@Test

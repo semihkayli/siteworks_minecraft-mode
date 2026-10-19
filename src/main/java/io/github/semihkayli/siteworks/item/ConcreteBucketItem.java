@@ -8,6 +8,7 @@ import io.github.semihkayli.siteworks.util.Messages;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -44,11 +46,7 @@ public class ConcreteBucketItem extends Item {
 
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
-		BlockPos clicked = context.getClickedPos();
-		// Clicked rebar or a plant inside the mold: pour right there. Clicked a wall or the floor: pour next to it.
-		BlockPos start = cellOf(context.getLevel().getBlockState(clicked)) != MoldPour.Cell.SOLID
-				? clicked
-				: clicked.relative(context.getClickedFace());
+		BlockPos start = startFor(context.getLevel(), context.getClickedPos(), context.getClickedFace());
 
 		// The world is changed on the server only. The client just swings the arm.
 		if (!(context.getLevel() instanceof ServerLevel level)) {
@@ -60,8 +58,7 @@ public class ConcreteBucketItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
-		MoldPour.Result result = MoldPour.plan((x, y, z) -> cellAt(level, player, new BlockPos(x, y, z)),
-				new MoldPour.Pos(start.getX(), start.getY(), start.getZ()), getAmount(stack));
+		MoldPour.Result result = plan(level, player, start, getAmount(stack));
 
 		for (MoldPour.Pos cell : result.cells()) {
 			BlockPos pos = new BlockPos(cell.x(), cell.y(), cell.z());
@@ -79,10 +76,12 @@ public class ConcreteBucketItem extends Item {
 			if (poured > 0) {
 				player.awardStat(Stats.ITEM_USED.get(this));
 			}
-			if (result.status() == MoldPour.Status.LEAKS) {
-				Messages.error(player, Component.translatable("message.siteworks.pour.leaks"));
-			} else if (result.status() == MoldPour.Status.FULL) {
-				player.sendOverlayMessage(Component.translatable("message.siteworks.pour.full"));
+			switch (result.status()) {
+				case LEAKS -> Messages.error(player, Component.translatable("message.siteworks.pour.leaks"));
+				case PROTECTED -> Messages.error(player, Component.translatable("message.siteworks.pour.protected"));
+				case FULL -> player.sendOverlayMessage(Component.translatable("message.siteworks.pour.full"));
+				case POURED -> {
+				}
 			}
 			// Like vanilla buckets: in creative mode the bucket stays full.
 			if (!player.hasInfiniteMaterials() && poured > 0) {
@@ -97,17 +96,40 @@ public class ConcreteBucketItem extends Item {
 		return InteractionResult.SUCCESS;
 	}
 
-	/** What a real block is for the pour. Protected blocks (spawn protection, world border) count as walls. */
-	private static MoldPour.Cell cellAt(ServerLevel level, Player player, BlockPos pos) {
-		if (level.isOutsideBuildHeight(pos) || (player != null && !level.mayInteract(player, pos))) {
-			return MoldPour.Cell.SOLID;
+	/**
+	 * Where a pour starts. Clicked rebar or a plant inside the mold: right there. Clicked a wall, the floor
+	 * or concrete: the cell next to the clicked face. Also used by the client preview (PourPreview), so both agree.
+	 */
+	public static BlockPos startFor(Level level, BlockPos clicked, Direction face) {
+		MoldPour.Cell cell = cellOf(level.getBlockState(clicked));
+		return cell == MoldPour.Cell.OPEN || cell == MoldPour.Cell.REBAR ? clicked : clicked.relative(face);
+	}
+
+	/** Plans the pour on the real blocks. Also used by the client preview (with the client's copy of the world). */
+	public static MoldPour.Result plan(Level level, Player player, BlockPos start, int amount) {
+		return MoldPour.plan((x, y, z) -> cellAt(level, player, new BlockPos(x, y, z)),
+				new MoldPour.Pos(start.getX(), start.getY(), start.getZ()), amount);
+	}
+
+	/**
+	 * What a real block is for the pour. A protected spot (spawn protection, world border, outside the world)
+	 * stays a wall if there is a block, but an open protected spot is BLOCKED: concrete may not flow into it.
+	 */
+	private static MoldPour.Cell cellAt(Level level, Player player, BlockPos pos) {
+		MoldPour.Cell cell = cellOf(level.getBlockState(pos));
+		boolean isProtected = level.isOutsideBuildHeight(pos) || (player != null && !level.mayInteract(player, pos));
+		if (isProtected && (cell == MoldPour.Cell.OPEN || cell == MoldPour.Cell.REBAR)) {
+			return MoldPour.Cell.BLOCKED;
 		}
-		return cellOf(level.getBlockState(pos));
+		return cell;
 	}
 
 	private static MoldPour.Cell cellOf(BlockState state) {
 		if (state.is(ModBlocks.REBAR)) {
 			return MoldPour.Cell.REBAR;
+		}
+		if (state.is(ModBlocks.WET_CONCRETE) || state.is(ModBlocks.CONCRETE) || state.is(ModBlocks.REINFORCED_CONCRETE)) {
+			return MoldPour.Cell.CONCRETE;
 		}
 		// Air, water, lava, plants, snow layers... = blocks that a placed block would replace.
 		return state.canBeReplaced() ? MoldPour.Cell.OPEN : MoldPour.Cell.SOLID;

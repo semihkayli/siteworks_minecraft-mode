@@ -31,6 +31,7 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add("item.siteworks.concrete_bucket.amount", "Concrete: %s/%s blocks");
 		builder.add("message.siteworks.pour.leaks", "The formwork leaks!");
 		builder.add("message.siteworks.pour.full", "The mold is full.");
+		builder.add("message.siteworks.pour.protected", "You can't pour concrete here (protected area or the edge of the world).");
 		builder.add(ModBlocks.FORMWORK, "Formwork");
 		builder.add(ModBlocks.REBAR, "Rebar");
 		builder.add(ModBlocks.CONCRETE, "Concrete");

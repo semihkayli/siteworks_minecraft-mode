@@ -33,6 +33,7 @@
   "message.siteworks.mixer.status": "Cement %s · Sand %s · Gravel %s · Water %s/%s · Ready %s/%s",
   "message.siteworks.pour.full": "The mold is full.",
   "message.siteworks.pour.leaks": "The formwork leaks!",
+  "message.siteworks.pour.protected": "You can't pour concrete here (protected area or the edge of the world).",
   "message.siteworks.trowel.blocked": "Something is in the way.",
   "message.siteworks.trowel.need_block": "Hold the bricks in your other hand, or click a masonry block.",
   "message.siteworks.trowel.no_blocks": "No more %s!",

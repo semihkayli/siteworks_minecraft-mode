@@ -54,14 +54,14 @@ public final class TrowelPreview {
 		GlobalPos savedStart = trowel.get(ModDataComponents.ROW_START);
 		BlockPos start = savedStart != null && savedStart.dimension().equals(level.dimension()) ? savedStart.pos() : null;
 		if (start != null) {
-			dot(level, START, start, 3);
+			PreviewParticles.dot(level, START, start, 3);
 		}
 		if (!(minecraft.hitResult instanceof BlockHitResult hit) || hit.getType() != HitResult.Type.BLOCK) {
 			return;
 		}
 		BlockPos spot = TrowelItem.spotFor(hit.getBlockPos(), level.getBlockState(hit.getBlockPos()), hit.getDirection());
 		if (start == null) {
-			dot(level, SPOT, spot, 2);
+			PreviewParticles.dot(level, SPOT, spot, 2);
 			return;
 		}
 
@@ -69,7 +69,7 @@ public final class TrowelPreview {
 		Direction direction = spot.equals(start) ? Direction.UP : TrowelItem.straightDirection(start, spot);
 		int length = start.distManhattan(spot) + 1;
 		if (direction == null || length > TrowelMode.ROW.maxBlocks()) {
-			dot(level, WRONG, spot, 3);
+			PreviewParticles.dot(level, WRONG, spot, 3);
 			return;
 		}
 		// Like the real placing: the row ends at the first spot that is not free.
@@ -78,18 +78,7 @@ public final class TrowelPreview {
 			if (!level.getBlockState(pos).canBeReplaced()) {
 				break;
 			}
-			dot(level, ROW, pos, 1);
-		}
-	}
-
-	/** {@code count} dust particles near the middle of a block spot. */
-	private static void dot(ClientLevel level, DustParticleOptions color, BlockPos pos, int count) {
-		for (int i = 0; i < count; i++) {
-			level.addParticle(color,
-					pos.getX() + 0.5 + (level.getRandom().nextDouble() - 0.5) * 0.3,
-					pos.getY() + 0.5 + (level.getRandom().nextDouble() - 0.5) * 0.3,
-					pos.getZ() + 0.5 + (level.getRandom().nextDouble() - 0.5) * 0.3,
-					0.0, 0.0, 0.0);
+			PreviewParticles.dot(level, ROW, pos, 1);
 		}
 	}
 }
