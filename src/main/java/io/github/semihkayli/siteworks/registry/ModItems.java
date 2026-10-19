@@ -65,7 +65,7 @@ public final class ModItems {
 					.component(ModDataComponents.TROWEL_MODE, TrowelMode.ROW)
 					.component(ModDataComponents.MORTAR_CHARGE, 0));
 
-	// Frame: an Iron Ingot smelted again (furnace or blast furnace) -> Steel Ingot. 7 steel -> 8 Steel Beams.
+	// Frame: an Iron Ingot smelted again (furnace or blast furnace) -> Steel Ingot. 7 steel -> 16 Steel Beams.
 	public static final Item STEEL_INGOT = register("steel_ingot", Item::new, new Item.Properties());
 
 	// TEST ITEM (Phase 1 ghost test). Creative only, no recipe. Replaced by the Survey Stake in Phase 5.

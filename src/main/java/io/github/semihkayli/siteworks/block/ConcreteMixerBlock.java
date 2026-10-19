@@ -5,6 +5,7 @@ import io.github.semihkayli.siteworks.item.ConcreteBucketItem;
 import io.github.semihkayli.siteworks.registry.ModBlockEntities;
 import io.github.semihkayli.siteworks.registry.ModDataComponents;
 import io.github.semihkayli.siteworks.registry.ModItems;
+import io.github.semihkayli.siteworks.util.Messages;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -78,6 +79,12 @@ public class ConcreteMixerBlock extends BaseEntityBlock {
 
 		int slot = ConcreteMixerBlockEntity.slotFor(stack);
 		if (slot >= 0) {
+			// A slot holds one kind (e.g. sand OR red sand). Say so, instead of silently doing nothing.
+			ItemStack stored = mixer.getItem(slot);
+			if (!stored.isEmpty() && !ItemStack.isSameItemSameComponents(stored, stack)) {
+				Messages.error(player, Component.translatable("message.siteworks.mixer.slot_taken", stored.getHoverName()));
+				return InteractionResult.SUCCESS;
+			}
 			if (mixer.insert(slot, stack, consume) > 0) {
 				level.playSound(null, pos, SoundEvents.GRAVEL_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
 			}

@@ -27,6 +27,7 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add("message.siteworks.mixer.status", "Çimento %s · Kum %s · Çakıl %s · Su %s/%s · Hazır %s/%s");
 		builder.add("message.siteworks.mixer.mixing", " · Karıştırıyor...");
 		builder.add("message.siteworks.mixer.no_concrete", "Henüz hazır beton yok.");
+		builder.add("message.siteworks.mixer.slot_taken", "Betoniyerde zaten %s var. Önce onu kullan.");
 		builder.add(ModItems.CONCRETE_BUCKET, "Beton Kovası");
 		builder.add("item.siteworks.concrete_bucket.amount", "Beton: %s/%s blok");
 		builder.add("message.siteworks.pour.leaks", "Kalıp sızdırıyor!");

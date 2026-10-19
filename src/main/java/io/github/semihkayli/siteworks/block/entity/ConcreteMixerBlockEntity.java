@@ -98,8 +98,10 @@ public class ConcreteMixerBlockEntity extends BlockEntity implements WorldlyCont
 			mixer.progress = 0;
 			level.playSound(null, pos, SoundEvents.MUD_PLACE, SoundSource.BLOCKS, 1.0f, 0.8f);
 			mixer.updateFillLevel();
+			// Save only when a batch is done, not every tick. If the game stops mid-batch, the saved progress
+			// is a bit old, so that batch just takes a few seconds longer. Nothing is lost.
+			mixer.setChanged();
 		}
-		mixer.setChanged();
 	}
 
 	private boolean canMix() {

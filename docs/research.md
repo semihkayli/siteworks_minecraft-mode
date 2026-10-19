@@ -24,8 +24,8 @@ _Checked 2026-10-11. This file is about **technology only**. Game content is in 
 | Java (JDK) | **25** | Needed for Minecraft 26.1+ |
 | Fabric Loader | 0.19.5 | Latest stable |
 | Fabric API | 0.162.0+26.3 (2026-10-06) | Mod ID is now `fabric-api` (was `fabric`) |
-| Fabric Loom (Gradle plugin) | 1.17 | Plugin: `net.fabricmc.fabric-loom` |
-| Gradle | 9.6.0 | Comes with the template (Gradle wrapper) |
+| Fabric Loom (Gradle plugin) | 1.18.4 (pinned 2026-10-19; was `1.18-SNAPSHOT`) | Plugin: `net.fabricmc.fabric-loom` |
+| Gradle | 9.7.1 | Comes with the template (Gradle wrapper) |
 | Names in code | **Mojang official names** | Yarn is not supported any more |
 | IDE | IntelliJ IDEA **2025.3+** | Older versions break Mixins |
 

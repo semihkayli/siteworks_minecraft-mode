@@ -29,6 +29,7 @@
   "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks",
   "message.siteworks.mixer.mixing": " · Mixing...",
   "message.siteworks.mixer.no_concrete": "No concrete ready yet.",
+  "message.siteworks.mixer.slot_taken": "The mixer already holds %s. Use it up first.",
   "message.siteworks.mixer.status": "Cement %s · Sand %s · Gravel %s · Water %s/%s · Ready %s/%s",
   "message.siteworks.pour.full": "The mold is full.",
   "message.siteworks.pour.leaks": "The formwork leaks!",

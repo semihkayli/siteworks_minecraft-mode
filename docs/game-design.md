@@ -29,6 +29,9 @@ _Technical research (versions, tools, Java) is in `docs/research.md`._
 | 18 | Hand Truck | **Moved to v1.1+**: item-duplication risk must be avoided in v1.0 |
 | 19 | Ghost look | **Vanilla Block Displays** (slightly smaller glowing blocks) ✅ No custom rendering |
 | 20 | More features (crane, insulation…) | ❌ **Scope locked.** A crane needs moving physics, and insulation is a hidden inventory chore |
+| 21 | Inspection (Inspector's Clipboard) | ❌ **Dropped** (user, 2026-10-19: "I don't want to do this") |
+| 22 | Light gameplay rules | (user, 2026-10-19): "some basic rules for reality and fun", but not too real and not boring. Result: the **Foundation rule** (row 23). Other candidates in §5 |
+| 23 | **Foundation rule** | ✅ **In v1.0** (user opened the scope, 2026-10-19). Its own phase after Phase 3½. See §3.8 |
 
 ---
 
@@ -176,6 +179,22 @@ Concrete Mixer  +  cement + sand + gravel + water  →  fills Concrete Buckets
 | ~~**Hand Truck (yük arabası)**~~ → **v1.1+** | Replaces the wheelbarrow. Right-click a **full chest or barrel** → you carry it **with all its items**, and right-click again to place it somewhere else. You move slowly while carrying. Great for moving your storage when the site changes. Only vanilla chests, barrels and our own blocks, to avoid bugs with other mods |
 | **Scaffolding** | Vanilla, no new block |
 
+### 3.8 Foundation (temel) — added to v1.0 on 2026-10-19
+
+The user's idea: you never *have* to build a foundation, but a good foundation makes your building safe from explosions.
+
+| | Rule |
+|---|---|
+| **No foundation** | Normal Minecraft: explosions damage the building |
+| **What counts** | A layer of **Reinforced Concrete only** (user), resting on **firm ground** (stone, a gravel bed / blokaj, concrete). On soft ground (dirt, grass, sand, mud, clay) it doesn't count |
+| **Reward** | Every block **directly above** the foundation (its "shadow") is **explosion-proof** up to the height limit: **TNT and explosive mobs (creepers and the like) don't damage it** (user, 2026-10-19). Players and mobs still get hurt as normal |
+| **Height rule** | A thicker foundation allows a taller building (e.g. 1 layer → 8, 2 → 16, 3 → 32; numbers TBD). Real life: taller = heavier = bigger foundation (no single real ratio exists, so the numbers are a game choice) |
+| **Hard stop** (user, "maybe my idea changes later") | In a foundation's shadow you **can't place** blocks above the limit, like the world height limit, with a message ("Foundation too thin for this height! Add a layer."). Only there: blocks with no foundation under them are never limited. Claude's note: this may make players skip foundations; re-check in play |
+| **Replaces** | the "tall columns need a foundation" rule and Cracked Concrete (round 2 ideas) |
+
+- Shadow instead of "connected blocks": understood in 10 seconds, fast, and trees/terrain next to the house are never protected by accident.
+- Code: Fabric has no explosion event → our first small **mixin** in `ServerExplosion`. Phase 7: maybe an on/off switch for PvP servers.
+
 ---
 
 ## 4. v1.0 item list (~26)
@@ -206,7 +225,15 @@ Concrete Mixer  +  cement + sand + gravel + water  →  fills Concrete Buckets
   - Hollow bricks hide the lines.
   - The Blueprint gets a **Services view**.
 - **Idea, undecided (user, 2026-10-18):** a foundation is required before construction can start. Not in v1.0: it's a rule players must check, and it's unclear how it fits with vanilla builds and blueprints.
-- **Inspection:** an optional Inspector's Clipboard with a ⭐ certificate. Never mandatory, never blocks building.
+- ~~**Inspection:** an optional Inspector's Clipboard with a ⭐ certificate.~~ **Dropped** (user, 2026-10-19).
+- **Light gameplay rules, undecided (opened 2026-10-19, decide in the Phase 4 discussion).** The user wants a few rules "for reality and fun", not too real, not boring. Test for every rule: you can see it, it acts at once, and it never breaks finished work. Candidates (Claude's ideas):
+  - ✅ **Footprint mode shows the foundation layer in its own color** (Phase 5): guidance, not a rule. User: OK.
+  - ✅ **The Foundation rule** → moved to **§3.8** (v1.0, user 2026-10-19). It replaces the round 2 ideas ("tall columns need a foundation", Cracked Concrete).
+  - ℹ️ **Creeper idea:** vanilla already does a logical version. Explosions lose power in blocks with high blast resistance, so a Reinforced Concrete outer wall also shields what's behind it. Teach it (tooltip / "Iron Will"), no new rule.
+  - 🤔 Rebar holds wet concrete (like scaffolding's distance rule). User: not sure, maybe illogical.
+  - ❌ Rejected by the user (2026-10-19): monsters can't spawn on concrete ("illogical"), watering helps curing ("not necessary").
+  - ❌ Claude advises against: timed breaks or timed warnings for buildings (the player can be offline or away, chunks unload, a friend's build on a server breaks; tracking whole buildings over time is heavy), and "everything on a foundation is blast-proof" (a glass window or wood wall would be blast-proof too: hidden and odd).
+- **Trowel later:** a Plaster/Paint mode for the finishing update (user's paint idea; in real life the trowel is also used for plaster).
 - **Finishing (ince inşaat):** plaster, tiles, fixtures, furniture, comfort and the "Well Rested" buff.
 - **Future:** Architect villager + house blueprint catalog, blueprint library (Creative → Survival), elevator, fire safety.
 - **Never:** volts/litres/pressure math, structural collapse physics, item pipes/factories, random breakdowns, cranes (moving physics), insulation (hidden chore).
@@ -290,5 +317,5 @@ The full phase plan is in **`docs/phases.md`** (Phases 0–7).
 
 ## 8. Scope status
 
-✅ All design questions are answered (see §0, rows 16–20). **The v1.0 scope is locked.**
+✅ All design questions are answered (see §0, rows 16–20). **The v1.0 scope is locked.** The user opened it once on 2026-10-19 for the Foundation rule (§3.8, §0 row 23).
 New ideas go to §5 "Later". Small details (exact recipes, numbers) are decided inside each phase's "Discuss before starting".

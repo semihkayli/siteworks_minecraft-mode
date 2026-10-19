@@ -10,19 +10,19 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Mattock (Kazma Çapa) | `siteworks:mattock` | 1 | ✅ tested in-game |
 | Sledgehammer (Balyoz) | `siteworks:sledgehammer` | 1 | ✅ tested in-game (incl. Phase 2 ceiling debris) |
 | Hard Hat (Baret) | `siteworks:hard_hat` | 1 | ✅ tested in-game (anvil + falling wet concrete, 2026-10-18) |
-| Safety Net (Güvenlik Ağı) — block | `siteworks:safety_net` | 1 | ✅ tested in-game |
+| Safety Net (Güvenlik Ağı) — block | `siteworks:safety_net` | 1 | ✅ tested in-game. Burning (Phase 3½ R1): ✅ tested in-game (2026-10-19) |
 | Ghost Test (Hayalet Testi) — **TEST ITEM** | `siteworks:ghost_test` | 1 | ✅ tested in-game (512 ghosts = 112–116 FPS). Replaced by the Survey Stake in Phase 5 |
 | Cement Mix (Çimento Karışımı) | `siteworks:cement_mix` | 2 | ✅ tested in-game |
 | Cement (Çimento) | `siteworks:cement` | 2 | ✅ tested in-game |
-| Concrete Mixer (Betoniyer) — block | `siteworks:concrete_mixer` | 2 | ✅ tested in-game (right-click, water, mixing, buckets, save, drops, hopper input) |
-| Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅ |
+| Concrete Mixer (Betoniyer) — block | `siteworks:concrete_mixer` | 2 | ✅ tested in-game (right-click, water, mixing, buckets, save, drops, hopper input). "Slot taken" message (Phase 3½ R1): ✅ tested in-game (2026-10-19) |
+| Concrete Bucket (Beton Kovası) | `siteworks:concrete_bucket` | 2 | ✅ tested in-game + 14 unit tests ✅. No hand dip (Phase 3½ R1): ✅ tested in-game (2026-10-19) |
 | Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
 | Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 | Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (2026-10-18) |
-| Trowel (Mala) | `siteworks:trowel` | 3 | ✅ tested in-game: mortar charge (step 3), Row "from → to" (step 3b), particle preview (step 5, 2026-10-19). Course mode dropped (step 4) |
+| Trowel (Mala) | `siteworks:trowel` | 3 | ✅ tested in-game: mortar charge (step 3), Row "from → to" (step 3b), particle preview (step 5, 2026-10-19). Course mode dropped (step 4). No hand dip (Phase 3½ R1): ✅ tested in-game (2026-10-19) |
 | Steel Ingot (Çelik Külçe) | `siteworks:steel_ingot` | 3 | ✅ tested in-game (2026-10-18) |
 | Steel Beam (Çelik Kiriş) — block | `siteworks:steel_beam` | 3 | ✅ tested in-game: block, extending bridge (step 2), 16 per craft + climbable column (step 2b, 2026-10-19) |
 
@@ -161,7 +161,8 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Recipe | Shaped, `S.S / .S. / S.S` (5 string) → **4** Safety Nets |
 | Recipe book | Unlocks when the player gets string |
 | Bounce | `bounceRestitution(0.3)`, handled by vanilla (slime = 1.0, bed = 0.75). Vanilla stops the bounce while sneaking |
-| Strength | 0.4 (breaks fast, even by hand), wool sounds, map color = wool, can catch fire from lava |
+| Strength | 0.4 (breaks fast, even by hand), wool sounds, map color = wool |
+| Fire | **Burns like wool** (Phase 3½ R1, user: "it could burn"): catches fire easily (30) and burns away fast (60), also from lava next to it. A burnt net drops nothing |
 | Drops | Itself (also by hand). Not when destroyed by an explosion (vanilla `dropSelf`) |
 | Look (placeholder) | Block = vanilla `template_trapdoor_top` model with the `block/cobweb` texture. The holes render correctly (26.x picks the cutout layer from the texture). Inventory icon = flat cobweb. A new look comes in Phase 6 |
 
@@ -174,7 +175,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 - `block/SafetyNetBlock.java`:
   - `getShape` = `Block.box(0, 13, 0, 16, 16, 16)`
   - `fallOn` does nothing, so there's no damage
-- `registry/ModBlocks.java`: registers the block + `BlockItem`
+- `registry/ModBlocks.java`: registers the block + `BlockItem`; `init()` registers the flammability (Fabric `FlammableBlockRegistry`)
 - Datagen:
   - `ModModelProvider` (blockstate + `safety_net_top` model + flat item icon)
   - `ModBlockLootProvider` (`dropSelf`)
@@ -376,6 +377,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Stack | 1 |
 | Sounds | Mud place + bucket empty, when something was poured |
 | Stats | Counts as "used" in the vanilla statistics (for advancements later) |
+| Hand animation | The hand does **not** dip when the amount changes (`allowComponentsUpdateAnimation` = false, Phase 3½ R1) |
 | Look (placeholder) | Flat vanilla `item/powder_snow_bucket` icon. A new look comes in Phase 6 |
 
 **Mold pour rules** (concrete behaves like water):
@@ -416,7 +418,7 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 | Sneak + right-click | Vanilla behaviour (e.g. place sand next to the mixer instead of putting it in) |
 | Water source | A **water source block next to it** (any of the 6 sides, waterlogged blocks too) refills the water to 8/8 by itself, once per second |
 | Creative mode | Inserting doesn't use up your items (like vanilla) |
-| Sand slot | Holds sand **or** red sand, not both at the same time (a slot keeps one item type) |
+| Sand slot | Holds sand **or** red sand, not both at the same time (a slot keeps one item type, because hoppers need real item stacks). Right-click with the other kind → red message "The mixer already holds Sand. Use it up first." (Phase 3½ R1; before, nothing happened) |
 | Look | Vanilla cauldron shape with iron block sides. The **ready concrete shows inside**: state `fill` = 0 (empty), 1 (1–21 blocks), 2 (22–42), 3 (43–64), with the `gray_concrete_powder` texture. Particles (gray dust) + a grinding sound while mixing, a mud sound when a batch is done |
 | Strength | Hardness 2 (like a cauldron), metal sounds, needs a pickaxe to drop (`#minecraft:mineable/pickaxe`) |
 | Drops | Itself. The **stored cement, sand and gravel drop too**. Water and ready concrete are lost (they have no item) |
@@ -424,7 +426,7 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 
 **Code:**
 - `block/ConcreteMixerBlock.java`: `BaseEntityBlock`, `FILL` property, right-click (`useItemOn` / `useWithoutItem`), ticker
-- `block/entity/ConcreteMixerBlockEntity.java`: storage (3 item slots + water + ready + progress), mixing every server tick, saving (`saveAdditional` / `loadAdditional`), drops on break (`preRemoveSideEffects`), hopper input (implements vanilla `WorldlyContainer`: `canPlaceItemThroughFace` = the right slot only, `canTakeItemThroughFace` = always false). All numbers are constants at the top
+- `block/entity/ConcreteMixerBlockEntity.java`: storage (3 item slots + water + ready + progress), mixing every server tick (marked for saving only when a batch is done, Phase 3½ R1), saving (`saveAdditional` / `loadAdditional`), drops on break (`preRemoveSideEffects`), hopper input (implements vanilla `WorldlyContainer`: `canPlaceItemThroughFace` = the right slot only, `canTakeItemThroughFace` = always false). All numbers are constants at the top
 - `registry/ModBlockEntities.java`: `CONCRETE_MIXER` block entity type
 - Models by hand: `src/main/resources/assets/siteworks/models/block/concrete_mixer{,_level1,_level2,_full}.json` (parents = vanilla cauldron models). Blockstate from datagen (`ModModelProvider`, `PropertyDispatch` on `fill`)
 - Datagen: `ModBlockLootProvider` (`dropSelf`), `ModBlockTagProvider`, `ModRecipeProvider`, both lang providers (also the status messages)
@@ -500,7 +502,9 @@ closed mold bottom-up (16 = 9 + 7), pour from above drops to the floor, small mo
 | What it does | A **builder's wand for masonry**. Right-click a masonry block: it places many blocks at once, from your inventory, and uses **Mortar** (1 Mortar = 8 blocks) |
 | Which block | 1. a **masonry block in your other hand**; 2. else the **masonry block you clicked at the 1st click** (it copies the wall; saved on the trowel as `siteworks:row_block`); 3. else the masonry block you clicked at the 2nd click. None → "Hold the bricks in your other hand, or click a masonry block." |
 | Blocks from | Your **whole inventory** (hotbar, main inventory, off hand), not only the hand |
-| Mode: **Row (8)** = "from → to" (step 3b, fixed after the user's video) | **Both clicks mark a spot where a brick goes:** the spot in front of the clicked face (grass/snow: the clicked spot itself), like the Measuring Tape corners. **1st click** = the start spot → green sparkles there + "Row start set. Now click where the row ends (max 8)." (saved as `siteworks:row_start` with the dimension, shown in the tooltip). **2nd click** = the end spot → the straight line **from the start spot to the end spot, both included**, 1–8 blocks. Same spot twice = 1 block. Examples: click the **top** of a wall at both ends = a new layer on top; click the **top of the ground** at both ends = a first row on bare ground. **A wrong 2nd click never gets you stuck:** not straight → "Not a straight line. New row start set here.", longer than 8 → "Too long (max 8)! New row start set here." (red, and that click becomes the new start). **Cancel:** sneak + right-click the air while a start is set → "Row start removed." (the mode does NOT change; the next sneak + air click changes the mode). The first blocked spot still ends the row early. A start in another dimension is ignored. History: the 1st version used the start **block** (row after it, start kept after a wrong click) → in the user's video every click said "Not a straight line." (stuck with an invisible old start, and rows on top of a wall were impossible) |
+| Which hand | Hold the trowel in the **main hand** (bricks in the off hand if you want). With the trowel in the off hand and bricks in the main hand, vanilla uses the main hand first: it places 1 normal brick and the trowel does nothing |
+| Hand animation | The hand does **not** dip when the charge or the row start changes (`allowComponentsUpdateAnimation` = false, Phase 3½ R1) |
+| Mode: **Row (8)** = "from → to" (step 3b, fixed after the user's video) | **Both clicks mark a spot where a brick goes:** the spot in front of the clicked face (grass/snow: the clicked spot itself), like the Measuring Tape corners. **1st click** = the start spot → green sparkles there + "Row start set. Now click where the row ends (max 8)." (saved as `siteworks:row_start` with the dimension, shown in the tooltip). **2nd click** = the end spot → the straight line **from the start spot to the end spot, both included**, 1–8 blocks. Same spot twice = 1 block. Examples: click the **top** of a wall at both ends = a new layer on top; click the **top of the ground** at both ends = a first row on bare ground. **A wrong 2nd click never gets you stuck:** not straight → "Not a straight line. New row start set here.", longer than 8 → "Too long (max 8)! New row start set here." (red, and that click becomes the new start). **Cancel:** sneak + right-click the air while a start is set → "Row start removed.". The first blocked spot still ends the row early. A start in another dimension is ignored. History: the 1st version used the start **block** (row after it, start kept after a wrong click) → in the user's video every click said "Not a straight line." (stuck with an invisible old start, and rows on top of a wall were impossible) |
 | ~~Mode: Course (16)~~ | **Dropped** (user, 2026-10-19: the "from → to" Row is enough). The trowel has only Row now. A trowel saved in the old Course mode loads as Row |
 | Sneak + right-click the air | **Cancels the row start** ("Row start removed."); does nothing when no start is set. (It switched modes while Course mode existed; Phase 5 may bring a mode switch back for "Blueprint fill") |
 | Preview (step 5) | While you hold the trowel (either hand), small **dust particles** show the row, **only for you** (made on your computer), 5 times per second. **No start yet:** a **white** dot on the spot you look at (= where the row would start). **Start set:** a **yellow** dot on the start, **green** dots on every spot from the start to the spot you look at (stops at the first spot that isn't free, like the real placing), or a **red** dot on the spot you look at if it is not in a straight line or more than 8 (a click there makes it the new start). It uses the same spot + line rules as the placing code (`TrowelItem.spotFor`, `straightDirection`) |

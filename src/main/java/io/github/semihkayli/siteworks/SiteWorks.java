@@ -17,17 +17,12 @@ import org.slf4j.LoggerFactory;
 public class SiteWorks implements ModInitializer {
 	public static final String MOD_ID = "siteworks";
 
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
+	/** Writes to the console and run/logs/latest.log, with our mod ID as the name. */
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	/** Runs once when the game starts, on both the client and the server. Registers all our content. */
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
-
 		ModDataComponents.init();
 		ModBlocks.init();
 		ModBlockEntities.init();

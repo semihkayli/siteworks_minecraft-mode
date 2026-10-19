@@ -4,6 +4,7 @@ import io.github.semihkayli.siteworks.block.WetConcreteBlock;
 import io.github.semihkayli.siteworks.pour.MoldPour;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModDataComponents;
+import io.github.semihkayli.siteworks.util.Messages;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -78,7 +80,7 @@ public class ConcreteBucketItem extends Item {
 				player.awardStat(Stats.ITEM_USED.get(this));
 			}
 			if (result.status() == MoldPour.Status.LEAKS) {
-				player.sendOverlayMessage(Component.translatable("message.siteworks.pour.leaks").withStyle(ChatFormatting.RED));
+				Messages.error(player, Component.translatable("message.siteworks.pour.leaks"));
 			} else if (result.status() == MoldPour.Status.FULL) {
 				player.sendOverlayMessage(Component.translatable("message.siteworks.pour.full"));
 			}
@@ -109,6 +111,12 @@ public class ConcreteBucketItem extends Item {
 		}
 		// Air, water, lava, plants, snow layers... = blocks that a placed block would replace.
 		return state.canBeReplaced() ? MoldPour.Cell.OPEN : MoldPour.Cell.SOLID;
+	}
+
+	/** The amount changes after every pour. Without this, the hand would dip (the "take the item out again" animation). */
+	@Override
+	public boolean allowComponentsUpdateAnimation(Player player, InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
+		return false;
 	}
 
 	// The bar under the icon (like durability) shows what's left. Hidden when the bucket is full.

@@ -1,6 +1,6 @@
 package io.github.semihkayli.siteworks.item;
 
-import net.minecraft.ChatFormatting;
+import io.github.semihkayli.siteworks.util.Messages;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -97,7 +97,7 @@ public class SteelBeamItem extends BlockItem {
 	/** An action bar message, only on the server (the client runs this method too, to guess the result). */
 	private static void message(BlockPlaceContext context, String key) {
 		if (!context.getLevel().isClientSide() && context.getPlayer() != null) {
-			context.getPlayer().sendOverlayMessage(Component.translatable(key).withStyle(ChatFormatting.RED));
+			Messages.error(context.getPlayer(), Component.translatable(key));
 		}
 	}
 }

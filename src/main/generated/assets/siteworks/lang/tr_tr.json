@@ -29,6 +29,7 @@
   "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu",
   "message.siteworks.mixer.mixing": " · Karıştırıyor...",
   "message.siteworks.mixer.no_concrete": "Henüz hazır beton yok.",
+  "message.siteworks.mixer.slot_taken": "Betoniyerde zaten %s var. Önce onu kullan.",
   "message.siteworks.mixer.status": "Çimento %s · Kum %s · Çakıl %s · Su %s/%s · Hazır %s/%s",
   "message.siteworks.pour.full": "Kalıp dolu.",
   "message.siteworks.pour.leaks": "Kalıp sızdırıyor!",

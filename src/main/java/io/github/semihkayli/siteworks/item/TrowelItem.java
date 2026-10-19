@@ -3,6 +3,7 @@ package io.github.semihkayli.siteworks.item;
 import io.github.semihkayli.siteworks.registry.ModDataComponents;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import io.github.semihkayli.siteworks.registry.ModTags;
+import io.github.semihkayli.siteworks.util.Messages;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -116,7 +117,7 @@ public class TrowelItem extends Item {
 		}
 		clearRowStart(trowel);
 		if (blockItem == null) {
-			message(player, Component.translatable("message.siteworks.trowel.need_block"));
+			Messages.error(player, Component.translatable("message.siteworks.trowel.need_block"));
 			return InteractionResult.FAIL;
 		}
 
@@ -147,7 +148,7 @@ public class TrowelItem extends Item {
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, spot.getX() + 0.5, spot.getY() + 0.5, spot.getZ() + 0.5,
 				10, 0.25, 0.25, 0.25, 0.0);
 		if (warning) {
-			message(player, text);
+			Messages.error(player, text);
 		} else {
 			player.sendOverlayMessage(text);
 		}
@@ -211,7 +212,7 @@ public class TrowelItem extends Item {
 		}
 		trowel.set(ModDataComponents.MORTAR_CHARGE, charge);
 		if (problem != null) {
-			message(player, problem);
+			Messages.error(player, problem);
 		}
 		return placed;
 	}
@@ -267,8 +268,13 @@ public class TrowelItem extends Item {
 		return ItemStack.EMPTY;
 	}
 
-	private static void message(Player player, Component text) {
-		player.sendOverlayMessage(text.copy().withStyle(ChatFormatting.RED));
+	/**
+	 * The mortar charge and the row start change on almost every click. Without this, Minecraft would play
+	 * the "take the item out again" hand animation (the hand dips) after each change.
+	 */
+	@Override
+	public boolean allowComponentsUpdateAnimation(Player player, InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
+		return false;
 	}
 
 	// The bar under the icon shows the mortar left in the trowel (0-8 blocks). Hidden when empty.

@@ -26,7 +26,7 @@ public final class ModDataComponents {
 					.networkSynchronized(ByteBufCodecs.VAR_INT)
 					.build());
 
-	/** The Trowel's mode (Row / Course). */
+	/** The Trowel's mode. Only Row for now; kept for Phase 5 (Blueprint fill), and so old saved trowels still load. */
 	public static final DataComponentType<TrowelMode> TROWEL_MODE = Registry.register(
 			BuiltInRegistries.DATA_COMPONENT_TYPE,
 			SiteWorks.id("trowel_mode"),

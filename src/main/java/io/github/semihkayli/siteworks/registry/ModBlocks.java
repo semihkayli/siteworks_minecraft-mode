@@ -9,6 +9,7 @@ import io.github.semihkayli.siteworks.block.WetConcreteBlock;
 import io.github.semihkayli.siteworks.item.SteelBeamItem;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -23,7 +24,7 @@ import net.minecraft.world.level.material.MapColor;
 
 /** All blocks of the mod. Each block also gets a BlockItem, so it can be held and placed. */
 public final class ModBlocks {
-	// Soft like wool, burns, no fall damage, small bounce (slime = 1.0, bed = 0.75).
+	// Soft like wool, burns like wool (see init), no fall damage, small bounce (slime = 1.0, bed = 0.75).
 	public static final Block SAFETY_NET = register("safety_net",
 			SafetyNetBlock::new,
 			BlockBehaviour.Properties.of()
@@ -135,5 +136,7 @@ public final class ModBlocks {
 	}
 
 	public static void init() {
+		// Fire can burn the Safety Net, like wool: catches fire easily (30) and burns away fast (60).
+		FlammableBlockRegistry.getDefaultInstance().add(SAFETY_NET, 30, 60);
 	}
 }

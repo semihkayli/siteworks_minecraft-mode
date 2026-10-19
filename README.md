@@ -1,9 +1,17 @@
 # Site Works
 
-## Setup
+A Fabric mod for Minecraft 26.3 about rough construction: concrete molds that cure, rebar, a trowel builder's wand that uses mortar, steel beams, 3×3 digging tools and (coming) blueprint holograms.
 
-For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
+Work in progress. The plan and the rules are in `docs/` (start with `docs/phases.md`).
+
+## Build
+
+- `./gradlew runClient` starts Minecraft with the mod.
+- `./gradlew build` builds the jar into `build/libs/`.
+- `./gradlew test` runs the unit tests.
+
+Needs Java 25. The only dependency is Fabric API.
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Not decided yet (Phase 7). The `LICENSE` file is still the CC0 file from the Fabric template.

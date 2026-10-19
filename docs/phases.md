@@ -2,12 +2,12 @@
 
 ## Current status
 
-- **Phase:** 3 — Masonry & frame, **done** ✅ (2026-10-19). Next: **Phase 4 — Blueprints, not started** (discuss the questions first, best in a new chat).
-- **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
+- **Phase:** 3 — Masonry & frame, **done** ✅ (2026-10-19). Next: **Phase 3½ — Review fixes** (steps R1–R3, decided 2026-10-19), then **Phase 3¾ — Foundations** (new v1.0 content, user 2026-10-19), then **Phase 4 — Blueprints, not started** (discuss the questions first, best in a new chat).
+- **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18.4 (pinned 2026-10-19, was 1.18-SNAPSHOT), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Phase 2 summary:** Formwork, Rebar, Concrete, Reinforced Concrete (Sledgehammer recycling via loot tables), Cement Mix → Cement, Wet Concrete (`WetConcreteBlock`: gravity + one scheduled tick for curing, falls directly in `neighborChanged` because Minecraft keeps only 1 scheduled tick per position), Concrete Bucket + the water-like mold pour (`pour/MoldPour`, pure Java, **14 JUnit tests**: `gradlew test`), Concrete Mixer (first **block entity**, right-click + hopper input via `WorldlyContainer`), Sledgehammer ceiling debris (1 heart, Hard Hat blocks it). Tests: creeper vs reinforced concrete ✅, 200 blocks curing at once = 12.1 ms/tick (13.0 before), 119 FPS ✅.
 - **Phase 3 summary:** Mortar (1 Cement + 4 Sand → 8), Steel Ingot (iron ingot smelted, furnace or blast furnace), Steel Beam (`SteelBeamBlock` = `RotatedPillarBlock` + `facing`; lying = full I-beam you walk on, standing = slim column in vanilla `#climbable`, climbed inside like a ladder; `SteelBeamItem` extends the line up to 8 ahead like scaffolding via `updatePlacementContext`; 7 steel → 16), Trowel (`TrowelItem`: Row "from → to" = 2 clicks on brick spots, inclusive, max 8, a wrong 2nd click becomes the new start; mortar charge 1 Mortar = 8 blocks kept on the item; every block via vanilla `BlockItem.place()`; `masonry_blocks` tag), client particle preview (`client/TrowelPreview`, white/yellow/green/red dust, client tick event). **Dropped by the user:** Course mode (step 4), the climbing mixin (replaced by the slim `#climbable` column). New data components: `trowel_mode` (only `row`), `mortar_charge`, `row_start`, `row_block`. Lessons: write every step report and discussion in the chat; ask back when an answer is unclear; only the user marks tests as passed (all in `docs/rules.md`).
-- **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `event/` in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`) in `src/client/java/.../client/`. No mixins (the mixin configs are empty). Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
+- **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `event/`, `util/` (`Messages`: red action bar messages) in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`) in `src/client/java/.../client/`. No mixins (the mixin configs are empty). Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
 - **Datagen notes:** run `gradlew runDatagen` after changing any provider. Never edit `src/main/generated/` by hand. Vanilla tags must be added with `forceAddTag` (plain `addTag` fails because datagen can't see vanilla tags). A JNA `Win32Exception: Parametre hatalı` line in the datagen log is harmless.
 - **26.3 API notes (old tutorials are wrong here):**
   - Dyes: `Items.DYE.yellow()` (a `ColorCollection`), not `Items.YELLOW_DYE`.
@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
+- **Next step:** Phase 3½ step R1 done ✅ (tested + committed 2026-10-19). Now R2 (mixer comparator), then R3. Then the Phase 3¾ (Foundations) discussion. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -214,6 +214,71 @@
 
 ---
 
+## Phase 3½ — Review fixes (1–2 sessions)
+
+**Why:** a full code review after Phase 3 (2026-10-19). No crash bugs and no item duplication were found, but some things feel broken to the player. The user agreed to the list. Claude decided the order (the user asked for it).
+
+**Decisions:** (2026-10-19)
+- **Do now (before Phase 4):**
+  - The hand "dips" (re-equip animation) every time the Trowel or Concrete Bucket data changes → `allowComponentsUpdateAnimation` = false.
+  - Mixer + red sand: the sand slot keeps one kind (hoppers need real item stacks), so we show a message instead of failing silently ("The sand slot has Sand. Use it up first."). In real life any clean sand works, and that's still true: just not both kinds at the same time.
+  - **Safety Net burns** (user: "it could burn"), like wool (Fabric `FlammableBlockRegistry`).
+  - Mixer: save (`setChanged`) only when something really changes, not every tick.
+  - One shared red-message helper (now copied in `TrowelItem` and `SteelBeamItem`).
+  - Old comments and docs (`ModItems` "8 beams", `ModDataComponents` "Row / Course", `items.md` "changes the mode", `research.md` versions, README + template comments).
+  - Pin Loom `1.18-SNAPSHOT` → `1.18.4` (a snapshot can change overnight and break the build).
+  - `items.md`: the Trowel must be in the **main hand** (bricks in the off hand). With the trowel in the off hand, the main hand places one normal brick first (vanilla order).
+  - Keep the unused `trowel_mode` component: Phase 5 needs it again, and removing a component type can break old saved trowels.
+  - **Comparator output** on the mixer = how much ready concrete is inside (0–15).
+  - **Pour preview** for the Concrete Bucket (like the trowel preview, client only, the same `MoldPour` code): gray dots where the concrete will go, a **red dot at the hole** if it leaks. Plus clearer messages: clicking the top of a wall or a full mold no longer says "The formwork leaks!". Protected empty cells (spawn protection, below the world) stop the pour instead of acting as a floor.
+- **Later:** shared "can I build here?" helper + a pure `RowPlan` class (start of Phase 5, Blueprint fill needs both), gravel ×4 from recycling (Phase 6 balance), claim mods (Phase 7).
+- **Leave:** wet concrete placed in the air cures at once if a block is put under it within 2 ticks (very rare, documented).
+- **Testing (Claude decided, user: "you decide"):** every new pure-Java logic gets unit tests (the leak position now, `RowPlan` in Phase 5). Fabric **GameTest** (automatic tests in a real world, part of Fabric API): not now, check again in Phase 6 before the full playthrough, when re-testing everything by hand gets long.
+
+**Steps:**
+- R1. Quick fixes: hand animation, red sand message, Safety Net burns, mixer saving, message helper, old comments/docs, pin Loom, `items.md` notes — ✅ done, tested in-game (2026-10-19)
+- R2. Mixer comparator output
+- R3. Pour preview + red leak dot + clearer pour messages + protected cells + new `MoldPour` unit tests
+
+**Done when:**
+- [x] The trowel and the bucket no longer dip when used (R1)
+- [x] Red sand into a sand-filled mixer shows a message (R1)
+- [x] Fire burns a Safety Net (R1)
+- [ ] A comparator next to the mixer shows the ready concrete
+- [ ] The bucket shows where the concrete goes, and a red dot at the hole of a leaking mold
+- [ ] Clicking the top of a wall or a full mold gives a correct message
+
+---
+
+## Phase 3¾ — Foundations (2–3 sessions)
+
+**Goal:** the Foundation rule (`game-design.md` §3.8): Reinforced Concrete on firm ground makes the blocks above it explosion-proof, up to a height limit (hard stop). Added to v1.0 by the user on 2026-10-19. Right after Phase 3½ because the concrete code is fresh, it doesn't depend on Blueprints, and the R3 pour preview can also warn "soft ground: no foundation".
+
+**Learn:** our first **mixin** (Fabric has no explosion event), a fast "column scan" (look down from a block to find its foundation).
+
+**Already decided (2026-10-19):** Reinforced Concrete only · on firm ground only · protects its "shadow" (blocks directly above) · thicker = taller · hard stop above the limit, only in a foundation's shadow (user: "maybe my idea changes later") · replaces the column rule and Cracked Concrete.
+
+**Discuss before starting:**
+- The numbers: layers → height (e.g. 1 → 8, 2 → 16, 3 → 32)? Max foundation thickness?
+- ~~Which explosions?~~ **Decided (user, 2026-10-19):** TNT **and** explosive mobs (creepers and the like) don't damage a protected building. Players and mobs still get hurt as normal. Open detail: the Wither also breaks blocks by touching them (not an explosion); does the protection cover that too?
+- Firm ground: exactly which blocks (stone types, gravel, concrete, deepslate...)? Is the bottom layer checked only, or every cell?
+- How does the player **see** the protected area and the limit (message when the foundation cures, particles, Hard Hat view...)?
+- Does the foundation need a minimum size (e.g. 3×3), so a single block can't protect a tower?
+- Do explosions next to the foundation (from below, from the side) damage the foundation itself? (Reinforced Concrete is already blast resistance 1200.)
+- The hard stop and other players / pistons / Endermen / falling blocks: which placements are stopped?
+- Unit tests for the pure "shadow + thickness" logic. Phase 7: an on/off switch for PvP servers?
+
+**Done when:**
+- [ ] A creeper and TNT next to a protected house break no protected blocks
+- [ ] The same house without a foundation (or on dirt) is damaged like vanilla
+- [ ] Placing above the limit is stopped with a message; a thicker foundation allows it
+- [ ] No lag with a big TNT explosion near a protected base
+
+**Decisions:**
+- _(write answers here)_
+
+---
+
 ## Phase 4 — Blueprints (5–7 sessions)
 
 **Goal:** save buildings as blueprints.
@@ -225,6 +290,13 @@
 - Where to store blueprint data (world saved data vs `.nbt` files in the world folder)
 - Max size (32×32×32?)
 - Cost of copying (1 paper?)
+- **From the Phase 3 review (2026-10-19), plan for these traps:**
+  - Tooltips run on the **client**, and the client can't read the server's blueprint files. So save the name, size and material list **on the item** (data components) when the blueprint is made.
+  - `StructureTemplate` also saves block entity data (= chest contents). "Blocks only" doesn't happen by itself: the code must remove it. This is the "full chest copies no items" test.
+  - Wet Concrete has no item: count it as Concrete / Reinforced Concrete in the material list.
+  - Templates never change after saving, so a copy can share the same template ID. Copy and rename only change the item.
+- **Cheap code preparation for later features (user: OK, 2026-10-19):** only small choices inside this phase, no extra phase. (1) The blueprint data gets a **version number**, so a later format (e.g. a Services view) can still read old blueprints. (2) The material list is a simple "block → count" list (works for pipes and plaster later). Don't build systems for v1.1+ now.
+- **Gameplay question (opened 2026-10-19, user):** why build walls with the trowel, and why lay a foundation? The user wants "some basic rules for reality and fun", not too real and not boring. The candidates are in `game-design.md` §5 ("Light gameplay rules"). Inspection is dropped. Decide here, and write the answer into `game-design.md`.
 
 **Done when:**
 - [ ] Select → save → the blueprint shows the correct size and material list
@@ -246,6 +318,11 @@
 **Discuss before starting:**
 - What counts as "correct": only the block type, or also the direction (stairs facing)?
 - Who can remove someone else's stake on a server?
+- **From the Phase 3 review (2026-10-19):**
+  - Start with 2 refactors that Blueprint fill needs: one shared "can I build here?" helper (Trowel, Beam, Bucket, 3×3 tools, Blueprint fill) and a pure, unit-tested `RowPlan` class (used by `TrowelItem` and `TrowelPreview`, so they always agree).
+  - Ghost cleanup, 2 ways: (A) **check when loaded:** each ghost has the stake's ID; when a ghost loads, it checks if its stake still exists and still wants it, otherwise it deletes itself (also removes old Ghost Test leftovers). (B) **never saved:** the server only tells each player's game "draw a ghost here" (network packets), nothing is saved, so there is nothing to clean, but it needs much more networking code. Claude recommends A.
+  - Footprint mode shows the foundation layer in its own color (user: OK, 2026-10-19).
+  - **Cheap code preparation (user: OK, 2026-10-19):** (3) the ghost filter (Full / Layer / Footprint) is one small function, so a later "Services view" is just one more filter; (4) the "can I build here?" helper is used by every tool (also future pipes, the Hand Truck, and the Foundation hard stop); (5) the trowel keeps its mode system, so a Plaster/Paint mode can be added later.
 - **From the Phase 1 review:** the old Ghost Test entities (tag `siteworks_ghost_test`) stay in test worlds. The orphan cleanup must also remove this old tag, and the Ghost Test item must be removed or hidden before release.
 - Ghost colors and size (e.g. 0.8 scale). **Phase 1 ghost test results (2026-10-12):**
   - **Performance OK:** 512 ghosts = 112–116 FPS, server 9.5 ms/tick (RTX 5060 laptop; weaker PCs may differ, so keep the 512 limit).
@@ -278,6 +355,7 @@
 - **From the Phase 1 review:** the 3×3 tools have no speed cost (9 blocks in the time of 1), and ring blocks harder than the center break for free (hit stone → deepslate around it breaks too). Test in play. Options: skip ring blocks harder than the center, and/or lower the mining speed (e.g. 4.0 instead of 6.0).
 - `sledge_breakable` misses some blocks: smooth/cut/chiseled sandstone, red nether bricks, cracked/chiseled deepslate bricks and tiles, cracked nether bricks, polished blackstone variants, quartz, prismarine, purpur, packed mud, smooth basalt.
 - Mixer: the user said "sneak + right-click with sand" (should place the sand, vanilla behaviour) "didn't work out, or maybe I didn't meet the conditions". Unclear, re-check in play.
+- **From the Phase 3 review (2026-10-19):** gravel ×4 from recycling (4 gravel → 16 concrete → 16 gravel with the Sledgehammer). Options: recycling gives less, or keep it. Fabric GameTest: yes or no (see Phase 3½ testing decision).
 - Code cleanup: remove the empty mixin configs (`siteworks.mixins.json`, `siteworks.client.mixins.json` + the `"mixins"` entry in `fabric.mod.json`) if still unused. Merge `flatItem`/`handheldTool` in `ModModelProvider` into one helper.
 
 **Done when:**
@@ -295,6 +373,7 @@
 
 **Content:** `build` → test the jar in the normal Minecraft launcher with Fabric Loader + Fabric API, README, license, a Modrinth page (free).
 ⚠️ Publishing is public, so Claude asks before uploading anything.
+**From the Phase 3 review (2026-10-19), user: "we will consider later":** on servers, claim mods are bypassed. Only spawn protection and the world border are checked for trowel spots 2–8, every pour cell and the beam end spot. Decide if v1.0 needs a fix (the shared "can I build here?" helper from Phase 5 is the one place to change).
 
 **Decisions:**
 - _(write answers here)_
