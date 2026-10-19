@@ -2,21 +2,22 @@ package io.github.semihkayli.siteworks.item;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 
-/** The Trowel's modes. Sneak + right-click the air switches to the next one. */
+/**
+ * The Trowel's modes. Only Row for now: Course mode was dropped by the user (Phase 3 step 4).
+ * Phase 5 adds "Blueprint fill", and then sneak + right-click the air can switch modes again.
+ */
 public enum TrowelMode implements StringRepresentable {
 	/** "From -> to": click where the row starts, then where it ends (both included). Up to 8 blocks in a straight line. */
-	ROW("row", 8),
-	/** Up to 16 blocks: one new layer on the whole wall face (Phase 3 step 4). */
-	COURSE("course", 16);
+	ROW("row", 8);
 
-	// Saved in the world as "row" / "course", sent to clients as a small number.
-	public static final Codec<TrowelMode> CODEC = StringRepresentable.fromEnum(TrowelMode::values);
+	// Saved in the world as "row", sent to clients as a small number.
+	// An unknown saved name (e.g. the old "course") loads as ROW, so old trowels don't break.
+	public static final Codec<TrowelMode> CODEC = Codec.STRING.xmap(TrowelMode::byName, TrowelMode::getSerializedName);
 	public static final StreamCodec<ByteBuf, TrowelMode> STREAM_CODEC = ByteBufCodecs.idMapper(
 			ByIdMap.continuous(TrowelMode::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO), TrowelMode::ordinal);
 
@@ -32,13 +33,13 @@ public enum TrowelMode implements StringRepresentable {
 		return maxBlocks;
 	}
 
-	public TrowelMode next() {
-		return values()[(ordinal() + 1) % values().length];
-	}
-
-	/** "Row (8)" / "Sıra (8)". */
-	public Component displayName() {
-		return Component.translatable("item.siteworks.trowel.mode." + name);
+	private static TrowelMode byName(String name) {
+		for (TrowelMode mode : values()) {
+			if (mode.name.equals(name)) {
+				return mode;
+			}
+		}
+		return ROW;
 	}
 
 	@Override

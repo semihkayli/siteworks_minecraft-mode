@@ -30,8 +30,9 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The Trowel (mala) = a builder's wand for masonry. It places many blocks at once, from your inventory,
- * and uses Mortar (1 Mortar = 8 blocks). Sneak + right-click the air = next mode.
+ * and uses Mortar (1 Mortar = 8 blocks).
  * Row mode is "from -> to" (Phase 3 step 3b): 1st click = where the row starts, 2nd click = where it ends (both included).
+ * Sneak + right-click the air = cancel a row start. (Course mode was dropped by the user, Phase 3 step 4.)
  * Every block is placed by vanilla's BlockItem.place(), so all vanilla rules apply (entities, sounds, creative...).
  */
 public class TrowelItem extends Item {
@@ -43,33 +44,20 @@ public class TrowelItem extends Item {
 		super(properties);
 	}
 
-	public static TrowelMode getMode(ItemStack stack) {
-		return stack.getOrDefault(ModDataComponents.TROWEL_MODE, TrowelMode.ROW);
-	}
-
 	public static int getCharge(ItemStack stack) {
 		return stack.getOrDefault(ModDataComponents.MORTAR_CHARGE, 0);
 	}
 
-	/**
-	 * Sneak + right-click the air: if a row start is set, remove it (cancel).
-	 * Otherwise switch to the next mode.
-	 */
+	/** Sneak + right-click the air: remove (cancel) the row start, if one is set. */
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
-		if (!player.isShiftKeyDown()) {
+		ItemStack stack = player.getItemInHand(hand);
+		if (!player.isShiftKeyDown() || !stack.has(ModDataComponents.ROW_START)) {
 			return InteractionResult.PASS;
 		}
 		if (!level.isClientSide()) {
-			ItemStack stack = player.getItemInHand(hand);
-			if (stack.has(ModDataComponents.ROW_START)) {
-				clearRowStart(stack);
-				player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.row_cancel"));
-			} else {
-				TrowelMode mode = getMode(stack).next();
-				stack.set(ModDataComponents.TROWEL_MODE, mode);
-				player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.mode", mode.displayName()));
-			}
+			clearRowStart(stack);
+			player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.row_cancel"));
 		}
 		return InteractionResult.SUCCESS;
 	}
@@ -82,11 +70,6 @@ public class TrowelItem extends Item {
 		}
 		Player player = context.getPlayer();
 		ItemStack trowel = context.getItemInHand();
-		if (getMode(trowel) == TrowelMode.COURSE) {
-			// TEMPORARY until Phase 3 step 4.
-			player.sendOverlayMessage(Component.translatable("message.siteworks.trowel.course_soon"));
-			return InteractionResult.FAIL;
-		}
 		// Adventure mode can't build.
 		if (!player.getAbilities().mayBuild) {
 			return InteractionResult.FAIL;
@@ -299,8 +282,6 @@ public class TrowelItem extends Item {
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
 			Consumer<Component> tooltip, TooltipFlag flag) {
-		tooltip.accept(Component.translatable("item.siteworks.trowel.mode_line", getMode(stack).displayName())
-				.withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("item.siteworks.trowel.charge", getCharge(stack), BLOCKS_PER_MORTAR)
 				.withStyle(ChatFormatting.GRAY));
 		GlobalPos start = stack.get(ModDataComponents.ROW_START);
@@ -308,9 +289,7 @@ public class TrowelItem extends Item {
 			tooltip.accept(Component.translatable("item.siteworks.trowel.row_start_line",
 					start.pos().getX(), start.pos().getY(), start.pos().getZ()).withStyle(ChatFormatting.YELLOW));
 		}
-		if (getMode(stack) == TrowelMode.ROW) {
-			tooltip.accept(Component.translatable("item.siteworks.trowel.row_hint").withStyle(ChatFormatting.DARK_GRAY));
-		}
+		tooltip.accept(Component.translatable("item.siteworks.trowel.row_hint").withStyle(ChatFormatting.DARK_GRAY));
 		tooltip.accept(Component.translatable("item.siteworks.trowel.hint").withStyle(ChatFormatting.DARK_GRAY));
 	}
 }

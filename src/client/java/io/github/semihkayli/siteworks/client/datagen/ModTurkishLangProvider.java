@@ -38,11 +38,8 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add(ModBlocks.WET_CONCRETE, "Taze Beton");
 		builder.add(ModItems.MORTAR, "Harç");
 		builder.add(ModItems.TROWEL, "Mala");
-		builder.add("item.siteworks.trowel.mode.row", "Sıra (8)");
-		builder.add("item.siteworks.trowel.mode.course", "Duvar Katmanı (16)");
-		builder.add("item.siteworks.trowel.mode_line", "Mod: %s");
 		builder.add("item.siteworks.trowel.charge", "Harç: %s/%s blok");
-		builder.add("item.siteworks.trowel.hint", "Eğil + havaya sağ tık: mod değiştir");
+		builder.add("item.siteworks.trowel.hint", "Eğil + havaya sağ tık: sıra başlangıcını iptal et");
 		builder.add("item.siteworks.trowel.row_hint", "Sıra: önce sıranın başlayacağı, sonra biteceği yere tıkla");
 		builder.add("item.siteworks.trowel.row_start_line", "Sıra başlangıcı: %s %s %s");
 		builder.add("message.siteworks.trowel.row_start", "Sıra başlangıcı seçildi. Şimdi sıranın biteceği yere tıkla (en fazla %s).");
@@ -50,12 +47,9 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add("message.siteworks.trowel.not_straight", "Düz bir çizgi değil. Yeni sıra başlangıcı burası.");
 		builder.add("message.siteworks.trowel.too_long", "Çok uzun (en fazla %s)! Yeni sıra başlangıcı burası.");
 		builder.add("message.siteworks.trowel.need_block", "Tuğlaları diğer elinde tut ya da bir örgü bloğuna tıkla.");
-		builder.add("message.siteworks.trowel.mode", "Mala modu: %s");
-		builder.add("message.siteworks.trowel.not_masonry", "Mala sadece örgü blokları koyar (tuğla, taş tuğla, beton...).");
 		builder.add("message.siteworks.trowel.no_mortar", "Harç bitti!");
 		builder.add("message.siteworks.trowel.no_blocks", "%s bitti!");
 		builder.add("message.siteworks.trowel.blocked", "Önünde bir engel var.");
-		builder.add("message.siteworks.trowel.course_soon", "Duvar katmanı modu bir sonraki adımda geliyor.");
 		builder.add(ModItems.STEEL_INGOT, "Çelik Külçe");
 		builder.add(ModBlocks.STEEL_BEAM, "Çelik Kiriş");
 		builder.add("message.siteworks.beam.blocked", "Önünde bir engel var.");

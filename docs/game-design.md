@@ -25,7 +25,7 @@ _Technical research (versions, tools, Java) is in `docs/research.md`._
 | 14 | Wheelbarrow | Removed. Replaced by a **Hand Truck** that moves full chests |
 | 15 | Trowel | Becomes a **Builder's Wand** that uses **mortar** and places many bricks at once |
 | 16 | Curing time | **~2 minutes** ✅ (real feel, short wait) |
-| 17 | Trowel limits | **Row 8 / Course 16 / Blueprint fill 16**, **1 Mortar = 8 blocks** ✅ (one craft = 8 mortar = 64 blocks = 1 stack) |
+| 17 | Trowel limits | **Row 8 / ~~Course 16~~ (dropped in Phase 3) / Blueprint fill 16**, **1 Mortar = 8 blocks** ✅ (one craft = 8 mortar = 64 blocks = 1 stack) |
 | 18 | Hand Truck | **Moved to v1.1+**: item-duplication risk must be avoided in v1.0 |
 | 19 | Ghost look | **Vanilla Block Displays** (slightly smaller glowing blocks) ✅ No custom rendering |
 | 20 | More features (crane, insulation…) | ❌ **Scope locked.** A crane needs moving physics, and insulation is a hidden inventory chore |
@@ -145,8 +145,8 @@ Concrete Mixer  +  cement + sand + gravel + water  →  fills Concrete Buckets
 
 | Mode (sneak + right-click air to change) | What it places |
 |---|---|
-| **Row (sıra)** | Up to **8 blocks** in a line, along the wall you click |
-| **Course (duvar katmanı)** | Extends the whole wall face by 1 layer, up to **16 blocks** |
+| **Row (sıra)** | "From → to": click where the row starts, then where it ends → up to **8 blocks** in a straight line (Phase 3) |
+| ~~**Course (duvar katmanı)**~~ | **Dropped** in Phase 3 (user: the "from → to" Row is enough) |
 | **Blueprint fill (plana göre)** ⭐ | Places the **missing ghost blocks** on that wall that match the block in your hand, up to **16 per click**. Building from a blueprint becomes fast and satisfying |
 
 - A **preview outline** shows where the blocks will go before you click.
@@ -257,7 +257,7 @@ In v2, blueprints were the "last and hardest" part. Now **3 tools depend on the 
 | Cement chain, Formwork, Rebar, Concrete blocks, Wet Concrete (gravity + curing) | 2 |
 | Mold pour (flood fill) | 3 |
 | Concrete Mixer (+ hopper) | 3 |
-| Mortar + Trowel Row/Course modes | 3 |
+| Mortar + Trowel Row mode | 3 |
 | Hand Truck | 3 |
 | Measuring Tape selection + Blueprint saving | 3–4 |
 | Drafting Table screen | 3 |

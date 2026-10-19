@@ -2,7 +2,7 @@
 
 ## Current status
 
-- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (`124c166`) and steps 2 + 2b (`05491f3`: beam extending, 16 per craft, climbable slim column) are committed. Mortar + Steel Ingot are tested OK; the user hasn't confirmed the beam column test yet. Step 3 (Trowel: Row mode, mortar charge, mode switch, masonry tag) is committed and tested OK. Step 3b (Row "from → to", max 8; 1st version got stuck in the user's video, fixed the same day) is committed and tested OK. Next: step 4 (Course mode).
+- **Phase:** 3 — Masonry & frame, **in progress** (started 2026-10-18). Decisions are written below. Step 1 (`124c166`) and steps 2 + 2b (`05491f3`: beam extending, 16 per craft, climbable slim column) are committed. Mortar + Steel Ingot are tested OK; the user hasn't confirmed the beam column test yet. Step 3 (Trowel: Row mode, mortar charge, mode switch, masonry tag) is committed and tested OK. Step 3b (Row "from → to", max 8; 1st version got stuck in the user's video, fixed the same day) is committed (`b442b7c`) and tested OK. **Step 4 (Course mode) was dropped** by the user (2026-10-19) and removed from the code. **Step 5 (trowel particle preview) is in progress.**
 - **Phase 2:** Concrete, **done** ✅ (2026-10-18).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18-SNAPSHOT (1.18.4), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3 step 4 (Trowel Course mode; remove the temporary "Course mode comes in the next step." message), after the step 3 test + commit. Run `gradlew test` before each commit.
+- **Next step:** Phase 3 step 5 (trowel particle preview), then step 6 ("Done when" checklist). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -170,7 +170,7 @@
 
 **Goal:** fast, satisfying wall building and steel frames.
 
-**Content:** Mortar (1 craft = 8 mortar, 1 mortar = 8 blocks), Trowel modes **Row 8 / Course 16** (sneak + right-click air to switch), placement preview with particles, `masonry_blocks` tag, Steel Ingot (blast furnace), Steel Beam (axis + extends up to 8 into the air).
+**Content:** Mortar (1 craft = 8 mortar, 1 mortar = 8 blocks), Trowel **Row 8** ("from → to"; ~~Course 16~~ dropped), placement preview with particles, `masonry_blocks` tag, Steel Ingot (blast furnace), Steel Beam (axis + extends up to 8 into the air).
 
 **Discuss before starting:**
 - Which blocks are "masonry" (the tag list)?
@@ -178,7 +178,7 @@
 - Trowel preview: particles OK for v1.0?
 
 **Done when:**
-- [ ] The trowel places up to 8/16 bricks per click and uses mortar correctly (64 blocks = 8 mortar)
+- [ ] The trowel places up to 8 bricks per row and uses mortar correctly (64 blocks = 8 mortar)
 - [ ] It never places blocks inside players/mobs or where vanilla wouldn't allow it
 - [ ] Steel beam extends straight up to 8 and keeps its axis
 
@@ -189,8 +189,8 @@
   - **Block:** places the block you click (copies the wall). A masonry block in the **offhand** overrides it. Takes blocks from the whole inventory.
   - **Mortar charge:** 1 Mortar = 8 blocks. The trowel stores the leftover charge (data component, shown as an item bar), so nothing is wasted.
   - **Row (8):** ~~click a face → up to 8 blocks go straight out from that face~~ → **changed in step 3b (2026-10-19): "from → to"**. 1st click = the start block, 2nd click = where the row ends → exactly that many blocks (1–8; user chose to keep max 8). Reason: the old Row always tried 8, so shorter rows needed breaking blocks. **Fixed after the user's video (2026-10-19):** both clicks mark brick **spots** (in front of the clicked face), the row is start → end **inclusive**, a wrong 2nd click becomes the **new start** (never stuck), sneak + air cancels a start. Block: other hand → masonry of the 1st click → masonry of the 2nd click.
-  - **Course (16):** click a face → every **connected matching block** on that face gets one new block in front of it (max 16, nearest first).
-  - **Mode switch:** sneak + right-click air, the mode is shown in the action bar.
+  - ~~**Course (16):** click a face → every connected matching block on that face gets one new block in front of it~~ → **dropped (user, 2026-10-19):** the "from → to" Row is useful enough. Removed from the code; an old Course trowel loads as Row.
+  - **Sneak + right-click air:** ~~switch mode~~ → cancels the row start (only one mode now; Phase 5 may add Blueprint fill + a mode switch).
   - **Rules:** vanilla placement checks for every block (no blocks inside players/mobs, spawn protection, adventure mode). Creative = free. Out of blocks/mortar → places what it can + "Out of mortar!".
   - **Recipe** `.I / S.` (1 iron ingot + 1 stick, diagonal). **No durability** (mortar is the cost). Look: `item/iron_shovel`.
 - **Preview:** **particles** on the target spots while holding the trowel and looking at a block. Real outlines maybe in Phase 6.
@@ -208,7 +208,7 @@
    - 2b. 16 beams per craft + climbing standing beams (slim column, `#climbable`)
 3. Trowel: Row mode + mortar charge + mode switch
    - 3b. Row becomes "from → to" (2 clicks, exact length, max 8)
-4. Trowel: Course mode
+4. ~~Trowel: Course mode~~ (dropped by the user)
 5. Trowel particle preview
 6. "Done when" checklist → status → commit
 
