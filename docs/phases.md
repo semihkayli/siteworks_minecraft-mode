@@ -7,7 +7,7 @@
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Phase 2 summary:** Formwork, Rebar, Concrete, Reinforced Concrete (Sledgehammer recycling via loot tables), Cement Mix → Cement, Wet Concrete (`WetConcreteBlock`: gravity + one scheduled tick for curing, falls directly in `neighborChanged` because Minecraft keeps only 1 scheduled tick per position), Concrete Bucket + the water-like mold pour (`pour/MoldPour`, pure Java, **14 JUnit tests**: `gradlew test`), Concrete Mixer (first **block entity**, right-click + hopper input via `WorldlyContainer`), Sledgehammer ceiling debris (1 heart, Hard Hat blocks it). Tests: creeper vs reinforced concrete ✅, 200 blocks curing at once = 12.1 ms/tick (13.0 before), 119 FPS ✅.
 - **Phase 3 summary:** Mortar (1 Cement + 4 Sand → 8), Steel Ingot (iron ingot smelted, furnace or blast furnace), Steel Beam (`SteelBeamBlock` = `RotatedPillarBlock` + `facing`; lying = full I-beam you walk on, standing = slim column in vanilla `#climbable`, climbed inside like a ladder; `SteelBeamItem` extends the line up to 8 ahead like scaffolding via `updatePlacementContext`; 7 steel → 16), Trowel (`TrowelItem`: Row "from → to" = 2 clicks on brick spots, inclusive, max 8, a wrong 2nd click becomes the new start; mortar charge 1 Mortar = 8 blocks kept on the item; every block via vanilla `BlockItem.place()`; `masonry_blocks` tag), client particle preview (`client/TrowelPreview`, white/yellow/green/red dust, client tick event). **Dropped by the user:** Course mode (step 4), the climbing mixin (replaced by the slim `#climbable` column). New data components: `trowel_mode` (only `row`), `mortar_charge`, `row_start`, `row_block`. Lessons: write every step report and discussion in the chat; ask back when an answer is unclear; only the user marks tests as passed (all in `docs/rules.md`).
-- **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `foundation/` (`Foundation` pure + unit tested, `FoundationLookup`), `event/`, `util/` (`Messages`: red action bar messages) in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`, `PourPreview`, `PreviewParticles`) in `src/client/java/.../client/`. No mixins (the mixin configs are empty). Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
+- **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `foundation/` (`Foundation` pure + unit tested, `FoundationLookup`), `event/`, `util/` (`Messages`: red action bar messages) in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`, `PourPreview`, `PreviewParticles`) in `src/client/java/.../client/`. Mixins (since Phase 3¾ step 3): `mixin/ServerExplosionMixin`, `mixin/WitherBossMixin` in `siteworks.mixins.json` (MixinExtras comes with Fabric Loader). The client mixin config is still empty. Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
 - **Datagen notes:** run `gradlew runDatagen` after changing any provider. Never edit `src/main/generated/` by hand. Vanilla tags must be added with `forceAddTag` (plain `addTag` fails because datagen can't see vanilla tags). A JNA `Win32Exception: Parametre hatalı` line in the datagen log is harmless.
 - **26.3 API notes (old tutorials are wrong here):**
   - Dyes: `Items.DYE.yellow()` (a `ColorCollection`), not `Items.YELLOW_DYE`.
@@ -21,7 +21,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3¾ (Foundations): discussion done (2026-10-19). Step 1 (formwork rule) done ✅ (tested + committed 2026-10-19). Step 2 (finding foundations + right-click info) done ✅ (tested + committed 2026-10-24). Now step 3 (explosion + Wither protection). After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
+- **Next step:** Phase 3¾ (Foundations): discussion done (2026-10-19). Step 1 (formwork rule) done ✅ (tested + committed 2026-10-19). Step 2 (finding foundations + right-click info) done ✅ (tested + committed 2026-10-24). Step 3 (explosion + Wither protection, first mixins) done ✅ (tested + committed 2026-10-24). Next: step 4 (hard stop), one question first. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -269,8 +269,8 @@
 - Unit tests for the pure "shadow + thickness" logic. Phase 7: an on/off switch for PvP servers?
 
 **Done when:**
-- [ ] A creeper and TNT next to a protected house break no protected blocks
-- [ ] The same house without a foundation (or on dirt) is damaged like vanilla
+- [x] A creeper and TNT next to a protected house break no protected blocks (step 3)
+- [x] The same house without a foundation is damaged like vanilla (step 3)
 - [ ] Placing above the limit is stopped with a message; a thicker foundation allows it
 - [ ] No lag with a big TNT explosion near a protected base
 
@@ -288,7 +288,7 @@
 **Steps:**
 1. The formwork rule in the pour (`MoldPour` + tests, message, red preview marker on the bad side block) — ✅ done, tested in-game (2026-10-19), 24 unit tests ✅
 2. Finding foundations (pure logic, unit tested) + the right-click info on Reinforced Concrete — ✅ done, tested in-game (2026-10-24), 9 unit tests ✅
-3. Explosion + Wither protection (our first mixins)
+3. Explosion + Wither protection (our first mixins) — ✅ done, tested in-game (2026-10-24: TNT, creeper, limit; Wither optional, not confirmed), 11 foundation unit tests ✅
 4. The hard stop + its message
 5. "Done when" checklist → status → commit
 
@@ -371,7 +371,7 @@
 - `sledge_breakable` misses some blocks: smooth/cut/chiseled sandstone, red nether bricks, cracked/chiseled deepslate bricks and tiles, cracked nether bricks, polished blackstone variants, quartz, prismarine, purpur, packed mud, smooth basalt.
 - Mixer: the user said "sneak + right-click with sand" (should place the sand, vanilla behaviour) "didn't work out, or maybe I didn't meet the conditions". Unclear, re-check in play.
 - **From the Phase 3 review (2026-10-19):** gravel ×4 from recycling (4 gravel → 16 concrete → 16 gravel with the Sledgehammer). Options: recycling gives less, or keep it. Fabric GameTest: yes or no (see Phase 3½ testing decision).
-- Code cleanup: remove the empty mixin configs (`siteworks.mixins.json`, `siteworks.client.mixins.json` + the `"mixins"` entry in `fabric.mod.json`) if still unused. Merge `flatItem`/`handheldTool` in `ModModelProvider` into one helper.
+- Code cleanup: remove the empty client mixin config (`siteworks.client.mixins.json` + its entry in `fabric.mod.json`) if still unused (the main config is used since Phase 3¾ step 3). Merge `flatItem`/`handheldTool` in `ModModelProvider` into one helper.
 
 **Done when:**
 - [ ] A full survival playthrough (dig → foundation → frame → walls from a blueprint) works with no crashes

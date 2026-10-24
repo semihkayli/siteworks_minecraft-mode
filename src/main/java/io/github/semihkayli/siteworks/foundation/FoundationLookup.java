@@ -1,6 +1,9 @@
 package io.github.semihkayli.siteworks.foundation;
 
 import io.github.semihkayli.siteworks.registry.ModBlocks;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -19,6 +22,28 @@ public final class FoundationLookup {
 	/** The foundation that carries a block at {@code pos}, or null if there is none under it. */
 	public static Foundation.Stack below(Level level, BlockPos pos) {
 		return Foundation.below(column(level, pos), pos.getY(), level.getMinY());
+	}
+
+	/** Is the block at {@code pos} part of a building carried by a foundation (= protected from explosions and the Wither)? */
+	public static boolean isCarried(Level level, BlockPos pos) {
+		Foundation.Stack stack = below(level, pos);
+		return stack != null && stack.carries(pos.getY());
+	}
+
+	/** Removes every carried (protected) block from an explosion's list of blocks to destroy. */
+	public static void removeCarried(Level level, List<BlockPos> positions) {
+		if (positions.isEmpty()) {
+			return;
+		}
+		List<Foundation.Pos> asPos = new ArrayList<>(positions.size());
+		for (BlockPos pos : positions) {
+			asPos.add(new Foundation.Pos(pos.getX(), pos.getY(), pos.getZ()));
+		}
+		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+		Set<Foundation.Pos> carried = Foundation.carried((x, y, z) -> cellAt(level, cursor.set(x, y, z)), asPos, level.getMinY());
+		if (!carried.isEmpty()) {
+			positions.removeIf(pos -> carried.contains(new Foundation.Pos(pos.getX(), pos.getY(), pos.getZ())));
+		}
 	}
 
 	private static Foundation.Column column(Level level, BlockPos pos) {

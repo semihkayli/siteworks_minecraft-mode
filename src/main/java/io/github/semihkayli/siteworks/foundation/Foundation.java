@@ -1,5 +1,14 @@
 package io.github.semihkayli.siteworks.foundation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * The Foundation rule (Phase 3¾), the pure logic: it looks at ONE column of blocks (one x/z spot, straight up and down).
  *
@@ -26,6 +35,14 @@ public final class Foundation {
 	/** One column of the world, by height. The game version reads real blocks, the tests use a fake column. */
 	public interface Column {
 		Cell get(int y);
+	}
+
+	/** The whole world (many columns), for checking many blocks at once (an explosion). */
+	public interface World {
+		Cell get(int x, int y, int z);
+	}
+
+	public record Pos(int x, int y, int z) {
 	}
 
 	/**
@@ -94,6 +111,37 @@ public final class Foundation {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Which of these blocks are carried by a foundation (= protected)? Used for explosions, which hit hundreds of blocks.
+	 * Fast: in each column we start with the highest block and look down once. A lower block in the same column
+	 * has the same foundation, unless it is at or below that foundation's top (then we look again from there).
+	 */
+	public static Set<Pos> carried(World world, Collection<Pos> positions, int minY) {
+		List<Pos> highestFirst = new ArrayList<>(positions);
+		highestFirst.sort(Comparator.comparingInt(Pos::y).reversed());
+		Map<Long, Stack> found = new HashMap<>(); // column -> its foundation (null value = no foundation under it)
+		Set<Pos> carried = new HashSet<>();
+		for (Pos pos : highestFirst) {
+			long key = ((long) pos.x() << 32) | (pos.z() & 0xFFFFFFFFL);
+			Column column = y -> world.get(pos.x(), y, pos.z());
+			Stack stack;
+			if (!found.containsKey(key)) {
+				stack = below(column, pos.y(), minY);
+				found.put(key, stack);
+			} else {
+				stack = found.get(key);
+				if (stack != null && pos.y() <= stack.top()) {
+					stack = below(column, pos.y(), minY); // this block is inside or under that foundation
+					found.put(key, stack);
+				}
+			}
+			if (stack != null && stack.carries(pos.y())) {
+				carried.add(pos);
+			}
+		}
+		return carried;
 	}
 
 	/** The stack whose top is {@code top}: go down while it's Reinforced Concrete, then look at the block under it. */
