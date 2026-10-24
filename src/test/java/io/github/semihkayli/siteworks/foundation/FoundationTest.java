@@ -145,16 +145,18 @@ class FoundationTest {
 	}
 
 	@Test
-	void explosionKeepsOnlyTheBuildingAboveTheFoundation() {
-		// A 1-layer foundation at y = 1 (x 0..2, z = 0) on solid ground at y = 0: it carries y 2..9.
+	void explosionKeepsTheBuildingAndTheGroundUnderTheFoundation() {
+		// A 1-layer foundation at y = 1 (x 0..2, z = 0) on solid ground (y = -1 and 0): it carries y 2..9.
+		// Kept: the building (y 5, 9) and the block holding the foundation up (y 0). Not kept: above the limit (y 10),
+		// beside the foundation (x 5), deeper ground (y -1). The foundation itself (y 1) is Reinforced Concrete anyway.
 		FakeWorld world = new FakeWorld();
 		for (int x = 0; x <= 2; x++) {
-			world.set(x, 0, 0, Cell.SOLID).set(x, 1, 0, Cell.FOUNDATION);
+			world.set(x, -1, 0, Cell.SOLID).set(x, 0, 0, Cell.SOLID).set(x, 1, 0, Cell.FOUNDATION);
 		}
-		Set<Foundation.Pos> carried = Foundation.carried(world,
-				List.of(pos(1, 5, 0), pos(1, 9, 0), pos(1, 10, 0), pos(5, 5, 0), pos(1, 1, 0), pos(1, 0, 0)), MIN_Y);
+		Set<Foundation.Pos> safe = Foundation.protectedBlocks(world, List.of(pos(1, 5, 0), pos(1, 9, 0), pos(1, 10, 0),
+				pos(5, 5, 0), pos(1, 1, 0), pos(1, 0, 0), pos(1, -1, 0), pos(5, 0, 0)), MIN_Y);
 
-		assertEquals(Set.of(pos(1, 5, 0), pos(1, 9, 0)), carried);
+		assertEquals(Set.of(pos(1, 5, 0), pos(1, 9, 0), pos(1, 0, 0)), safe);
 	}
 
 	@Test
@@ -165,7 +167,7 @@ class FoundationTest {
 		for (int y = 2; y <= 5; y++) {
 			world.set(0, y, 0, Cell.SOLID);
 		}
-		Set<Foundation.Pos> carried = Foundation.carried(world,
+		Set<Foundation.Pos> carried = Foundation.protectedBlocks(world,
 				List.of(pos(0, 3, 0), pos(0, 14, 0), pos(0, 15, 0), pos(0, 6, 0), pos(0, 1, 0)), MIN_Y);
 
 		assertEquals(Set.of(pos(0, 3, 0), pos(0, 14, 0), pos(0, 6, 0)), carried);

@@ -2,11 +2,19 @@
 
 ## Current status
 
-- **Phase:** 3½ — Review fixes, **done** ✅ (2026-10-19). Next: **Phase 3¾ — Foundations** (new v1.0 content, user 2026-10-19), then **Phase 4 — Blueprints, not started** (discuss the questions first, best in a new chat).
+- **Phase:** 3¾ — Foundations, **done** ✅ (2026-10-24). Next: **Phase 4 — Blueprints, not started** (discuss the questions first, best in a new chat).
 - **Phase 0 summary:** JDK 25 + IntelliJ + MC Dev plugin. Fabric template (26.3, datagen ON, split sources ON, Groovy). Loader 0.19.5, Loom 1.18.4 (pinned 2026-10-19, was 1.18-SNAPSHOT), Gradle 9.7.1. Harmless log errors: `Perflib 009` and `401 Failed to fetch user properties`. Game log: `run/logs/latest.log` (Claude can read it). Git: local + GitHub `origin/main`.
 - **Phase 1 summary:** Mattock + Sledgehammer (3×3 via `AreaToolItem` + `AreaMining`), Hard Hat (`HardHatProtection`), Safety Net block (`SafetyNetBlock`), Ghost Test item (Block Displays). Datagen for all JSON. First class tweaker. **All built items are documented in `docs/items.md`.**
 - **Phase 2 summary:** Formwork, Rebar, Concrete, Reinforced Concrete (Sledgehammer recycling via loot tables), Cement Mix → Cement, Wet Concrete (`WetConcreteBlock`: gravity + one scheduled tick for curing, falls directly in `neighborChanged` because Minecraft keeps only 1 scheduled tick per position), Concrete Bucket + the water-like mold pour (`pour/MoldPour`, pure Java, **14 JUnit tests**: `gradlew test`), Concrete Mixer (first **block entity**, right-click + hopper input via `WorldlyContainer`), Sledgehammer ceiling debris (1 heart, Hard Hat blocks it). Tests: creeper vs reinforced concrete ✅, 200 blocks curing at once = 12.1 ms/tick (13.0 before), 119 FPS ✅.
 - **Phase 3 summary:** Mortar (1 Cement + 4 Sand → 8), Steel Ingot (iron ingot smelted, furnace or blast furnace), Steel Beam (`SteelBeamBlock` = `RotatedPillarBlock` + `facing`; lying = full I-beam you walk on, standing = slim column in vanilla `#climbable`, climbed inside like a ladder; `SteelBeamItem` extends the line up to 8 ahead like scaffolding via `updatePlacementContext`; 7 steel → 16), Trowel (`TrowelItem`: Row "from → to" = 2 clicks on brick spots, inclusive, max 8, a wrong 2nd click becomes the new start; mortar charge 1 Mortar = 8 blocks kept on the item; every block via vanilla `BlockItem.place()`; `masonry_blocks` tag), client particle preview (`client/TrowelPreview`, white/yellow/green/red dust, client tick event). **Dropped by the user:** Course mode (step 4), the climbing mixin (replaced by the slim `#climbable` column). New data components: `trowel_mode` (only `row`), `mortar_charge`, `row_start`, `row_block`. Lessons: write every step report and discussion in the chat; ask back when an answer is unclear; only the user marks tests as passed (all in `docs/rules.md`).
+- **Phase 3½ summary (review fixes, 2026-10-19):** after a full code review (no crashes, no dupes). No hand dip for Trowel/Bucket (`allowComponentsUpdateAnimation`), mixer "slot already holds…" message, Safety Net burns, mixer comparator output (ready concrete 0–15), shared `util/Messages`, Loom pinned 1.18.4, **pour preview** (`client/PourPreview`: gray = where concrete goes, red = the hole), aim help (clicking a wall top pours into the mold), "The mold is full." on a full mold, protected empty cells stop the pour. Inspection dropped (user).
+- **Phase 3¾ summary (Foundations, new v1.0 content by the user, 2026-10-19 → 2026-10-24):**
+  - **Formwork rule:** the sides of a pour must be Formwork, our concrete or Steel Beams (floor: any solid block); bad side = "Wet concrete needs formwork here!" + red dots on that block. `MoldPour` = 24 unit tests.
+  - **Foundation** (`foundation/Foundation` pure + 14 unit tests, `FoundationLookup`): a stack of Reinforced Concrete on any solid block (user: digging to stone is boring; "firm ground" saved as a later idea). Every layer = 8 blocks of height. Per column, looking straight down. Right-click Reinforced Concrete with both hands empty = info (`block/ReinforcedConcreteBlock`).
+  - **Protection** (first **mixins**: `ServerExplosionMixin`, `WitherBossMixin`): the building above, up to the limit, plus the one block under each foundation column, can't be broken by explosions (TNT, creepers…) or the Wither. Players/mobs still get hurt.
+  - **Hard stop** (`BlockItemMixin`, rule A): a player can't put a block on top of a protected block at the limit (hand, Trowel, Steel Beam, Bucket pour). Creative ignores it.
+  - Tests: TNT/creeper/limit/hard stop OK; lag: 125 TNT next to a 16×16 base = 9.5 ms per tick (P99 27.5 ms). Known and accepted: a reinforced floor on walls counts as a new foundation; a tower beside a house can bridge over the limit.
+  - Lesson: the user sometimes tests in a game started before the new code → on a failed test, first compare the log start time with the build time.
 - **Code layout:** `registry/` (ModItems, ModBlocks, ModBlockEntities, ModDataComponents, ModTags, ModCreativeTabs), `item/`, `block/`, `block/entity/`, `pour/` (pure logic, unit tested), `foundation/` (`Foundation` pure + unit tested, `FoundationLookup`), `event/`, `util/` (`Messages`: red action bar messages) in `src/main/java/.../siteworks/`. Client-only code (`SiteWorksClient`, `TrowelPreview`, `PourPreview`, `PreviewParticles`) in `src/client/java/.../client/`. Mixins (since Phase 3¾ step 3): `mixin/BlockItemMixin` (step 4), `mixin/ServerExplosionMixin`, `mixin/WitherBossMixin` in `siteworks.mixins.json` (MixinExtras comes with Fabric Loader). The client mixin config is still empty. Unit tests in `src/test/java/`. Hand-written models (custom shapes) in `src/main/resources/assets/siteworks/models/block/`. Datagen providers in `src/client/java/.../client/datagen/`. Output in `src/main/generated/` (commit it, because CI doesn't run datagen).
 - **Datagen notes:** run `gradlew runDatagen` after changing any provider. Never edit `src/main/generated/` by hand. Vanilla tags must be added with `forceAddTag` (plain `addTag` fails because datagen can't see vanilla tags). A JNA `Win32Exception: Parametre hatalı` line in the datagen log is harmless.
 - **26.3 API notes (old tutorials are wrong here):**
@@ -21,7 +29,7 @@
   - Private Minecraft methods: add them to `src/main/resources/siteworks.classtweaker` (header `classTweaker v1 official`).
 - **Checking APIs:** `gradlew genSources` fails while Minecraft/IntelliJ holds the jar ("file used by another process"). Either close them and run it, or use `javap` on `~/.gradle/caches/fabric-loom/minecraftMaven/.../minecraft-common-deobf-26.3.jar` (and `minecraft-clientonly-deobf`).
 - **Phase 1 review (2026-10-12), fixes done and tested OK (enchanting, floor + wall 3×3):** (1) tools + Hard Hat added to the vanilla tags `#shovels`/`#pickaxes`/`#head_armor` (`ModItemTagProvider`), so enchanting works; (2) 3×3 checks `level.mayInteract()` (spawn protection + world border); (3) the 3×3 plane uses the face you hit. The other review notes are in the Phase 2, 5 and 6 discussion lists.
-- **Next step:** Phase 3¾ (Foundations): discussion done (2026-10-19). Step 1 (formwork rule) done ✅ (tested + committed 2026-10-19). Step 2 (finding foundations + right-click info) done ✅ (tested + committed 2026-10-24). Step 3 (explosion + Wither protection, first mixins) done ✅ (tested + committed 2026-10-24). Step 4 (hard stop, rule A) done ✅ (tested + committed 2026-10-24). Now step 5: the "Done when" checklist, only the TNT lag test is left. After that the Phase 4 discussion (where to store blueprints, max size, cost of copying). Run `gradlew test` before each commit.
+- **Next step:** **Phase 4 discussion** (where to store blueprints, max size, cost of copying, the traps from the Phase 3 review), best in a new chat. Run `gradlew test` before each commit (38 unit tests: 24 MoldPour + 14 Foundation).
 - `.github/workflows/build.yml` runs a build on GitHub Actions after each push (free within GitHub's monthly limit for private repos).
 - **Open items:** the template's `LICENSE` file and `fabric.mod.json` say **CC0** (template default, NOT our decision). Decide the real license in Phase 7. `contact` in `fabric.mod.json` still points to Fabric's example repo.
 - **Notes for Claude:**
@@ -256,7 +264,7 @@
 
 **Learn:** our first **mixin** (Fabric has no explosion event), a fast "column scan" (look down from a block to find its foundation).
 
-**Already decided (2026-10-19):** Reinforced Concrete only · on firm ground only · protects its "shadow" (blocks directly above) · thicker = taller · hard stop above the limit, only in a foundation's shadow (user: "maybe my idea changes later") · replaces the column rule and Cracked Concrete.
+**Already decided (2026-10-19):** Reinforced Concrete only · ~~on firm ground only~~ (changed 2026-10-24: any solid block) · protects its "shadow" (blocks directly above) · thicker = taller · hard stop above the limit, only in a foundation's shadow (user: "maybe my idea changes later") · replaces the column rule and Cracked Concrete.
 
 **Discuss before starting:**
 - The numbers: layers → height (e.g. 1 → 8, 2 → 16, 3 → 32)? Max foundation thickness?
@@ -272,7 +280,7 @@
 - [x] A creeper and TNT next to a protected house break no protected blocks (step 3)
 - [x] The same house without a foundation is damaged like vanilla (step 3)
 - [x] Placing above the limit is stopped with a message; a thicker foundation allows it (step 4)
-- [ ] No lag with a big TNT explosion near a protected base
+- [x] No lag with a big TNT explosion near a protected base (step 5: 125 TNT next to a 16×16 base = 9.5 ms per tick, P99 27.5 ms; before 8.7 / 12.4; limit 50. After the fix the base kept every block)
 
 **Decisions:** (2026-10-19, discussion round 1)
 - **Formwork rule (new, user):** the **sides** of a pour must be **Formwork**, not soil and not stone either ("use only formwork for every wet concrete"). Also OK at the side: **our concrete** (wet, cured, reinforced: big slabs are poured in parts, like a real construction joint / döküm derzi) and **Steel Beams** (a column standing in the mold). Everything else at the side (soil, stone, wood, bricks, glass...) = "Wet concrete needs formwork here!". The **floor** can be any solid block (round 2, user OK).
@@ -290,7 +298,7 @@
 2. Finding foundations (pure logic, unit tested) + the right-click info on Reinforced Concrete — ✅ done, tested in-game (2026-10-24), 9 unit tests ✅
 3. Explosion + Wither protection (our first mixins) — ✅ done, tested in-game (2026-10-24: TNT, creeper, limit; Wither optional, not confirmed), 11 foundation unit tests ✅
 4. The hard stop + its message (rule A: only on top of the building) — ✅ done, tested in-game (2026-10-24), 14 foundation unit tests ✅
-5. "Done when" checklist → status → commit
+5. "Done when" checklist → status → commit — ✅ done (2026-10-24): lag test OK (9.5 ms, P99 27.5 ms); fix: the block under each foundation column is protected too (tested in-game ✅)
 
 ---
 
@@ -399,4 +407,4 @@
 
 See `docs/game-design.md` §5:
 - v1.1: Hand Truck
-- then building services (pipes, wires, data, gas), optional inspection, finishing/furniture, Architect villager
+- then building services (pipes, wires, data, gas), finishing/furniture, Architect villager (inspection was dropped, 2026-10-19)

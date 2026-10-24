@@ -26,9 +26,16 @@ public final class FoundationLookup {
 		return Foundation.below(column(level, pos), pos.getY(), level.getMinY());
 	}
 
-	/** Is the block at {@code pos} part of a building carried by a foundation (= protected from explosions and the Wither)? */
-	public static boolean isCarried(Level level, BlockPos pos) {
-		Foundation.Stack stack = below(level, pos);
+	/**
+	 * Is the block at {@code pos} protected from explosions and the Wither? Yes if it's part of a building carried
+	 * by a foundation, or the block that holds a foundation up.
+	 */
+	public static boolean isProtected(Level level, BlockPos pos) {
+		Foundation.Column column = column(level, pos);
+		if (Foundation.holdsUp(column, pos.getY())) {
+			return true;
+		}
+		Foundation.Stack stack = Foundation.below(column, pos.getY(), level.getMinY());
 		return stack != null && stack.carries(pos.getY());
 	}
 
@@ -49,8 +56,8 @@ public final class FoundationLookup {
 		return Component.translatable("message.siteworks.foundation.too_tall", stack.limitY());
 	}
 
-	/** Removes every carried (protected) block from an explosion's list of blocks to destroy. */
-	public static void removeCarried(Level level, List<BlockPos> positions) {
+	/** Removes every protected block (see {@link #isProtected}) from an explosion's list of blocks to destroy. */
+	public static void removeProtected(Level level, List<BlockPos> positions) {
 		if (positions.isEmpty()) {
 			return;
 		}
@@ -59,9 +66,9 @@ public final class FoundationLookup {
 			asPos.add(new Foundation.Pos(pos.getX(), pos.getY(), pos.getZ()));
 		}
 		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
-		Set<Foundation.Pos> carried = Foundation.carried((x, y, z) -> cellAt(level, cursor.set(x, y, z)), asPos, level.getMinY());
-		if (!carried.isEmpty()) {
-			positions.removeIf(pos -> carried.contains(new Foundation.Pos(pos.getX(), pos.getY(), pos.getZ())));
+		Set<Foundation.Pos> safe = Foundation.protectedBlocks((x, y, z) -> cellAt(level, cursor.set(x, y, z)), asPos, level.getMinY());
+		if (!safe.isEmpty()) {
+			positions.removeIf(pos -> safe.contains(new Foundation.Pos(pos.getX(), pos.getY(), pos.getZ())));
 		}
 	}
 

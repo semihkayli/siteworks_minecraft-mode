@@ -28,6 +28,6 @@ public abstract class ServerExplosionMixin {
 
 	@Inject(method = "calculateExplodedPositions", at = @At("RETURN"))
 	private void siteworks$keepFoundationBuildings(CallbackInfoReturnable<List<BlockPos>> cir) {
-		FoundationLookup.removeCarried(level, cir.getReturnValue());
+		FoundationLookup.removeProtected(level, cir.getReturnValue());
 	}
 }

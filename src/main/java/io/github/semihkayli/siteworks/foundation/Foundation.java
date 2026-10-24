@@ -133,15 +133,25 @@ public final class Foundation {
 	}
 
 	/**
-	 * Which of these blocks are carried by a foundation (= protected)? Used for explosions, which hit hundreds of blocks.
-	 * Fast: in each column we start with the highest block and look down once. A lower block in the same column
-	 * has the same foundation, unless it is at or below that foundation's top (then we look again from there).
+	 * Does the block at {@code y} hold up a foundation (a solid block right under its bottom layer)?
+	 * It's protected too (user, 2026-10-24): otherwise a chain of TNT digs away the ground under the foundation's edge,
+	 * that part stops being a foundation, and the next explosions break the building above it.
 	 */
-	public static Set<Pos> carried(World world, Collection<Pos> positions, int minY) {
+	public static boolean holdsUp(Column column, int y) {
+		return column.get(y) == Cell.SOLID && column.get(y + 1) == Cell.FOUNDATION;
+	}
+
+	/**
+	 * Which of these blocks are protected: carried by a foundation, or holding one up? Used for explosions,
+	 * which hit hundreds of blocks. Fast: in each column we start with the highest block and look down once.
+	 * A lower block in the same column has the same foundation, unless it is at or below that foundation's top
+	 * (then we look again from there).
+	 */
+	public static Set<Pos> protectedBlocks(World world, Collection<Pos> positions, int minY) {
 		List<Pos> highestFirst = new ArrayList<>(positions);
 		highestFirst.sort(Comparator.comparingInt(Pos::y).reversed());
 		Map<Long, Stack> found = new HashMap<>(); // column -> its foundation (null value = no foundation under it)
-		Set<Pos> carried = new HashSet<>();
+		Set<Pos> safe = new HashSet<>();
 		for (Pos pos : highestFirst) {
 			long key = ((long) pos.x() << 32) | (pos.z() & 0xFFFFFFFFL);
 			Column column = y -> world.get(pos.x(), y, pos.z());
@@ -156,11 +166,11 @@ public final class Foundation {
 					found.put(key, stack);
 				}
 			}
-			if (stack != null && stack.carries(pos.y())) {
-				carried.add(pos);
+			if ((stack != null && stack.carries(pos.y())) || holdsUp(column, pos.y())) {
+				safe.add(pos);
 			}
 		}
-		return carried;
+		return safe;
 	}
 
 	/** The stack whose top is {@code top}: go down while it's Reinforced Concrete, then look at the block under it. */

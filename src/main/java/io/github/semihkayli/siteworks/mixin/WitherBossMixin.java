@@ -23,7 +23,7 @@ public abstract class WitherBossMixin {
 			target = "Lnet/minecraft/server/level/ServerLevel;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z"))
 	private boolean siteworks$keepFoundationBuildings(ServerLevel level, BlockPos pos, boolean drop, Entity breaker,
 			Operation<Boolean> original) {
-		if (FoundationLookup.isCarried(level, pos)) {
+		if (FoundationLookup.isProtected(level, pos)) {
 			return false;
 		}
 		return original.call(level, pos, drop, breaker);
