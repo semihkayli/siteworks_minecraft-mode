@@ -25,6 +25,8 @@
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.beam.blocked": "Something is in the way.",
   "message.siteworks.beam.too_far": "Too far! Walk closer to the end of the beam.",
+  "message.siteworks.foundation.none": "Not a foundation: nothing solid under it (air, water...).",
+  "message.siteworks.foundation.ok": "Foundation: %s layer(s) → buildings up to %s blocks high (up to y %s)",
   "message.siteworks.ghost_test.removed": "Removed %s ghost blocks",
   "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks",
   "message.siteworks.mixer.mixing": " · Mixing...",

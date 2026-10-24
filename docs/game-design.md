@@ -186,7 +186,7 @@ The user's idea: you never *have* to build a foundation, but a good foundation m
 | | Rule |
 |---|---|
 | **No foundation** | Normal Minecraft: explosions damage the building |
-| **What counts** | A layer of **Reinforced Concrete only** (user), resting on **firm ground** (stone, a gravel bed / blokaj, concrete). On soft ground (dirt, grass, sand, mud, clay) it doesn't count |
+| **What counts** | A layer of **Reinforced Concrete only** (user), standing on **any solid block** (stone, dirt, sand... changed 2026-10-24: "firm ground only" is an idea for later, §5). Floating (air or water under it) = not a foundation |
 | **Reward** | Every block **directly above** the foundation (its "shadow") is **explosion-proof** up to the height limit: **TNT and explosive mobs (creepers and the like) don't damage it** (user, 2026-10-19), and **the Wither can't break it by touching** either. Players and mobs still get hurt as normal |
 | **Formwork rule** (user, 2026-10-19) | Wet concrete needs **Formwork** at its sides: soil, stone, wood, bricks... don't hold it. Our concrete (to pour big slabs in parts) and Steel Beams also count as sides. The floor can be any solid block. This changes the §3.4 mold rule "any solid block" |
 | **Height rule** | A thicker foundation allows a taller building: **every layer = 8 blocks** (up to 8 high = 1 layer, 9–16 = 2, 17–24 = 3...), measured per column (decided 2026-10-19). Real life: taller = heavier = bigger foundation (no single real ratio exists, so the numbers are a game choice) |
@@ -235,6 +235,7 @@ The user's idea: you never *have* to build a foundation, but a good foundation m
   - ❌ Rejected by the user (2026-10-19): monsters can't spawn on concrete ("illogical"), watering helps curing ("not necessary").
   - ❌ Claude advises against: timed breaks or timed warnings for buildings (the player can be offline or away, chunks unload, a friend's build on a server breaks; tracking whole buildings over time is heavy), and "everything on a foundation is blast-proof" (a glass window or wood wall would be blast-proof too: hidden and odd).
 - **Trowel later:** a Plaster/Paint mode for the finishing update (user's paint idea; in real life the trowel is also used for plaster).
+- **Idea, later (user, 2026-10-24): "firm ground" for foundations.** A foundation would need firm ground under it (stone, a gravel bed / blokaj), not soft ground (dirt, sand, mud). Dropped from v1.0 because digging down to stone can be boring. It would also close a loophole: a Reinforced Concrete floor on top of brick walls counting as a new foundation.
 - **Finishing (ince inşaat):** plaster, tiles, fixtures, furniture, comfort and the "Well Rested" buff.
 - **Future:** Architect villager + house blueprint catalog, blueprint library (Creative → Survival), elevator, fire safety.
 - **Never:** volts/litres/pressure math, structural collapse physics, item pipes/factories, random breakdowns, cranes (moving physics), insulation (hidden chore).

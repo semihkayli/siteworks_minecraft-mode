@@ -19,7 +19,7 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Formwork (Kalıp) — block | `siteworks:formwork` | 2 | ✅ tested in-game. The only good mold side (Phase 3¾ step 1): ✅ tested in-game (2026-10-19) |
 | Rebar (İnşaat Demiri) — block | `siteworks:rebar` | 2 | ✅ tested in-game |
 | Concrete (Beton) — block | `siteworks:concrete` | 2 | ✅ tested in-game |
-| Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game |
+| Reinforced Concrete (Betonarme) — block | `siteworks:reinforced_concrete` | 2 | ✅ tested in-game. Foundation info (Phase 3¾ step 2): ✅ tested in-game (2026-10-24) |
 | Wet Concrete (Taze Beton) — block, **no item** | `siteworks:wet_concrete` | 2 | ✅ tested in-game (with commands) |
 | Mortar (Harç) | `siteworks:mortar` | 3 | ✅ tested in-game (2026-10-18) |
 | Trowel (Mala) | `siteworks:trowel` | 3 | ✅ tested in-game: mortar charge (step 3), Row "from → to" (step 3b), particle preview (step 5, 2026-10-19). Course mode dropped (step 4). No hand dip (Phase 3½ R1): ✅ tested in-game (2026-10-19) |
@@ -294,8 +294,10 @@ _Rule: update this file in the same step as you add or change an item (see `docs
 | Tags | `#minecraft:mineable/pickaxe`, `#minecraft:needs_iron_tool`, `#siteworks:sledge_breakable` |
 | Look (placeholder) | Vanilla `block/gray_concrete` texture (darker than Concrete). A new look comes in Phase 6 |
 | Known (Phase 6 balance note) | In a Sledgehammer 3×3, ring blocks harder than the center still break for free. Hit stone → reinforced concrete around it breaks too |
+| Foundation (Phase 3¾ step 2) | A stack of Reinforced Concrete layers in one column that **stands on a solid block** = a **foundation**. Any solid block under it is OK: stone, dirt, grass, sand, gravel, bricks... (a block with a full top; changed 2026-10-24, user: digging to stone is boring). Nothing solid under it (air, water, a plant) = not a foundation. **Every layer = 8 blocks** of building height above its top (1 layer: up to 8 high, 2: 9–16, 3: 17–24...). A block's foundation = the first real foundation straight under it (through rooms and walls; a reinforced floor over a room is skipped). The protection (step 3) and the hard stop (step 4) are not built yet |
+| Right-click with **empty hands** (step 2) | Info in the action bar: green "Foundation: 2 layer(s) → buildings up to 16 blocks high (up to y 81)", or red "Not a foundation: nothing solid under it (air, water...)." Click any layer of the stack. With something in a hand, it acts like a normal block (you can build on it) |
 
-**Code:** `ModBlocks.REINFORCED_CONCRETE` (plain `Block`). Loot: `ModBlockLootProvider` (pool 1 = `selfOrGravel`, pool 2 = rebar with the same Sledgehammer condition). Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers.
+**Code:** `ModBlocks.REINFORCED_CONCRETE` = `block/ReinforcedConcreteBlock.java` (right-click info; was a plain `Block` until Phase 3¾ step 2). Foundation logic: `foundation/Foundation.java` (pure, 9 unit tests in `FoundationTest`), `foundation/FoundationLookup.java` (real blocks → cells). Messages: `message.siteworks.foundation.ok/none` (both lang providers). Loot: `ModBlockLootProvider` (pool 1 = `selfOrGravel`, pool 2 = rebar with the same Sledgehammer condition). Datagen: `ModModelProvider.cubeBlock`, `ModBlockTagProvider`, both lang providers.
 
 ---
 

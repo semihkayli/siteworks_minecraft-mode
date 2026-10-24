@@ -38,6 +38,8 @@ public class ModTurkishLangProvider extends FabricLanguageProvider {
 		builder.add(ModBlocks.REBAR, "İnşaat Demiri");
 		builder.add(ModBlocks.CONCRETE, "Beton");
 		builder.add(ModBlocks.REINFORCED_CONCRETE, "Betonarme");
+		builder.add("message.siteworks.foundation.ok", "Temel: %s katman → bina en fazla %s blok yüksek olabilir (en üst y: %s)");
+		builder.add("message.siteworks.foundation.none", "Temel değil: altında sağlam bir blok yok (hava, su...).");
 		builder.add(ModBlocks.WET_CONCRETE, "Taze Beton");
 		builder.add(ModItems.MORTAR, "Harç");
 		builder.add(ModItems.TROWEL, "Mala");

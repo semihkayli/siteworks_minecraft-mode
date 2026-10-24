@@ -3,6 +3,7 @@ package io.github.semihkayli.siteworks.registry;
 import io.github.semihkayli.siteworks.SiteWorks;
 import io.github.semihkayli.siteworks.block.ConcreteMixerBlock;
 import io.github.semihkayli.siteworks.block.RebarBlock;
+import io.github.semihkayli.siteworks.block.ReinforcedConcreteBlock;
 import io.github.semihkayli.siteworks.block.SafetyNetBlock;
 import io.github.semihkayli.siteworks.block.SteelBeamBlock;
 import io.github.semihkayli.siteworks.block.WetConcreteBlock;
@@ -65,9 +66,9 @@ public final class ModBlocks {
 					.sound(SoundType.STONE));
 
 	// Mines like an iron block (hardness 5), resists explosions like obsidian (1200 = creeper- and TNT-proof).
-	// Needs an iron pickaxe or better (tag #minecraft:needs_iron_tool).
+	// Needs an iron pickaxe or better (tag #minecraft:needs_iron_tool). Foundations are made of it (right-click = info).
 	public static final Block REINFORCED_CONCRETE = register("reinforced_concrete",
-			Block::new,
+			ReinforcedConcreteBlock::new,
 			BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_GRAY)
 					.instrument(NoteBlockInstrument.BASEDRUM)

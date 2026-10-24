@@ -25,6 +25,8 @@
   "itemGroup.siteworks.site_works": "Site Works",
   "message.siteworks.beam.blocked": "Önünde bir engel var.",
   "message.siteworks.beam.too_far": "Çok uzak! Kirişin ucuna yaklaş.",
+  "message.siteworks.foundation.none": "Temel değil: altında sağlam bir blok yok (hava, su...).",
+  "message.siteworks.foundation.ok": "Temel: %s katman → bina en fazla %s blok yüksek olabilir (en üst y: %s)",
   "message.siteworks.ghost_test.removed": "%s hayalet blok silindi",
   "message.siteworks.ghost_test.spawned": "%s hayalet blok oluşturuldu",
   "message.siteworks.mixer.mixing": " · Karıştırıyor...",

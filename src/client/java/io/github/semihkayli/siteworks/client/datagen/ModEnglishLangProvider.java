@@ -37,6 +37,8 @@ public class ModEnglishLangProvider extends FabricLanguageProvider {
 		builder.add(ModBlocks.REBAR, "Rebar");
 		builder.add(ModBlocks.CONCRETE, "Concrete");
 		builder.add(ModBlocks.REINFORCED_CONCRETE, "Reinforced Concrete");
+		builder.add("message.siteworks.foundation.ok", "Foundation: %s layer(s) → buildings up to %s blocks high (up to y %s)");
+		builder.add("message.siteworks.foundation.none", "Not a foundation: nothing solid under it (air, water...).");
 		builder.add(ModBlocks.WET_CONCRETE, "Wet Concrete");
 		builder.add(ModItems.MORTAR, "Mortar");
 		builder.add(ModItems.TROWEL, "Trowel");
