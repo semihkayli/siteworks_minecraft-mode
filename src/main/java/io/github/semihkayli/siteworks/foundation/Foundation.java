@@ -114,6 +114,25 @@ public final class Foundation {
 	}
 
 	/**
+	 * The hard stop (Phase 3¾ step 4, user's rule A: "stop only when the building grows taller").
+	 * May a player put a block at {@code y}? It's refused only when it goes ON TOP of a protected block
+	 * that is already at its foundation's limit. {@code blockBelow} = there is a block (not air) at {@code y - 1}.
+	 * Returns the foundation whose limit it would break, or null = OK.
+	 * So building beside a house, on a thicker part, or far above a deep bunker is never stopped.
+	 */
+	public static Stack tooTall(Column column, int y, boolean blockBelow, int minY) {
+		Stack own = below(column, y, minY);
+		if (own != null && own.carries(y)) {
+			return null; // inside the allowed height of a foundation
+		}
+		if (!blockBelow) {
+			return null; // it doesn't sit on the building
+		}
+		Stack under = below(column, y - 1, minY);
+		return under != null && under.carries(y - 1) && y > under.limitY() ? under : null;
+	}
+
+	/**
 	 * Which of these blocks are carried by a foundation (= protected)? Used for explosions, which hit hundreds of blocks.
 	 * Fast: in each column we start with the highest block and look down once. A lower block in the same column
 	 * has the same foundation, unless it is at or below that foundation's top (then we look again from there).

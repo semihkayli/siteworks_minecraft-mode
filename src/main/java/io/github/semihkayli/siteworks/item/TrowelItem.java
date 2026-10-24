@@ -1,5 +1,7 @@
 package io.github.semihkayli.siteworks.item;
 
+import io.github.semihkayli.siteworks.foundation.Foundation;
+import io.github.semihkayli.siteworks.foundation.FoundationLookup;
 import io.github.semihkayli.siteworks.registry.ModDataComponents;
 import io.github.semihkayli.siteworks.registry.ModItems;
 import io.github.semihkayli.siteworks.registry.ModTags;
@@ -176,6 +178,12 @@ public class TrowelItem extends Item {
 				if (placed == 0) {
 					problem = Component.translatable("message.siteworks.trowel.blocked");
 				}
+				break;
+			}
+			// The foundation hard stop (Phase 3¾): checked here too, so the message isn't replaced by "in the way".
+			Foundation.Stack limit = FoundationLookup.refusedFor(player, level, pos);
+			if (limit != null) {
+				problem = FoundationLookup.tooTallMessage(limit);
 				break;
 			}
 			ItemStack blocks = creative ? new ItemStack(blockItem) : findStack(player.getInventory(), blockItem);

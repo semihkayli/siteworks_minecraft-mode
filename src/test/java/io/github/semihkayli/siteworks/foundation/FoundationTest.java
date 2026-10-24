@@ -172,6 +172,33 @@ class FoundationTest {
 	}
 
 	@Test
+	void hardStopOnTopOfTheLimit() {
+		// 1 layer at y = 1 on solid ground: the building may go up to y = 9. A wall stands from y = 2 to 9.
+		FakeColumn column = new FakeColumn().set(0, 0, Cell.SOLID).set(1, 1, Cell.FOUNDATION).set(2, 9, Cell.SOLID);
+
+		assertNull(Foundation.tooTall(column, 9, true, MIN_Y)); // still inside the limit
+		assertEquals(new Stack(1, 1, true), Foundation.tooTall(column, 10, true, MIN_Y)); // on top of the wall: stop
+		assertNull(Foundation.tooTall(column, 10, false, MIN_Y)); // not sitting on the building (rule A)
+	}
+
+	@Test
+	void hardStopWithAThickerFoundation() {
+		// 2 layers (y 1-2): up to y = 18, so y = 10 is fine now.
+		FakeColumn column = new FakeColumn().set(0, 0, Cell.SOLID).set(1, 2, Cell.FOUNDATION).set(3, 9, Cell.SOLID);
+
+		assertNull(Foundation.tooTall(column, 10, true, MIN_Y));
+		assertNull(Foundation.tooTall(column, 3, true, MIN_Y)); // right on top of the foundation
+	}
+
+	@Test
+	void hardStopDoesNotBlockTheSurfaceAboveADeepBunker() {
+		// A bunker foundation deep down at y = -40 (limit -32), solid ground from -31 up to 63. Building at y = 64 is free.
+		FakeColumn column = new FakeColumn().set(-41, -41, Cell.SOLID).set(-40, -40, Cell.FOUNDATION).set(-31, 63, Cell.SOLID);
+
+		assertNull(Foundation.tooTall(column, 64, true, MIN_Y));
+	}
+
+	@Test
 	void foundationAtTheBottomOfTheWorldIsNoFoundation() {
 		// Nothing under the lowest layer (the world ends): not on firm ground.
 		FakeColumn column = new FakeColumn().set(MIN_Y, MIN_Y + 1, Cell.FOUNDATION);

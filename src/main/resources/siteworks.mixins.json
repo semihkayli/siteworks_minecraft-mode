@@ -3,6 +3,7 @@
 	"package": "io.github.semihkayli.siteworks.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"BlockItemMixin",
 		"ServerExplosionMixin",
 		"WitherBossMixin"
 	],

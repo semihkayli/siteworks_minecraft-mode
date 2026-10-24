@@ -27,6 +27,7 @@
   "message.siteworks.beam.too_far": "Too far! Walk closer to the end of the beam.",
   "message.siteworks.foundation.none": "Not a foundation: nothing solid under it (air, water...).",
   "message.siteworks.foundation.ok": "Foundation: %s layer(s) → buildings up to %s blocks high (up to y %s)",
+  "message.siteworks.foundation.too_tall": "Foundation too thin for this height! Add a layer (max y %s).",
   "message.siteworks.ghost_test.removed": "Removed %s ghost blocks",
   "message.siteworks.ghost_test.spawned": "Spawned %s ghost blocks",
   "message.siteworks.mixer.mixing": " · Mixing...",

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -28,6 +30,23 @@ public final class FoundationLookup {
 	public static boolean isCarried(Level level, BlockPos pos) {
 		Foundation.Stack stack = below(level, pos);
 		return stack != null && stack.carries(pos.getY());
+	}
+
+	/**
+	 * The hard stop for a PLAYER placing a block at {@code pos}: the foundation whose limit it would break,
+	 * or null = OK. Creative mode ignores the limit, and so does placing without a player (dispensers...).
+	 */
+	public static Foundation.Stack refusedFor(Player player, Level level, BlockPos pos) {
+		if (player == null || player.getAbilities().instabuild) {
+			return null;
+		}
+		boolean blockBelow = !level.getBlockState(pos.below()).isAir();
+		return Foundation.tooTall(column(level, pos), pos.getY(), blockBelow, level.getMinY());
+	}
+
+	/** "Foundation too thin for this height! Add a layer (max y 71)." */
+	public static Component tooTallMessage(Foundation.Stack stack) {
+		return Component.translatable("message.siteworks.foundation.too_tall", stack.limitY());
 	}
 
 	/** Removes every carried (protected) block from an explosion's list of blocks to destroy. */

@@ -1,10 +1,13 @@
 package io.github.semihkayli.siteworks.item;
 
 import io.github.semihkayli.siteworks.block.WetConcreteBlock;
+import io.github.semihkayli.siteworks.foundation.Foundation;
+import io.github.semihkayli.siteworks.foundation.FoundationLookup;
 import io.github.semihkayli.siteworks.pour.MoldPour;
 import io.github.semihkayli.siteworks.registry.ModBlocks;
 import io.github.semihkayli.siteworks.registry.ModDataComponents;
 import io.github.semihkayli.siteworks.util.Messages;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -59,15 +62,16 @@ public class ConcreteBucketItem extends Item {
 		}
 
 		MoldPour.Result result = plan(level, player, start, getAmount(stack));
+		Allowed allowed = allowedCells(level, player, result.cells());
 
-		for (MoldPour.Pos cell : result.cells()) {
+		for (MoldPour.Pos cell : allowed.cells()) {
 			BlockPos pos = new BlockPos(cell.x(), cell.y(), cell.z());
 			boolean rebar = level.getBlockState(pos).is(ModBlocks.REBAR);
 			level.setBlock(pos, ModBlocks.WET_CONCRETE.defaultBlockState().setValue(WetConcreteBlock.REINFORCED, rebar),
 					Block.UPDATE_ALL);
 		}
 
-		int poured = result.cells().size();
+		int poured = allowed.cells().size();
 		if (poured > 0) {
 			level.playSound(null, start, SoundEvents.MUD_PLACE, SoundSource.BLOCKS, 1.0f, 0.8f);
 			level.playSound(null, start, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -76,7 +80,9 @@ public class ConcreteBucketItem extends Item {
 			if (poured > 0) {
 				player.awardStat(Stats.ITEM_USED.get(this));
 			}
-			switch (result.status()) {
+			if (allowed.limit() != null) {
+				Messages.error(player, FoundationLookup.tooTallMessage(allowed.limit()));
+			} else switch (result.status()) {
 				case LEAKS -> Messages.error(player, Component.translatable("message.siteworks.pour.leaks"));
 				case PROTECTED -> Messages.error(player, Component.translatable("message.siteworks.pour.protected"));
 				case NO_FORMWORK -> Messages.error(player, Component.translatable("message.siteworks.pour.no_formwork"));
@@ -104,6 +110,26 @@ public class ConcreteBucketItem extends Item {
 	public static BlockPos startFor(Level level, BlockPos clicked, Direction face) {
 		MoldPour.Cell cell = cellOf(level.getBlockState(clicked));
 		return cell == MoldPour.Cell.OPEN || cell == MoldPour.Cell.REBAR ? clicked : clicked.relative(face);
+	}
+
+	/**
+	 * The pour cells that may really be placed: all of them, or only the ones before the first cell that would make
+	 * a building on a foundation too tall (the hard stop, Phase 3¾). {@code refused} / {@code limit} = that cell and
+	 * its foundation, or null.
+	 */
+	public record Allowed(List<MoldPour.Pos> cells, MoldPour.Pos refused, Foundation.Stack limit) {
+	}
+
+	/** The foundation hard stop for a pour. The cells are in placing order, so the ones before the cut are still safe. */
+	public static Allowed allowedCells(Level level, Player player, List<MoldPour.Pos> cells) {
+		for (int i = 0; i < cells.size(); i++) {
+			MoldPour.Pos cell = cells.get(i);
+			Foundation.Stack limit = FoundationLookup.refusedFor(player, level, new BlockPos(cell.x(), cell.y(), cell.z()));
+			if (limit != null) {
+				return new Allowed(cells.subList(0, i), cell, limit);
+			}
+		}
+		return new Allowed(cells, null, null);
 	}
 
 	/** Plans the pour on the real blocks. Also used by the client preview (with the client's copy of the world). */
